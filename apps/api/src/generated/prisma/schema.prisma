@@ -1,0 +1,1363 @@
+// ============================================================
+// LAHANS CONNECT — Prisma schema (PostgreSQL 16)
+// Sources: BRD §6 (DDL inti), PRD §7 (Data Model Sketch)
+//
+// ZERO HARDCODE PRINCIPLES ENFORCED HERE:
+//  - Class A/B tables carry effective_from/effective_to + gist
+//    EXCLUDE anti-overlap (via custom migration, see prisma/migrations)
+//  - audit_logs is APPEND-ONLY (REVOKE UPDATE/DELETE, partition)
+//  - No BYTEA/BLOB columns anywhere (BR-FILE-01)
+//  - Money stored as Decimal (BRD 7.4)
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../apps/api/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// A. ORGANIZATION
+// ============================================================
+
+model companies {
+  id                String   @id @default(uuid()) @db.Uuid
+  code              String   @unique
+  legal_name        String
+  tax_id            String?
+  bpjs_rate_profile String? // FK reference by code (configurable)
+  timezone          String   @default("Asia/Jakarta")
+  address           String?
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  branches        branches[]
+  divisions       divisions[]
+  work_schedules  work_schedules[]
+  payroll_periods payroll_periods[]
+  holidays        holidays[]
+
+  @@index([is_active])
+}
+
+model branches {
+  id                String   @id @default(uuid()) @db.Uuid
+  company_id        String   @db.Uuid
+  code              String   @unique
+  name              String
+  address           String?
+  latitude          Decimal? @db.Decimal(9, 6)
+  longitude         Decimal? @db.Decimal(9, 6)
+  geofence_radius_m Int      @default(150)
+  timezone          String   @default("Asia/Jakarta")
+  attendance_policy String   @default("GEOFENCE_TRACKED") // GEOFENCE_STRICT | GEOFENCE_TRACKED
+  city_tier         String? // for v2 perdin
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  company   companies   @relation(fields: [company_id], references: [id], onDelete: Restrict)
+  employees employees[]
+
+  @@index([company_id])
+  @@index([is_active])
+}
+
+model divisions {
+  id         String   @id @default(uuid()) @db.Uuid
+  company_id String   @db.Uuid
+  code       String   @unique
+  name       String
+  parent_id  String?  @db.Uuid
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company     companies     @relation(fields: [company_id], references: [id], onDelete: Restrict)
+  departments departments[]
+
+  @@index([company_id])
+}
+
+model departments {
+  id          String   @id @default(uuid()) @db.Uuid
+  division_id String   @db.Uuid
+  code        String   @unique
+  name        String
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  division      divisions       @relation(fields: [division_id], references: [id], onDelete: Restrict)
+  job_positions job_positions[]
+
+  @@index([division_id])
+}
+
+model job_grades {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique // NON_STAFF, STAFF, SUPERVISOR, MANAGER
+  name        String
+  level_order Int      @default(0)
+  is_staff    Boolean  @default(false)
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  job_positions  job_positions[]
+  overtime_rules overtime_rate_rules[]
+
+  @@index([is_active])
+}
+
+model job_positions {
+  id            String   @id @default(uuid()) @db.Uuid
+  department_id String?  @db.Uuid
+  job_grade_id  String?  @db.Uuid
+  code          String   @unique
+  name          String
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  department departments? @relation(fields: [department_id], references: [id], onDelete: SetNull)
+  job_grade  job_grades?  @relation(fields: [job_grade_id], references: [id], onDelete: SetNull)
+  employees  employees[]
+
+  @@index([job_grade_id])
+  @@index([is_active])
+}
+
+// ============================================================
+// B. EMPLOYEES (Class A/B effective-dated)
+// ============================================================
+
+model employees {
+  id                String    @id @default(uuid()) @db.Uuid
+  nik               String    @unique // 8 digits, immutable, never reused (FR-M8B-025a)
+  full_name         String
+  email             String?
+  phone             String?
+  gender            String? // Pria | Wanita
+  birth_date        DateTime?
+  birth_place       String?
+  id_card_no        String?
+  tax_id            String?
+  marital_status    String?
+  dependents_count  Int       @default(0)
+  bank_name         String?
+  bank_account_no   String?
+  bank_account_name String?
+  join_date         DateTime?
+  employment_status String    @default("AKTIF") // reference_data EMPLOYMENT_STATUS
+  resign_date       DateTime?
+  leave_eligible    Boolean   @default(true) // FR-M1B-030
+  photo_url         String?
+  is_active         Boolean   @default(true)
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  branch_id       String?        @db.Uuid
+  branch          branches?      @relation(fields: [branch_id], references: [id], onDelete: Restrict)
+  job_position_id String?        @db.Uuid
+  job_position    job_positions? @relation(fields: [job_position_id], references: [id], onDelete: Restrict)
+
+  assignments           employee_assignments[]
+  reporting_lines       reporting_lines[]                @relation("ReportingLineEmployee")
+  subordinates          reporting_lines[]                @relation("ReportingLineSupervisor")
+  documents             employee_documents[]
+  component_assignments employee_component_assignments[]
+  user                  users?
+  attendance_logs       attendance_logs[]
+  attendance_daily      attendance_daily[]
+  leave_balances        leave_balances[]
+  leave_requests        leave_requests[]
+  overtime_requests     overtime_requests[]
+  payroll_feeder_lines  payroll_feeder_lines[]
+  payslips              payslips[]
+
+  @@index([branch_id])
+  @@index([job_position_id])
+  @@index([is_active])
+  @@index([join_date])
+  @@index([employment_status])
+}
+
+// Class B — structural, effective-dated (gist EXCLUDE in migration)
+model employee_assignments {
+  id              String    @id @default(uuid()) @db.Uuid
+  employee_id     String    @db.Uuid
+  company_id      String?   @db.Uuid
+  branch_id       String?   @db.Uuid
+  department_id   String?   @db.Uuid
+  job_position_id String?   @db.Uuid
+  job_grade_id    String?   @db.Uuid
+  contract_type   String? // reference_data CONTRACT_TYPE
+  contract_start  DateTime?
+  contract_end    DateTime?
+  effective_from  DateTime  @map("effective_from")
+  effective_to    DateTime?
+  is_primary      Boolean   @default(true)
+  created_at      DateTime  @default(now())
+
+  employee employees @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+
+  @@index([employee_id, effective_from(sort: Desc)])
+  @@index([employee_id, effective_to])
+}
+
+// Class B — reporting lines, effective-dated (gist EXCLUDE)
+model reporting_lines {
+  id             String    @id @default(uuid()) @db.Uuid
+  employee_id    String    @db.Uuid
+  supervisor_id  String    @db.Uuid
+  line_type      String    @default("DIRECT") // DIRECT | DIVISION_HEAD
+  effective_from DateTime  @map("effective_from")
+  effective_to   DateTime?
+  created_at     DateTime  @default(now())
+
+  employee   employees @relation("ReportingLineEmployee", fields: [employee_id], references: [id], onDelete: Restrict)
+  supervisor employees @relation("ReportingLineSupervisor", fields: [supervisor_id], references: [id], onDelete: Restrict)
+
+  @@index([supervisor_id, effective_from])
+  @@index([employee_id, effective_from])
+}
+
+model employee_documents {
+  id          String    @id @default(uuid()) @db.Uuid
+  employee_id String    @db.Uuid
+  doc_type    String // reference_data DOCUMENT_TYPE
+  doc_number  String?
+  issued_date DateTime?
+  expiry_date DateTime?
+  file_url    String?
+  verified_by String?   @db.Uuid
+  verified_at DateTime?
+  created_at  DateTime  @default(now())
+
+  employee employees @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+
+  @@index([employee_id])
+  @@index([expiry_date])
+}
+
+// ============================================================
+// C. MODUL 0 — ACCESS & SECURITY (BRD §6.1)
+// ============================================================
+
+model users {
+  id                   String    @id @default(uuid()) @db.Uuid
+  employee_id          String?   @unique @db.Uuid
+  login_nik            String?   @unique
+  email                String?   @unique
+  password_hash        String
+  status               String    @default("PENDING_ACTIVATION") // ACTIVE|INACTIVE|LOCKED|PENDING_ACTIVATION
+  must_change_password Boolean   @default(true)
+  two_factor_enabled   Boolean   @default(false)
+  two_factor_secret    String?
+  failed_attempts      Int       @default(0)
+  locked_until         DateTime?
+  last_login_at        DateTime?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  employee          employees?                  @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+  group_memberships user_group_members[]
+  overrides         user_permission_overrides[]
+  scope_bindings    user_scope_bindings[]
+  devices           user_devices[]
+  audit_logs        audit_logs[]
+  refresh_tokens    refresh_tokens[]
+}
+
+model user_groups {
+  id                  String   @id @default(uuid()) @db.Uuid
+  code                String   @unique // SUPER_ADMIN, HCGA_MANAGER, COMBEN, FINANCE, ...
+  name                String
+  description         String?
+  is_system           Boolean  @default(false)
+  requires_2fa        Boolean  @default(false)
+  max_session_minutes Int?
+  allowed_ip_cidr     String[]
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  memberships user_group_members[]
+  permissions group_permissions[]
+}
+
+model user_group_members {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String   @db.Uuid
+  group_id    String   @db.Uuid
+  assigned_by String?  @db.Uuid
+  assigned_at DateTime @default(now())
+
+  user  users       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  group user_groups @relation(fields: [group_id], references: [id], onDelete: Restrict)
+
+  @@unique([user_id, group_id])
+}
+
+model permissions {
+  id           String   @id @default(uuid()) @db.Uuid
+  code         String   @unique // modul.resource.action
+  module       String
+  resource     String
+  action       String
+  description  String?
+  is_dangerous Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  group_permissions group_permissions[]
+  overrides         user_permission_overrides[]
+  menu              menus[]
+
+  @@index([module])
+}
+
+model group_permissions {
+  id            String   @id @default(uuid()) @db.Uuid
+  group_id      String   @db.Uuid
+  permission_id String   @db.Uuid
+  data_scope    String   @default("SELF")
+  scope_config  Json?
+  masked_fields Json? // ["basic_salary","bank_account_no"]
+  created_at    DateTime @default(now())
+
+  group      user_groups @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  permission permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+  @@unique([group_id, permission_id])
+}
+
+model user_permission_overrides {
+  id            String    @id @default(uuid()) @db.Uuid
+  user_id       String    @db.Uuid
+  permission_id String    @db.Uuid
+  effect        String // GRANT | DENY (DENY always wins)
+  data_scope    String?
+  reason        String
+  granted_by    String    @db.Uuid
+  expires_at    DateTime?
+  created_at    DateTime  @default(now())
+
+  user       users       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  permission permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, permission_id])
+}
+
+model user_scope_bindings {
+  id           String   @id @default(uuid()) @db.Uuid
+  user_id      String   @db.Uuid
+  scope_type   String // BRANCH | DIVISION | COMPANY
+  scope_ref_id String   @db.Uuid
+  created_at   DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, scope_type, scope_ref_id])
+}
+
+model menus {
+  id              String   @id @default(uuid()) @db.Uuid
+  parent_id       String?  @db.Uuid
+  code            String   @unique
+  label           String
+  icon            String?
+  route           String?
+  platform        String   @default("BOTH") // WEB | MOBILE | BOTH
+  permission_code String?  @db.Uuid
+  sort_order      Int      @default(0)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  parent     menus?       @relation("MenuParent", fields: [parent_id], references: [id], onDelete: Cascade)
+  children   menus[]      @relation("MenuParent")
+  permission permissions? @relation(fields: [permission_code], references: [id], onDelete: SetNull)
+}
+
+model sensitive_fields {
+  id             String   @id @default(uuid()) @db.Uuid
+  entity_name    String
+  field_name     String
+  default_masked Boolean  @default(true)
+  description    String?
+  created_at     DateTime @default(now())
+
+  @@unique([entity_name, field_name])
+}
+
+model approval_delegations {
+  id                String   @id @default(uuid()) @db.Uuid
+  delegator_user_id String   @db.Uuid
+  delegate_user_id  String   @db.Uuid
+  module_codes      Json
+  start_date        DateTime
+  end_date          DateTime
+  reason            String
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+}
+
+model user_devices {
+  id           String    @id @default(uuid()) @db.Uuid
+  user_id      String    @db.Uuid
+  device_id    String
+  platform     String
+  model        String?
+  os_version   String?
+  app_version  String?
+  fcm_token    String?
+  is_trusted   Boolean   @default(false)
+  last_seen_at DateTime?
+  created_at   DateTime  @default(now())
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, device_id])
+}
+
+model refresh_tokens {
+  id          String    @id @default(uuid()) @db.Uuid
+  user_id     String    @db.Uuid
+  token_hash  String    @unique
+  expires_at  DateTime
+  revoked_at  DateTime?
+  replaced_by String?
+  created_at  DateTime  @default(now())
+  ip_address  String?
+  user_agent  String?
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+// APPEND-ONLY. REVOKE UPDATE/DELETE + partition in migration.
+model audit_logs {
+  id            BigInt   @id @default(autoincrement())
+  actor_user_id String?  @db.Uuid
+  action        String
+  entity_name   String
+  entity_id     String?
+  before_data   Json?
+  after_data    Json?
+  ip_address    String?
+  user_agent    String?
+  request_id    String?
+  created_at    DateTime @default(now())
+
+  user users? @relation(fields: [actor_user_id], references: [id], onDelete: SetNull)
+
+  @@index([entity_name, entity_id])
+  @@index([actor_user_id, created_at(sort: Desc)])
+}
+
+// ============================================================
+// D. WORK TIME (BRD §4.7.1)
+// ============================================================
+
+model work_schedules {
+  id                     String   @id @default(uuid()) @db.Uuid
+  company_id             String   @db.Uuid
+  code                   String   @unique // HO_STANDARD, PABRIK_STAFFUP, PABRIK_OPERATOR, FIELD_MARKET
+  name                   String
+  schedule_type          String // FIXED | SHIFT | FLEXIBLE
+  weekly_target_minutes  Int?
+  daily_standard_minutes Int?
+  is_active              Boolean  @default(true)
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  company              companies              @relation(fields: [company_id], references: [id], onDelete: Restrict)
+  days                 work_schedule_days[]
+  schedule_assignments schedule_assignments[]
+  holiday_workdays     holidays[]
+
+  @@index([company_id])
+}
+
+model work_schedule_days {
+  id                     String  @id @default(uuid()) @db.Uuid
+  work_schedule_id       String  @db.Uuid
+  day_of_week            Int
+  is_working_day         Boolean @default(true)
+  start_time             String?
+  end_time               String?
+  break_minutes          Int     @default(60)
+  late_tolerance_minutes Int     @default(0)
+
+  work_schedule work_schedules @relation(fields: [work_schedule_id], references: [id], onDelete: Cascade)
+
+  @@unique([work_schedule_id, day_of_week])
+}
+
+model schedule_assignments {
+  id               String    @id @default(uuid()) @db.Uuid
+  work_schedule_id String    @db.Uuid
+  scope_type       String // EMPLOYEE | POSITION | GRADE | BRANCH | COMPANY
+  scope_ref_id     String    @db.Uuid
+  priority         Int // 1=EMPLOYEE .. 5=COMPANY
+  effective_from   DateTime
+  effective_to     DateTime?
+  created_at       DateTime  @default(now())
+
+  work_schedule work_schedules @relation(fields: [work_schedule_id], references: [id], onDelete: Restrict)
+
+  @@index([scope_type, scope_ref_id])
+  @@index([work_schedule_id])
+}
+
+model schedule_overrides {
+  id               String   @id @default(uuid()) @db.Uuid
+  employee_id      String   @db.Uuid
+  work_date        DateTime
+  work_schedule_id String?  @db.Uuid
+  is_day_off       Boolean  @default(false)
+  reason           String
+  created_by       String   @db.Uuid
+  created_at       DateTime @default(now())
+
+  @@unique([employee_id, work_date])
+}
+
+model holidays {
+  id                   String   @id @default(uuid()) @db.Uuid
+  company_id           String   @db.Uuid
+  date                 DateTime
+  name                 String
+  holiday_type         String // NATIONAL | JOINT_LEAVE | COMPANY
+  deducts_annual_leave Boolean  @default(false)
+  region_scope         String?
+  is_active            Boolean  @default(true)
+  created_at           DateTime @default(now())
+
+  company        companies        @relation(fields: [company_id], references: [id], onDelete: Restrict)
+  work_schedules work_schedules[]
+
+  @@unique([company_id, date, holiday_type])
+  @@index([date])
+}
+
+// ============================================================
+// E. ATTENDANCE
+// ============================================================
+
+model attendance_logs {
+  id                       String    @id @default(uuid()) @db.Uuid
+  employee_id              String    @db.Uuid
+  log_type                 String // IN | OUT
+  server_time              DateTime
+  device_time              DateTime?
+  latitude                 Decimal?  @db.Decimal(9, 6)
+  longitude                Decimal?  @db.Decimal(9, 6)
+  gps_accuracy_m           Decimal?  @db.Decimal(8, 2)
+  photo_url                String?
+  branch_id                String?   @db.Uuid
+  distance_from_geofence_m Decimal?  @db.Decimal(10, 2)
+  is_out_of_zone           Boolean   @default(false)
+  is_mock_location         Boolean   @default(false)
+  is_offline_sync          Boolean   @default(false)
+  device_id                String?
+  app_version              String?
+  raw_payload              Json?
+  client_request_id        String?   @unique // idempotency
+  created_at               DateTime  @default(now())
+
+  employee employees @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+
+  @@index([employee_id, server_time(sort: Desc)])
+  // NOTE: partial index WHERE is_mock_location = TRUE added via custom migration (BRD 6.4)
+  @@index([branch_id])
+}
+
+model attendance_daily {
+  id                  String    @id @default(uuid()) @db.Uuid
+  employee_id         String    @db.Uuid
+  work_date           DateTime
+  schedule_id         String?   @db.Uuid
+  first_in_at         DateTime?
+  last_out_at         DateTime?
+  status              String    @default("INCOMPLETE") // HADIR|TERLAMBAT|PULANG_CEPAT|ALPHA|IZIN|SAKIT|CUTI|LIBUR|DINAS|INCOMPLETE
+  late_minutes        Int       @default(0)
+  early_leave_minutes Int       @default(0)
+  work_minutes        Int       @default(0)
+  overtime_minutes    Int       @default(0)
+  source              String    @default("MOBILE") // MOBILE|MACHINE|MANUAL|SYSTEM
+  is_anomaly          Boolean   @default(false)
+  anomaly_reasons     Json?
+  payroll_period_id   String?   @db.Uuid
+  locked_at           DateTime?
+
+  employee employees @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+
+  @@unique([employee_id, work_date])
+  @@index([payroll_period_id, status])
+  @@index([is_anomaly])
+}
+
+model attendance_corrections {
+  id                   String   @id @default(uuid()) @db.Uuid
+  attendance_daily_id  String   @db.Uuid
+  requested_by         String   @db.Uuid
+  reason_code          String // reference_data ATTENDANCE_CORRECTION_REASON
+  notes                String?
+  proposed_values      Json?
+  approval_instance_id String?  @db.Uuid
+  status               String   @default("PENDING")
+  created_at           DateTime @default(now())
+}
+
+// ============================================================
+// F. LEAVE & OVERTIME
+// ============================================================
+
+model leave_types {
+  id                               String   @id @default(uuid()) @db.Uuid
+  code                             String   @unique // CUTI_TAHUNAN, CUTI_ADVANCE, IZIN, SAKIT, ...
+  name                             String
+  deduct_quota                     Boolean  @default(false)
+  deduct_salary                    Boolean  @default(false)
+  salary_deduction_formula_code    String?
+  max_days_per_request             Int?
+  min_notice_days                  Int?
+  requires_attachment              Boolean  @default(false)
+  allow_backdate                   Boolean  @default(false)
+  allow_half_day                   Boolean  @default(false)
+  gender_restriction               String?
+  min_service_months               Int?
+  workflow_code                    String? // approval_workflows.code
+  affects_attendance_allowance     Boolean  @default(true)
+  affects_meal_transport_allowance Boolean  @default(true)
+  is_active                        Boolean  @default(true)
+  created_at                       DateTime @default(now())
+  updated_at                       DateTime @updatedAt
+
+  leave_balances leave_balances[]
+  leave_requests leave_requests[]
+}
+
+model leave_balances {
+  id                String    @id @default(uuid()) @db.Uuid
+  employee_id       String    @db.Uuid
+  leave_type_id     String    @db.Uuid
+  period_year       Int
+  entitlement_days  Decimal   @db.Decimal(6, 2)
+  prorate_days      Decimal   @db.Decimal(6, 2)
+  carried_over_days Decimal   @default(0) @db.Decimal(6, 2)
+  used_days         Decimal   @default(0) @db.Decimal(6, 2)
+  advance_used_days Decimal   @default(0) @db.Decimal(6, 2)
+  pending_days      Decimal   @default(0) @db.Decimal(6, 2)
+  expired_days      Decimal   @default(0) @db.Decimal(6, 2)
+  balance_days      Decimal   @db.Decimal(6, 2)
+  valid_from        DateTime
+  expires_at        DateTime?
+
+  employee   employees              @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+  leave_type leave_types            @relation(fields: [leave_type_id], references: [id], onDelete: Restrict)
+  ledger     leave_balance_ledger[]
+
+  @@unique([employee_id, leave_type_id, period_year])
+  @@index([expires_at])
+}
+
+model leave_requests {
+  id                   String    @id @default(uuid()) @db.Uuid
+  doc_number           String    @unique
+  employee_id          String    @db.Uuid
+  leave_type_id        String    @db.Uuid
+  start_date           DateTime
+  end_date             DateTime
+  total_days           Decimal   @db.Decimal(6, 2)
+  is_half_day          Boolean   @default(false)
+  reason               String?
+  attachment_urls      Json?
+  is_emergency         Boolean   @default(false)
+  is_backdated         Boolean   @default(false)
+  status               String    @default("PENDING")
+  approval_instance_id String?
+  submitted_at         DateTime  @default(now())
+  decided_at           DateTime?
+
+  employee   employees            @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+  leave_type leave_types          @relation(fields: [leave_type_id], references: [id], onDelete: Restrict)
+  days       leave_request_days[]
+
+  @@index([employee_id, submitted_at])
+  @@index([status])
+}
+
+model leave_request_days {
+  id               String   @id @default(uuid()) @db.Uuid
+  leave_request_id String   @db.Uuid
+  leave_date       DateTime
+  day_portion      String   @default("FULL") // FULL | FIRST_HALF | SECOND_HALF
+  is_counted       Boolean  @default(true)
+
+  leave_request leave_requests @relation(fields: [leave_request_id], references: [id], onDelete: Cascade)
+
+  @@index([leave_request_id])
+}
+
+// APPEND-ONLY ledger
+model leave_balance_ledger {
+  id               String   @id @default(uuid()) @db.Uuid
+  leave_balance_id String   @db.Uuid
+  entry_type       String // GRANT | USE | ADVANCE | EXPIRE | ADJUST | PAYOUT
+  days             Decimal  @db.Decimal(6, 2)
+  reference_type   String?
+  reference_id     String?
+  notes            String?
+  created_by       String?  @db.Uuid
+  created_at       DateTime @default(now())
+
+  leave_balance leave_balances @relation(fields: [leave_balance_id], references: [id], onDelete: Restrict)
+
+  @@index([leave_balance_id, created_at])
+}
+
+// Class A — overtime rates, effective-dated (gist EXCLUDE)
+model overtime_rate_rules {
+  id                String    @id @default(uuid()) @db.Uuid
+  company_id        String?   @db.Uuid
+  job_grade_id      String    @db.Uuid
+  day_type          String // WEEKDAY | WEEKEND | NATIONAL_HOLIDAY | JOINT_HOLIDAY
+  calc_method       String // HOURLY_DIVISOR | FLAT_PER_DAY | NONE
+  divisor           Int?
+  multiplier        Decimal?  @db.Decimal(6, 3)
+  flat_amount       Decimal?  @db.Decimal(18, 2)
+  max_hours_per_day Int?
+  effective_from    DateTime  @map("effective_from")
+  effective_to      DateTime?
+  created_at        DateTime  @default(now())
+
+  job_grade job_grades @relation(fields: [job_grade_id], references: [id], onDelete: Restrict)
+
+  @@index([job_grade_id, day_type, effective_from(sort: Desc)])
+}
+
+model overtime_requests {
+  id                   String   @id @default(uuid()) @db.Uuid
+  doc_number           String   @unique
+  employee_id          String   @db.Uuid
+  overtime_date        DateTime
+  day_type             String
+  planned_start        String?
+  planned_end          String?
+  planned_hours        Decimal? @db.Decimal(6, 2)
+  actual_hours         Decimal? @db.Decimal(6, 2)
+  rate_rule_id         String?  @db.Uuid
+  calculated_amount    Decimal? @db.Decimal(18, 2)
+  calculation_trace    Json?
+  reason               String?
+  status               String   @default("PENDING")
+  approval_instance_id String?
+  created_at           DateTime @default(now())
+
+  employee employees @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+
+  @@index([employee_id, overtime_date])
+  @@index([status])
+}
+
+// ============================================================
+// G. PAYROLL
+// ============================================================
+
+model payroll_components {
+  id                 String   @id @default(uuid()) @db.Uuid
+  code               String   @unique // BASIC_SALARY, TUNJANGAN_MAKAN, ...
+  name               String
+  component_type     String // INCOME | DEDUCTION
+  is_fixed_allowance Boolean  @default(false)
+  calc_method        String   @default("FIXED") // FIXED|PER_DAY|PERCENTAGE|FORMULA|IMPORTED
+  formula_expression String? // e.g. "BASIC_SALARY / ABSENCE_DIVISOR * ABSENCE_DAYS"
+  taxable            Boolean  @default(true)
+  bpjs_base          Boolean  @default(false)
+  display_order      Int      @default(0)
+  is_active          Boolean  @default(true)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  component_assignments employee_component_assignments[]
+
+  @@index([is_active])
+}
+
+// Class A — per-employee component, effective-dated (gist EXCLUDE)
+model employee_component_assignments {
+  id                   String    @id @default(uuid()) @db.Uuid
+  employee_id          String    @db.Uuid
+  payroll_component_id String    @db.Uuid
+  amount               Decimal?  @db.Decimal(18, 2)
+  qty                  Decimal?  @db.Decimal(10, 2)
+  effective_from       DateTime  @map("effective_from")
+  effective_to         DateTime?
+  notes                String?
+  created_at           DateTime  @default(now())
+
+  employee          employees          @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+  payroll_component payroll_components @relation(fields: [payroll_component_id], references: [id], onDelete: Restrict)
+
+  @@index([employee_id, effective_from(sort: Desc)])
+}
+
+// Class A — attendance allowance rule sets (effective-dated)
+model attendance_allowance_rules {
+  id               String    @id @default(uuid()) @db.Uuid
+  rule_set_code    String // NON_STAFF_DEFAULT, OPERATOR_TINTIN
+  absence_days_min Int
+  absence_days_max Int?
+  percentage       Decimal   @db.Decimal(5, 2)
+  effective_from   DateTime  @map("effective_from")
+  effective_to     DateTime?
+  created_at       DateTime  @default(now())
+
+  @@index([rule_set_code, effective_from(sort: Desc)])
+}
+
+model bpjs_rate_profiles {
+  id         String   @id @default(uuid()) @db.Uuid
+  code       String   @unique // LMN_LMI, PABRIK
+  name       String
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  rates bpjs_rates[]
+}
+
+// Class A — BPJS rates, effective-dated (gist EXCLUDE)
+model bpjs_rates {
+  id                   String    @id @default(uuid()) @db.Uuid
+  profile_id           String    @db.Uuid
+  contribution_code    String // JHT | JKK | JKM | JP | KESEHATAN
+  payer                String // EMPLOYEE | COMPANY
+  percentage           Decimal   @db.Decimal(6, 3)
+  base_component_codes Json?
+  salary_cap           Decimal?  @db.Decimal(18, 2)
+  rounding_rule        String    @default("ROUND")
+  effective_from       DateTime  @map("effective_from")
+  effective_to         DateTime?
+  created_at           DateTime  @default(now())
+
+  profile bpjs_rate_profiles @relation(fields: [profile_id], references: [id], onDelete: Restrict)
+
+  @@index([profile_id, contribution_code, effective_from(sort: Desc)])
+}
+
+model payroll_periods {
+  id           String    @id @default(uuid()) @db.Uuid
+  company_id   String    @db.Uuid
+  code         String    @unique // e.g. 2026-08
+  cutoff_start DateTime
+  cutoff_end   DateTime
+  payment_date DateTime?
+  status       String    @default("OPEN") // OPEN | LOCKED | CLOSED
+  closed_by    String?   @db.Uuid
+  closed_at    DateTime?
+  created_at   DateTime  @default(now())
+
+  company      companies              @relation(fields: [company_id], references: [id], onDelete: Restrict)
+  feeder_lines payroll_feeder_lines[]
+  payslips     payslips[]
+
+  @@index([company_id, status])
+}
+
+model payroll_feeder_lines {
+  id                 String   @id @default(uuid()) @db.Uuid
+  payroll_period_id  String   @db.Uuid
+  employee_id        String   @db.Uuid
+  component_code     String
+  quantity           Decimal? @db.Decimal(10, 2)
+  amount             Decimal? @db.Decimal(18, 2)
+  calculation_trace  Json?
+  is_manual_override Boolean  @default(false)
+  override_reason    String?
+  overridden_by      String?  @db.Uuid
+  created_at         DateTime @default(now())
+
+  payroll_period payroll_periods @relation(fields: [payroll_period_id], references: [id], onDelete: Restrict)
+  employee       employees       @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+
+  @@index([payroll_period_id, employee_id])
+}
+
+model payslips {
+  id                String    @id @default(uuid()) @db.Uuid
+  payroll_period_id String    @db.Uuid
+  employee_id       String    @db.Uuid
+  version           Int       @default(1)
+  gross_amount      Decimal?  @db.Decimal(18, 2)
+  deduction_amount  Decimal?  @db.Decimal(18, 2)
+  net_amount        Decimal?  @db.Decimal(18, 2)
+  pdf_url           String?
+  status            String    @default("DRAFT") // DRAFT | PUBLISHED | REVOKED
+  published_at      DateTime?
+  first_viewed_at   DateTime?
+  created_at        DateTime  @default(now())
+
+  payroll_period payroll_periods @relation(fields: [payroll_period_id], references: [id], onDelete: Restrict)
+  employee       employees       @relation(fields: [employee_id], references: [id], onDelete: Restrict)
+  lines          payslip_lines[]
+
+  @@unique([payroll_period_id, employee_id, version])
+}
+
+model payslip_lines {
+  id             String   @id @default(uuid()) @db.Uuid
+  payslip_id     String   @db.Uuid
+  component_code String
+  component_name String
+  component_type String
+  quantity       Decimal? @db.Decimal(10, 2)
+  amount         Decimal? @db.Decimal(18, 2)
+  display_order  Int      @default(0)
+
+  payslip payslips @relation(fields: [payslip_id], references: [id], onDelete: Cascade)
+
+  @@index([payslip_id])
+}
+
+// ============================================================
+// H. WORKFLOW & NOTIFICATION
+// ============================================================
+
+model approval_workflows {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique // LEAVE_DEFAULT, PERMIT_DEFAULT, ...
+  module_code String
+  name        String
+  is_active   Boolean  @default(true)
+  version     Int      @default(1)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  steps approval_workflow_steps[]
+}
+
+model approval_workflow_steps {
+  id                   String  @id @default(uuid()) @db.Uuid
+  workflow_id          String  @db.Uuid
+  step_order           Int
+  approver_type        String // DIRECT_SUPERVISOR | DIVISION_HEAD | SPECIFIC_GROUP | SPECIFIC_USER | POSITION_IN_BRANCH | DYNAMIC_EXPRESSION
+  approver_ref         String?
+  condition_expression String?
+  sla_working_days     Int     @default(2)
+  escalation_action    String  @default("NOTIFY_THEN_ESCALATE")
+  allow_delegate       Boolean @default(true)
+  is_mandatory         Boolean @default(true)
+
+  workflow approval_workflows @relation(fields: [workflow_id], references: [id], onDelete: Cascade)
+
+  @@unique([workflow_id, step_order])
+}
+
+model approval_instances {
+  id                 String    @id @default(uuid()) @db.Uuid
+  workflow_id        String    @db.Uuid
+  workflow_version   Int
+  document_type      String
+  document_id        String    @db.Uuid
+  current_step_order Int       @default(1)
+  status             String    @default("PENDING") // PENDING | APPROVED | REJECTED | RETURNED
+  started_at         DateTime  @default(now())
+  completed_at       DateTime?
+
+  tasks approval_tasks[]
+
+  @@index([document_type, document_id])
+}
+
+model approval_tasks {
+  id                     String    @id @default(uuid()) @db.Uuid
+  approval_instance_id   String    @db.Uuid
+  step_order             Int
+  assignee_user_id       String    @db.Uuid
+  delegated_from_user_id String?   @db.Uuid
+  status                 String    @default("PENDING")
+  due_at                 DateTime?
+  acted_at               DateTime?
+  action                 String? // APPROVE | REJECT | RETURN
+  comments               String?
+
+  approval_instance approval_instances @relation(fields: [approval_instance_id], references: [id], onDelete: Cascade)
+
+  @@index([assignee_user_id, status, due_at])
+}
+
+// ============================================================
+// I. CONFIGURATION (M8B)
+// ============================================================
+
+// Class A — system parameters, effective-dated (gist EXCLUDE in migration)
+model system_parameters {
+  id             String    @id @default(uuid()) @db.Uuid
+  param_key      String
+  param_value    String
+  data_type      String // STRING | NUMBER | BOOLEAN | JSON | DATE
+  scope_type     String? // NULL = global
+  scope_ref_id   String?   @db.Uuid
+  effective_from DateTime  @map("effective_from")
+  effective_to   DateTime?
+  description    String?
+  updated_by     String?   @db.Uuid
+  created_at     DateTime  @default(now())
+
+  @@index([param_key, effective_from(sort: Desc)])
+}
+
+model format_settings {
+  id           String   @id @default(uuid()) @db.Uuid
+  format_key   String   @unique // date.display, date.display_separated, currency.symbol, ...
+  format_value String
+  data_type    String   @default("STRING") // STRING | NUMBER | JSON
+  applies_to   String   @default("BOTH") // WEB | MOBILE | BOTH | EXPORT
+  description  String?
+  is_editable  Boolean  @default(true)
+  updated_by   String?  @db.Uuid
+  updated_at   DateTime @updatedAt
+}
+
+model validation_rules {
+  id            String   @id @default(uuid()) @db.Uuid
+  entity_name   String
+  field_name    String
+  rule_type     String // REQUIRED | REGEX | RANGE | UNIQUE | LENGTH | CROSS_FIELD | LOOKUP
+  rule_config   Json
+  severity      String // ERROR | WARNING | INFO
+  error_message String
+  applies_on    String   @default("ALL") // CREATE | UPDATE | IMPORT | ALL
+  is_active     Boolean  @default(true)
+  sort_order    Int      @default(0)
+  created_at    DateTime @default(now())
+
+  @@index([entity_name, field_name])
+}
+
+model number_sequences {
+  id             String   @id @default(uuid()) @db.Uuid
+  sequence_code  String   @unique // EMPLOYEE_NIK, DOC_LEAVE, DOC_IZIN, ...
+  pattern        String
+  reset_period   String   @default("NEVER") // NEVER | YEARLY | MONTHLY
+  padding_length Int      @default(4)
+  current_number BigInt   @default(0)
+  last_reset_key String?
+  allow_manual   Boolean  @default(false)
+  scope_type     String?
+  scope_ref_id   String?  @db.Uuid
+  updated_by     String?  @db.Uuid
+  updated_at     DateTime @updatedAt
+
+  @@unique([sequence_code, scope_type, scope_ref_id])
+}
+
+model report_definitions {
+  id               String   @id @default(uuid()) @db.Uuid
+  report_code      String   @unique // LAP-ABS-01
+  name             String
+  category         String
+  data_source      String
+  columns          Json
+  default_filters  Json?
+  group_by         Json?
+  output_formats   Json
+  permission_code  String?
+  header_template  String?
+  footer_template  String?
+  filename_pattern String?
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model reference_data {
+  id         String   @id @default(uuid()) @db.Uuid
+  category   String
+  code       String
+  label      String
+  sort_order Int      @default(0)
+  metadata   Json?
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([category, code])
+  @@index([category])
+}
+
+// ============================================================
+// J. UPLOADS & STORAGE (BR-FILE-*)
+// ============================================================
+
+model upload_policies {
+  id                 String   @id @default(uuid()) @db.Uuid
+  policy_code        String   @unique // ATTENDANCE_SELFIE, TRIP_RECEIPT, ...
+  allowed_mime_types Json
+  max_size_kb        Int
+  max_width_px       Int?
+  max_height_px      Int?
+  compress_quality   Int      @default(70)
+  max_files          Int      @default(1)
+  retention_months   Int?
+  is_active          Boolean  @default(true)
+  created_at         DateTime @default(now())
+}
+
+model attachments {
+  id              String    @id @default(uuid()) @db.Uuid
+  policy_code     String
+  entity_name     String
+  entity_id       String    @db.Uuid
+  storage_driver  String    @default("local-disk")
+  object_key      String    @unique
+  original_name   String
+  mime_type       String
+  size_bytes      BigInt
+  checksum_sha256 String
+  uploaded_by     String    @db.Uuid
+  uploaded_at     DateTime  @default(now())
+  is_orphan       Boolean   @default(true)
+  purge_after     DateTime?
+
+  @@index([entity_name, entity_id])
+  @@index([uploaded_at])
+}
+
+// ============================================================
+// K. TAX (TER) — v2 shell, effective-dated (BR-TAX-*)
+// ============================================================
+
+model tax_ter_categories {
+  id             String    @id @default(uuid()) @db.Uuid
+  category_code  String // A | B | C
+  ptkp_status    String // TK/0, K/0, K/1, ...
+  effective_from DateTime
+  effective_to   DateTime?
+  created_at     DateTime  @default(now())
+
+  @@unique([ptkp_status, effective_from])
+}
+
+model tax_ter_brackets {
+  id             String    @id @default(uuid()) @db.Uuid
+  category_code  String
+  income_from    Decimal   @db.Decimal(18, 2)
+  income_to      Decimal?  @db.Decimal(18, 2)
+  rate_percent   Decimal   @db.Decimal(6, 3)
+  effective_from DateTime
+  effective_to   DateTime?
+  created_at     DateTime  @default(now())
+
+  @@index([category_code, effective_from, income_from])
+}
+
+// ============================================================
+// L. V2 MODULES — structure reserved (no screens this session)
+// ============================================================
+
+model loan_types {
+  id                  String   @id @default(uuid()) @db.Uuid
+  code                String   @unique
+  name                String
+  max_amount          Decimal? @db.Decimal(18, 2)
+  max_tenor_months    Int?
+  min_service_months  Int?
+  max_per_year        Int?
+  requires_attachment Boolean  @default(false)
+  workflow_code       String?
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now())
+}
+
+model loan_applications {
+  id                   String   @id @default(uuid()) @db.Uuid
+  doc_number           String   @unique
+  employee_id          String   @db.Uuid
+  loan_type_id         String   @db.Uuid
+  requested_amount     Decimal  @db.Decimal(18, 2)
+  tenor_months         Int
+  purpose              String?
+  attachment_urls      Json?
+  status               String   @default("PENDING")
+  approval_instance_id String?
+  created_at           DateTime @default(now())
+}
+
+model loans {
+  id                  String   @id @default(uuid()) @db.Uuid
+  loan_application_id String   @unique @db.Uuid
+  employee_id         String   @db.Uuid
+  principal_amount    Decimal  @db.Decimal(18, 2)
+  tenor_months        Int
+  monthly_installment Decimal  @db.Decimal(18, 2)
+  outstanding_amount  Decimal  @db.Decimal(18, 2)
+  start_period_id     String?  @db.Uuid
+  status              String   @default("ACTIVE")
+  created_at          DateTime @default(now())
+}
+
+model loan_installments {
+  id                String    @id @default(uuid()) @db.Uuid
+  loan_id           String    @db.Uuid
+  payroll_period_id String    @db.Uuid
+  sequence_no       Int
+  amount            Decimal   @db.Decimal(18, 2)
+  status            String    @default("PENDING")
+  paid_at           DateTime?
+  created_at        DateTime  @default(now())
+}
+
+model perdiem_rates {
+  id             String    @id @default(uuid()) @db.Uuid
+  job_grade_id   String    @db.Uuid
+  city_tier      String
+  expense_type   String // MEAL | LODGING | POCKET | TRANSPORT
+  amount         Decimal   @db.Decimal(18, 2)
+  unit           String    @default("PER_DAY")
+  is_active      Boolean   @default(true)
+  effective_from DateTime
+  effective_to   DateTime?
+  created_at     DateTime  @default(now())
+
+  @@index([job_grade_id, city_tier, expense_type])
+}
+
+model trip_requests {
+  id                    String   @id @default(uuid()) @db.Uuid
+  doc_number            String   @unique
+  requester_employee_id String   @db.Uuid
+  trip_type             String // IN_CITY | OUT_OF_CITY
+  urgency               String   @default("PLANNED") // PLANNED | URGENT
+  destination           String
+  depart_date           DateTime
+  return_date           DateTime
+  purpose               String?
+  status                String   @default("PENDING")
+  approval_instance_id  String?
+  created_at            DateTime @default(now())
+}
+
+model trip_participants {
+  id              String   @id @default(uuid()) @db.Uuid
+  trip_request_id String   @db.Uuid
+  employee_id     String   @db.Uuid
+  role            String   @default("TRAVELER")
+  created_at      DateTime @default(now())
+}
+
+model trip_budget_lines {
+  id               String   @id @default(uuid()) @db.Uuid
+  trip_request_id  String   @db.Uuid
+  expense_type     String
+  estimated_amount Decimal  @db.Decimal(18, 2)
+  notes            String?
+  created_at       DateTime @default(now())
+}
+
+model cash_advances {
+  id              String    @id @default(uuid()) @db.Uuid
+  trip_request_id String    @db.Uuid
+  amount          Decimal   @db.Decimal(18, 2)
+  payment_method  String // CASH | TRANSFER
+  bank_name       String?
+  account_no      String?
+  disbursed_by    String?   @db.Uuid
+  disbursed_at    DateTime?
+  created_at      DateTime  @default(now())
+}
+
+model trip_reports {
+  id              String    @id @default(uuid()) @db.Uuid
+  trip_request_id String    @unique @db.Uuid
+  submitted_at    DateTime?
+  due_at          DateTime?
+  total_actual    Decimal?  @db.Decimal(18, 2)
+  variance_amount Decimal?  @db.Decimal(18, 2)
+  settlement_type String? // REFUND | REIMBURSE | NONE
+  status          String    @default("PENDING")
+  created_at      DateTime  @default(now())
+}
+
+model trip_expense_lines {
+  id                String   @id @default(uuid()) @db.Uuid
+  trip_report_id    String   @db.Uuid
+  expense_type      String
+  expense_date      DateTime
+  amount            Decimal  @db.Decimal(18, 2)
+  receipt_url       String?
+  has_valid_receipt Boolean  @default(false)
+  is_approved       Boolean  @default(false)
+  rejection_reason  String?
+  created_at        DateTime @default(now())
+}
+
+model license_financings {
+  id                   String    @id @default(uuid()) @db.Uuid
+  doc_number           String    @unique
+  employee_id          String    @db.Uuid
+  license_type         String
+  old_license_no       String?
+  old_expiry_date      DateTime?
+  total_cost           Decimal   @db.Decimal(18, 2)
+  company_share_pct    Decimal   @db.Decimal(5, 2)
+  company_amount       Decimal   @db.Decimal(18, 2)
+  employee_amount      Decimal   @db.Decimal(18, 2)
+  status               String    @default("PENDING")
+  approval_instance_id String?
+  new_license_no       String?
+  new_license_file_url String?
+  created_at           DateTime  @default(now())
+}
+
+// ============================================================
+// M. FEATURE FLAGS
+// ============================================================
+
+model feature_flags {
+  id           String   @id @default(uuid()) @db.Uuid
+  code         String   @unique
+  is_enabled   Boolean  @default(false)
+  scope_type   String?
+  scope_ref_id String?  @db.Uuid
+  description  String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model notification_templates {
+  id               String   @id @default(uuid()) @db.Uuid
+  code             String   @unique
+  channel          String   @default("IN_APP") // PUSH | IN_APP | EMAIL | WHATSAPP
+  subject_template String?
+  body_template    String
+  variables        Json?
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model notifications {
+  id            String    @id @default(uuid()) @db.Uuid
+  user_id       String    @db.Uuid
+  template_code String
+  title         String?
+  body          String
+  payload       Json?
+  channel       String    @default("IN_APP")
+  status        String    @default("PENDING")
+  read_at       DateTime?
+  sent_at       DateTime?
+  created_at    DateTime  @default(now())
+
+  @@index([user_id, read_at])
+}

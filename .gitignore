@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Environment — infra credentials only, never commit
+.env
+.env.*
+!.env.example
+
+# Prisma
+prisma/db.sqlite
+
+# Flutter (deferred)
+.dart_tool/
+.packages
+build/
+*.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Uploaded files / local storage (never commit runtime data)
+storage/
+storage-local/
+
+# Test artifacts
+playwright-report/
+test-results/
