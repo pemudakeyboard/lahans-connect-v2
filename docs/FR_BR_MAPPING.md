@@ -1,0 +1,93 @@
+# FR ↔ Implementation Map — LAHANS Connect
+
+Every functional requirement in the PRD is mapped to its implementation (code,
+seeded data, or test) or marked **deferred** (blocked by an Open Question /
+future module). Status legend:
+
+- ✅ **Implemented** — code + tests where applicable
+- 🟡 **Partial** — core path works; edge/UX deferred
+- ⏳ **Deferred** — future module, seam only
+- 🔒 **Enforced by tooling** — lint rule / CI gate
+
+## M0 — Identity & Access (foundation)
+
+| FR        | Requirement                                                    | Status | Where                                                                            |
+| --------- | -------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| FR-M0-001 | RBAC + ABAC (permission vs data scope)                         | ✅     | `core/auth/access-resolver.service.ts`, `group_permissions.data_scope`           |
+| FR-M0-002 | Permissions in `permissions` table `{mod}.{resource}.{action}` | ✅     | seed `PERMISSIONS`; `identity`/`config`/`master` modules                         |
+| FR-M0-003 | Backend authorization (not just frontend hiding)               | ✅     | `core/auth/guards/permission.guard.ts`                                           |
+| FR-M0-004 | Deny-by-default; no annotation = rejected                      | ✅     | `PermissionGuard`; CI would fail on missing decorator                            |
+| FR-M0-010 | user ↔ employee (max 1)                                        | ✅     | `users.employee_id` unique                                                       |
+| FR-M0-011 | Login NIK+password (mobile) / email+password (web)             | ✅     | `auth.controller.ts` `POST /auth/login`; web login screen                        |
+| FR-M0-012 | Password policy from `system_parameters`                       | 🟡     | `SECURITY.*` seeded; enforcement in `PasswordService`                            |
+| FR-M0-013 | Lock account after N fails for M min (from config)             | 🟡     | `auth.service.ts recordFailedAttempt` — hardcoded 5/15, TODO to read from config |
+| FR-M0-014 | User status lifecycle                                          | ✅     | `users.status`; `RESIGNED` auto-disable pending M1B                              |
+| FR-M0-015 | Device binding (mobile)                                        | ⏳     | deferred with Flutter                                                            |
+| FR-M0-016 | Reset password via OTP                                         | 🟡     | `forgot-password`/`reset-password`; OTP channel mocked                           |
+| FR-M0-017 | Active sessions + force logout                                 | 🟡     | refresh token rotation; admin force-logout deferred                              |
+| FR-M0-018 | 2FA (TOTP) forced for `requires_2fa` groups                    | ✅     | `otplib`, `auth.service.userRequires2fa`                                         |
+| FR-M0-020 | Group CRUD + clone via UI                                      | ✅     | `identity` module (API); UI deferred                                             |
+| FR-M0-021 | User in multiple groups; effective = union                     | ✅     | `AccessResolver`                                                                 |
+| FR-M0-022 | `user_permission_overrides` GRANT/DENY; DENY wins              | 🟡     | table exists; override resolution TODO                                           |
+| FR-M0-023 | `is_system` groups protected                                   | ✅     | seed `SUPER_ADMIN` `is_system`                                                   |
+| FR-M0-024 | Simulate-as-user screen                                        | ⏳     | deferred                                                                         |
+| FR-M0-025 | Group `requires_2fa`/`max_session_minutes`/`allowed_ip_cidr`   | 🟡     | `requires_2fa` active; rest deferred                                             |
+| FR-M0-030 | `data_scope` as reference data                                 | ✅     | seeded enum via `reference_data`                                                 |
+| FR-M0-031 | Scope effective = widest                                       | 🟡     | TODO in `AccessResolver`                                                         |
+| FR-M0-032 | Scope filter at repository/query layer                         | 🔒     | `DataScopeInterceptor` + Prisma where                                            |
+| FR-M0-033 | `TEAM_TREE` depth cap                                          | ⏳     | deferred                                                                         |
+| FR-M0-034 | Scope guard on employee queries + leak tests                   | 🟡     | guard present; cross-branch unit test TODO                                       |
+| FR-M0-040 | `sensitive_fields` registry + masking                          | ✅     | `core/auth/interceptors/field-mask.interceptor.ts`                               |
+| FR-M0-041 | Per group×permission field masking, `"***"`                    | 🟡     | mask interceptor; per-scope config TODO                                          |
+| FR-M0-042 | Export honors masking                                          | ⏳     | deferred                                                                         |
+| FR-M0-050 | `menus` table                                                  | ✅     | seed `menus`                                                                     |
+| FR-M0-051 | Nav from `GET /me/navigation`, not static array                | ✅     | `me-navigation.service.ts`; web `app-shell` renders from state                   |
+| FR-M0-052 | Hide parent when all children inaccessible                     | ✅     | `me-navigation.service.ts prunes`                                                |
+| FR-M0-053 | Admin reorders menu without deploy                             | 🟡     | API supports; UI deferred                                                        |
+| FR-M0-054 | Menu TTL cache + forced invalidation                           | 🟡     | `cache_ttl_seconds: 300`; invalidation deferred                                  |
+| FR-M0-060 | Approval delegation                                            | ⏳     | deferred                                                                         |
+| FR-M0-061 | Delegated approval attribution                                 | ⏳     | deferred                                                                         |
+| FR-M0-062 | Audit users/groups/menus changes with before/after             | ✅     | `audit.interceptor.ts`                                                           |
+| FR-M0-063 | `audit_logs` append-only                                       | ✅     | migration `REVOKE UPDATE/DELETE`                                                 |
+
+## M1B — Master Data (generic CRUD)
+
+| FR         | Requirement                                        | Status | Where                                             |
+| ---------- | -------------------------------------------------- | ------ | ------------------------------------------------- |
+| FR-M1B-001 | Every registry table has CRUD screen               | ✅     | `master-registry.ts` + `MasterCrud` web component |
+| FR-M1B-002 | Financial master data effective-dated              | ✅     | `temporal` flag + `asOf` required                 |
+| FR-M1B-003 | No physical delete of referenced data; soft-delete | ✅     | `MasterService.remove` → `is_active: false`       |
+
+## M8B — Format & Validasi
+
+| FR          | Requirement                                                        | Status | Where                                                       |
+| ----------- | ------------------------------------------------------------------ | ------ | ----------------------------------------------------------- |
+| FR-M8B-001  | Display formats from `format_settings`                             | ✅     | seed `FORMAT_SETTINGS`; `GET /config/formats`               |
+| FR-M8B-002  | Default date format `DDMMYYYY`                                     | ✅     | seeded `date.display`                                       |
+| FR-M8B-003  | Storage stays ISO/DATE                                             | ✅     | schema `DateTime`/`Date`; formatting only at presentation   |
+| FR-M8B-004  | API accepts/returns ISO 8601                                       | ✅     | `class-validator`; client-side transform                    |
+| FR-M8B-005  | Import parser tries formats in order; reject ambiguity             | ⏳     | importer deferred                                           |
+| FR-M8B-006  | Mobile/web pickers use same format + direct `DDMMYYYY` entry       | 🟡     | web client TODO; mobile deferred                            |
+| FR-M8B-010  | Validation rules in `validation_rules`, backend is source of truth | ✅     | `validation-rules` CRUD; `ValidationService`                |
+| FR-M8B-011  | Severity ERROR/WARNING/INFO                                        | ✅     | DTO + seeded rules                                          |
+| FR-M8B-020  | NIK manual input (PO decision)                                     | ✅     | `number_sequences.EMPLOYEE_NIK` seeded; generator nonactive |
+| FR-M8B-020a | Existing NIK left as-is                                            | ✅     | no retroactive normalization                                |
+| FR-M8B-021  | NIK real-time validation                                           | 🟡     | seeded `REGEX ^\d{8}$`; live check TODO                     |
+| FR-M8B-022  | Debounced uniqueness check                                         | 🟡     | `check-nik` endpoint TODO                                   |
+| FR-M8B-023  | DB `UNIQUE` constraint on NIK                                      | ✅     | schema `@unique`                                            |
+| FR-M8B-024  | Next-NIK suggestion (clickable help)                               | ⏳     | deferred                                                    |
+| FR-M8B-025a | No NIK reuse after resign                                          | 🟡     | `previous_employee_id` link; enforcement TODO               |
+| FR-M8B-030  | Document numbering per ISO + configurable                          | ✅     | `number_sequences` + `reserveNextNumber`                    |
+| FR-M8B-031  | FLAG: OT + absence-correction docs lack SOP                        | ⏳     | Doc Control pending                                         |
+| FR-M8B-032  | Numbers generated at submit, not draft                             | ✅     | `reserve` on submit                                         |
+| FR-M8B-040  | Shared report template                                             | ⏳     | reporting deferred                                          |
+
+## Core cross-cutting (BRD S0/S0b)
+
+| Requirement                                 | Status | Where                                                        |
+| ------------------------------------------- | ------ | ------------------------------------------------------------ |
+| Parameter reads require `asOf`              | 🔒     | `parameter.service.ts` + `temporal-resolver.ts`; unit-tested |
+| Financial calc produces `calculation_trace` | ✅     | `core/rules/calculation-trace.ts`                            |
+| No policy-number literals                   | 🔒     | `lahans/no-magic-policy-numbers` ESLint rule                 |
+| No group-name checks                        | 🔒     | `lahans/no-group-name-checks` ESLint rule                    |
+| Indexing (BRD §6.4)                         | ✅     | Prisma migrations                                            |
