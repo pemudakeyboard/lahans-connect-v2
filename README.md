@@ -57,6 +57,10 @@ pnpm dev            # API on :3001, web on :3000
 - API docs (OpenAPI): `http://localhost:3001/api/docs`
 - Web: `http://localhost:3000`
 - Demo login: `admin@lahans.dev` / `Lahans@2026`
+  - SUPER_ADMIN group requires 2FA. Seed enrolls the demo admin with TOTP
+    secret `JBSWY3DPEHPK3PXP` — add it to any authenticator app and use the
+    6-digit code as the OTP at login. (Demo-only convenience; production
+    secrets are generated at `POST /auth/2fa/enroll`.)
 
 The web dev server proxies `/api/*` → `http://localhost:3001/api/v1/*` (BRD 7 global prefix).
 
