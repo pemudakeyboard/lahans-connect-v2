@@ -83,7 +83,7 @@ export default function SequencesPage() {
     void load();
   }, [load]);
 
-  async function onSave(e: React.FormEvent<HTMLFormElement>) {
+  async function onSave(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError(null);

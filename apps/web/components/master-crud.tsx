@@ -102,7 +102,7 @@ export function MasterCrud<T extends { id: string }>({
     setOpen(true);
   }
 
-  async function onSave(e: React.FormEvent<HTMLFormElement>) {
+  async function onSave(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError(null);
