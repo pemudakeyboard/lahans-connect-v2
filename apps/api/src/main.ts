@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './core/http/global-exception.filter';
+import { BigIntSerializerInterceptor } from './core/http/bigint-serializer.interceptor';
 import { ApiConfigService } from './core/config/api-config.service';
 
 async function bootstrap() {
@@ -24,6 +25,9 @@ async function bootstrap() {
 
   // Error envelope { error: { code, message, details } } (BRD 7.4)
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  // BigInt → string on every response (BRD §7.4 — no lossy coercion)
+  app.useGlobalInterceptors(new BigIntSerializerInterceptor());
 
   // OpenAPI (BRD 7)
   const swaggerConfig = new DocumentBuilder()

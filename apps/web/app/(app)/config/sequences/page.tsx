@@ -171,7 +171,7 @@ export default function SequencesPage() {
                     <Badge variant="outline">{s.reset_period}</Badge>
                   </TableCell>
                   <TableCell>{s.padding_length}</TableCell>
-                  <TableCell className="font-mono text-xs">{s.current_value}</TableCell>
+                  <TableCell className="font-mono text-xs">{s.current_number}</TableCell>
                   <TableCell>
                     {canWrite && (
                       <Button

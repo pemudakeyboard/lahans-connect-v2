@@ -211,7 +211,12 @@ async function main() {
   // ---------- Permissions ----------
   const permissionIds = new Map<string, string>();
   for (const code of PERMISSIONS) {
-    const [mod, res, act] = code.split('.');
+    // Registry format is {modul}.{resource}.{action}; two-segment codes like
+    // `master.read` are generic CI-gate permissions where the action lives in
+    // the second segment (module-level gate, not per-entity).
+    const parts = code.split('.');
+    const [mod, res] = parts;
+    const act = parts.length === 3 ? parts[2] : res;
     const p = await prisma.permissions.upsert({
       where: { code },
       create: { code, module: mod, resource: res, action: act },
@@ -354,6 +359,10 @@ async function main() {
     parallelism: 2,
     outputLen: 32,
   });
+  // Fixed TOTP secret so the demo admin can log in with 2FA (SUPER_ADMIN requires it).
+  // Seed-only convenience; in production secrets are generated at enroll2fa time.
+  // Set only on CREATE so re-seeding never invalidates an enrolled secret.
+  const DEMO_TOTP_SECRET = 'JBSWY3DPEHPK3PXP'; // standard otplib demo secret
   const demoUser = await prisma.users.upsert({
     where: { login_nik: DEMO_ADMIN_NIK },
     create: {
@@ -363,9 +372,13 @@ async function main() {
       password_hash: passwordHash,
       status: 'ACTIVE',
       must_change_password: false,
+      two_factor_secret: DEMO_TOTP_SECRET,
+      two_factor_enabled: true,
     },
     update: { employee_id: demoEmployee.id, email: 'admin@lahans.dev' },
   });
+  console.log(`✔ demo user ${DEMO_ADMIN_NIK} (password: Lahans@2026)`);
+  console.log(`  TOTP secret: ${DEMO_TOTP_SECRET}`);
   // Assign to SUPER_ADMIN
   await prisma.user_group_members.upsert({
     where: { user_id_group_id: { user_id: demoUser.id, group_id: groupIds.get('SUPER_ADMIN')! } },

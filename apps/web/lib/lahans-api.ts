@@ -136,7 +136,7 @@ export interface NumberSequence {
   allow_manual: boolean;
   scope_type?: string | null;
   scope_ref_id?: string | null;
-  current_value: number;
+  current_number: string;
   updated_at: string;
 }
 

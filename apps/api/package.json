@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-generated.cjs",
     "start": "nest start",
+    "prestart:dev": "node scripts/copy-generated.cjs",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "lint": "eslint \"src/**/*.ts\"",
