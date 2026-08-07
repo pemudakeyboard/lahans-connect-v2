@@ -14,8 +14,7 @@ describe('TemporalResolver', () => {
             rows.find(
               (r) =>
                 (r as { employee_id: string }).employee_id ===
-                  (where as { employee_id?: string }).employee_id ||
-                rows.length > 0,
+                  (where as { employee_id?: string }).employee_id || rows.length > 0,
             ) ?? null,
           );
         }),

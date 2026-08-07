@@ -8,7 +8,10 @@ export class UpsertNumberSequenceDto {
   @IsString()
   sequence_code!: string;
 
-  @ApiProperty({ example: 'EMP-{YYYY}-{SEQ}', description: 'Support token: {YYYY},{MM},{DD},{SEQ}' })
+  @ApiProperty({
+    example: 'EMP-{YYYY}-{SEQ}',
+    description: 'Support token: {YYYY},{MM},{DD},{SEQ}',
+  })
   @IsString()
   sequence_pattern!: string;
 

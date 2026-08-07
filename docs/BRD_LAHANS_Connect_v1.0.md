@@ -1,14 +1,16 @@
 # BRD — LAHANS Connect
+
 ### Business Requirements Document & Technical Blueprint
+
 ### HRIS PT Lahan Mekar Niaga (LMN Group)
 
-| Field | Value |
-|---|---|
-| Dokumen | Business Requirements Document (BRD) + Technical Blueprint |
-| Versi | 1.0 |
-| Tanggal | 07 Agustus 2026 |
-| Dokumen Induk | PRD LAHANS Connect v1.0 |
-| Audiens | Tim Developer, Tech Lead, QA, DBA, DevOps |
+| Field         | Value                                                                                                                       |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Dokumen       | Business Requirements Document (BRD) + Technical Blueprint                                                                  |
+| Versi         | 1.0                                                                                                                         |
+| Tanggal       | 07 Agustus 2026                                                                                                             |
+| Dokumen Induk | PRD LAHANS Connect v1.0                                                                                                     |
+| Audiens       | Tim Developer, Tech Lead, QA, DBA, DevOps                                                                                   |
 | Prinsip Utama | **ZERO HARDCODE.** Setiap angka kebijakan, alur approval, item menu, dan hak akses adalah **baris data**, bukan baris kode. |
 
 ---
@@ -17,20 +19,20 @@
 
 ### 1.1 Proses Bisnis dalam Ruang Lingkup
 
-| Kode | Proses | Dokumen Acuan | Rilis |
-|---|---|---|---|
-| BP-01 | Pengelolaan Data Karyawan & Organisasi | `data_pegawai_master` | MVP |
-| BP-02 | Pengelolaan Akses Pengguna & Otorisasi | *(baru — tidak ada SOP)* | MVP |
-| BP-03 | Pencatatan Kehadiran & Jadwal Kerja | `Contoh Jadwal Kerja`, `Matriks Payroll` | MVP |
-| BP-04 | Pengajuan & Persetujuan Cuti | SOP.LMN.CBN.04 rev.01 (15 Apr 2026) | MVP |
-| BP-05 | Pengajuan & Persetujuan Izin | SOP.LMN.CBN.03 rev.01 (09 Apr 2026) | MVP |
-| BP-06 | Perintah & Realisasi Lembur | `Matriks Perhitungan Payroll`, `Tintin — LEMBUR & ABSEN` | MVP |
-| BP-07 | Penyusunan Input Payroll (Feeder) | `Matriks Perhitungan Payroll`, `Matriks Gaji & Tunjangan` | MVP |
-| BP-08 | Distribusi Slip Gaji Elektronik | *(baru)* | MVP |
-| BP-09 | Pinjaman Uang Karyawan | SOP.LMN.CBN.09 rev.00 (17 Apr 2026) | v2 |
-| BP-10 | Perjalanan Dinas & Petty Cash | SOP.LMN.CMBN.06, SK Perdin, FRM.LMN.CMBN.09.001 | v2 |
-| BP-11 | Pembiayaan Perpanjangan SIM | SOP.LMN.CBN.02 rev.01 (10 Apr 2026) | v2 |
-| BP-12 | Perhitungan Payroll Penuh (Engine) | `Matriks Payroll`, `Tintin — Matriks` | v2 |
+| Kode  | Proses                                 | Dokumen Acuan                                             | Rilis |
+| ----- | -------------------------------------- | --------------------------------------------------------- | ----- |
+| BP-01 | Pengelolaan Data Karyawan & Organisasi | `data_pegawai_master`                                     | MVP   |
+| BP-02 | Pengelolaan Akses Pengguna & Otorisasi | _(baru — tidak ada SOP)_                                  | MVP   |
+| BP-03 | Pencatatan Kehadiran & Jadwal Kerja    | `Contoh Jadwal Kerja`, `Matriks Payroll`                  | MVP   |
+| BP-04 | Pengajuan & Persetujuan Cuti           | SOP.LMN.CBN.04 rev.01 (15 Apr 2026)                       | MVP   |
+| BP-05 | Pengajuan & Persetujuan Izin           | SOP.LMN.CBN.03 rev.01 (09 Apr 2026)                       | MVP   |
+| BP-06 | Perintah & Realisasi Lembur            | `Matriks Perhitungan Payroll`, `Tintin — LEMBUR & ABSEN`  | MVP   |
+| BP-07 | Penyusunan Input Payroll (Feeder)      | `Matriks Perhitungan Payroll`, `Matriks Gaji & Tunjangan` | MVP   |
+| BP-08 | Distribusi Slip Gaji Elektronik        | _(baru)_                                                  | MVP   |
+| BP-09 | Pinjaman Uang Karyawan                 | SOP.LMN.CBN.09 rev.00 (17 Apr 2026)                       | v2    |
+| BP-10 | Perjalanan Dinas & Petty Cash          | SOP.LMN.CMBN.06, SK Perdin, FRM.LMN.CMBN.09.001           | v2    |
+| BP-11 | Pembiayaan Perpanjangan SIM            | SOP.LMN.CBN.02 rev.01 (10 Apr 2026)                       | v2    |
+| BP-12 | Perhitungan Payroll Penuh (Engine)     | `Matriks Payroll`, `Tintin — Matriks`                     | v2    |
 
 ### 1.2 Di Luar Ruang Lingkup
 
@@ -40,18 +42,18 @@ Recruitment, Onboarding, Performance/KPI, Training, PPh 21, integrasi API BPJS, 
 
 ## 2. Aktor Bisnis & Tanggung Jawab Sistem
 
-| Aktor | Peran Bisnis (per SOP) | Grup Sistem Default |
-|---|---|---|
-| Karyawan | Mengajukan, melengkapi dokumen, mempertanggungjawabkan | `EMPLOYEE` |
-| Atasan Langsung | Review awal, approve/reject ≤ 2 hari kerja, jaga kontinuitas operasional | `SUPERVISOR` |
-| Division Head | Review lanjutan, keputusan akhir approval | `DIVISION_HEAD` |
-| Manager | Otorisasi tingkat departemen, persetujuan biaya perdin di atas ambang | `MANAGER` |
-| Dept. Comben | Verifikasi hak, administrasi, validasi data HRIS, perhitungan | `COMBEN` |
-| HCGA Manager | Pengendalian kebijakan, otorisasi berjenjang, pengelolaan pengguna | `HCGA_MANAGER` |
-| Dept. Finance / FAT Manager | Verifikasi anggaran, otorisasi pencairan | `FINANCE` |
-| Admin Cabang | Administrasi lokal, proxy attendance, jadwal cabang | `BRANCH_ADMIN` |
-| IT Admin | Konfigurasi sistem, pengelolaan akses | `SUPER_ADMIN` |
-| Auditor Internal / ISO | Penelusuran rekaman, read-only | `AUDITOR` |
+| Aktor                       | Peran Bisnis (per SOP)                                                   | Grup Sistem Default |
+| --------------------------- | ------------------------------------------------------------------------ | ------------------- |
+| Karyawan                    | Mengajukan, melengkapi dokumen, mempertanggungjawabkan                   | `EMPLOYEE`          |
+| Atasan Langsung             | Review awal, approve/reject ≤ 2 hari kerja, jaga kontinuitas operasional | `SUPERVISOR`        |
+| Division Head               | Review lanjutan, keputusan akhir approval                                | `DIVISION_HEAD`     |
+| Manager                     | Otorisasi tingkat departemen, persetujuan biaya perdin di atas ambang    | `MANAGER`           |
+| Dept. Comben                | Verifikasi hak, administrasi, validasi data HRIS, perhitungan            | `COMBEN`            |
+| HCGA Manager                | Pengendalian kebijakan, otorisasi berjenjang, pengelolaan pengguna       | `HCGA_MANAGER`      |
+| Dept. Finance / FAT Manager | Verifikasi anggaran, otorisasi pencairan                                 | `FINANCE`           |
+| Admin Cabang                | Administrasi lokal, proxy attendance, jadwal cabang                      | `BRANCH_ADMIN`      |
+| IT Admin                    | Konfigurasi sistem, pengelolaan akses                                    | `SUPER_ADMIN`       |
+| Auditor Internal / ISO      | Penelusuran rekaman, read-only                                           | `AUDITOR`           |
 
 ---
 
@@ -102,6 +104,7 @@ Recruitment, Onboarding, Performance/KPI, Training, PPh 21, integrasi API BPJS, 
 ```
 
 **Jalur Darurat (Cuti Darurat):**
+
 ```
 Karyawan memberitahu Atasan + Div. Head + Comben via kanal luar sistem
    → Karyawan kembali bekerja
@@ -248,82 +251,82 @@ Karyawan unggah SIM baru → Comben verifikasi → tutup dokumen
 
 ### 4.1 Aturan Payroll
 
-| ID | Aturan | Nilai Default | Sumber Konfigurasi | Status |
-|---|---|---|---|---|
-| BR-P01 | Periode cut-off payroll | Tgl 22 s.d. 21 bulan berjalan | `system_parameters.payroll_cutoff_start_day` / `_end_day` | Terkonfirmasi |
-| BR-P02 | Divisor jam lembur | 173 | `overtime_rate_rules.divisor` | Terkonfirmasi |
-| BR-P03 | Divisor potongan absen | **25 (tetap, bukan hari kerja aktual)** | `system_parameters.absence_deduction_divisor` | Terkonfirmasi |
-| BR-P04 | Formula potongan absen | `(Gaji Pokok ÷ 25) × hari_tidak_masuk` | `payroll_components.formula_expression` | Terkonfirmasi |
-| BR-P05 | Formula potongan izin | `(Gaji Pokok ÷ 25) × hari_izin` | `leave_types.salary_deduction_formula_code` | Terkonfirmasi |
-| BR-P06 | Lembur Non-Staff, hari libur | `(GP ÷ 173) × 2 × jam` | `overtime_rate_rules` | Terkonfirmasi |
-| BR-P07 | Lembur Non-Staff, hari biasa | `(GP ÷ 173) × 1 × jam` | `overtime_rate_rules` | Terkonfirmasi |
-| BR-P08 | Lembur Staff, semua hari | `(GP ÷ 173) × 1 × jam` | `overtime_rate_rules` | Terkonfirmasi |
-| BR-P09 | Lembur Supervisor, hari libur | `Rp 150.000 / hari (8 jam)` | `overtime_rate_rules.flat_amount` | Terkonfirmasi |
-| BR-P10 | Lembur Supervisor, hari biasa | **KONFLIK — default seed `NONE`** | `overtime_rate_rules` | ⚠️ **OQ-01** |
-| BR-P11 | Lembur Manager | Tidak ada | `overtime_rate_rules.calc_method = NONE` | Terkonfirmasi |
-| BR-P12 | Tunjangan kehadiran Non-Staff | 0 absen→100%; 1→50%; >1→0% | `attendance_allowance_rules` (`NON_STAFF_DEFAULT`) | Terkonfirmasi |
-| BR-P13 | Tunjangan kehadiran Operator | 0→100%; 1→80%; 2→50%; >2→0% | `attendance_allowance_rules` (`OPERATOR_TINTIN`) | Terkonfirmasi |
-| BR-P14 | Sakit | Tidak potong gaji pokok; uang makan & transport tidak diberikan | `leave_types` flags | Terkonfirmasi |
-| BR-P15 | Cuti (tahunan & khusus) | Tidak potong gaji pokok; uang makan & transport tidak diberikan | `leave_types` flags | Terkonfirmasi |
-| BR-P16 | BPJS karyawan — LMN/LMI | JHT 2%, Kesehatan 1% | `bpjs_rates` | Terkonfirmasi |
-| BR-P17 | BPJS perusahaan — LMN/LMI | JHT 3,7%; JKK 0,24%; JKM 0,3%; Kes 4% | `bpjs_rates` | Terkonfirmasi |
-| BR-P18 | BPJS perusahaan — Pabrik | JHT 3,7%; **JKK 0,89%**; JKM 0,3%; Kes 4% | `bpjs_rates` | Terkonfirmasi |
-| BR-P19 | Jaminan Pensiun (JP) | **BELUM ADA DATA** | `bpjs_rates` | ⚠️ **OQ-07** |
-| BR-P20 | Potongan keterlambatan / pulang cepat | **BELUM ADA FORMULA** | `payroll_components` | ⚠️ **OQ-12** |
+| ID     | Aturan                                | Nilai Default                                                   | Sumber Konfigurasi                                        | Status        |
+| ------ | ------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------- | ------------- |
+| BR-P01 | Periode cut-off payroll               | Tgl 22 s.d. 21 bulan berjalan                                   | `system_parameters.payroll_cutoff_start_day` / `_end_day` | Terkonfirmasi |
+| BR-P02 | Divisor jam lembur                    | 173                                                             | `overtime_rate_rules.divisor`                             | Terkonfirmasi |
+| BR-P03 | Divisor potongan absen                | **25 (tetap, bukan hari kerja aktual)**                         | `system_parameters.absence_deduction_divisor`             | Terkonfirmasi |
+| BR-P04 | Formula potongan absen                | `(Gaji Pokok ÷ 25) × hari_tidak_masuk`                          | `payroll_components.formula_expression`                   | Terkonfirmasi |
+| BR-P05 | Formula potongan izin                 | `(Gaji Pokok ÷ 25) × hari_izin`                                 | `leave_types.salary_deduction_formula_code`               | Terkonfirmasi |
+| BR-P06 | Lembur Non-Staff, hari libur          | `(GP ÷ 173) × 2 × jam`                                          | `overtime_rate_rules`                                     | Terkonfirmasi |
+| BR-P07 | Lembur Non-Staff, hari biasa          | `(GP ÷ 173) × 1 × jam`                                          | `overtime_rate_rules`                                     | Terkonfirmasi |
+| BR-P08 | Lembur Staff, semua hari              | `(GP ÷ 173) × 1 × jam`                                          | `overtime_rate_rules`                                     | Terkonfirmasi |
+| BR-P09 | Lembur Supervisor, hari libur         | `Rp 150.000 / hari (8 jam)`                                     | `overtime_rate_rules.flat_amount`                         | Terkonfirmasi |
+| BR-P10 | Lembur Supervisor, hari biasa         | **KONFLIK — default seed `NONE`**                               | `overtime_rate_rules`                                     | ⚠️ **OQ-01**  |
+| BR-P11 | Lembur Manager                        | Tidak ada                                                       | `overtime_rate_rules.calc_method = NONE`                  | Terkonfirmasi |
+| BR-P12 | Tunjangan kehadiran Non-Staff         | 0 absen→100%; 1→50%; >1→0%                                      | `attendance_allowance_rules` (`NON_STAFF_DEFAULT`)        | Terkonfirmasi |
+| BR-P13 | Tunjangan kehadiran Operator          | 0→100%; 1→80%; 2→50%; >2→0%                                     | `attendance_allowance_rules` (`OPERATOR_TINTIN`)          | Terkonfirmasi |
+| BR-P14 | Sakit                                 | Tidak potong gaji pokok; uang makan & transport tidak diberikan | `leave_types` flags                                       | Terkonfirmasi |
+| BR-P15 | Cuti (tahunan & khusus)               | Tidak potong gaji pokok; uang makan & transport tidak diberikan | `leave_types` flags                                       | Terkonfirmasi |
+| BR-P16 | BPJS karyawan — LMN/LMI               | JHT 2%, Kesehatan 1%                                            | `bpjs_rates`                                              | Terkonfirmasi |
+| BR-P17 | BPJS perusahaan — LMN/LMI             | JHT 3,7%; JKK 0,24%; JKM 0,3%; Kes 4%                           | `bpjs_rates`                                              | Terkonfirmasi |
+| BR-P18 | BPJS perusahaan — Pabrik              | JHT 3,7%; **JKK 0,89%**; JKM 0,3%; Kes 4%                       | `bpjs_rates`                                              | Terkonfirmasi |
+| BR-P19 | Jaminan Pensiun (JP)                  | **BELUM ADA DATA**                                              | `bpjs_rates`                                              | ⚠️ **OQ-07**  |
+| BR-P20 | Potongan keterlambatan / pulang cepat | **BELUM ADA FORMULA**                                           | `payroll_components`                                      | ⚠️ **OQ-12**  |
 
 ### 4.2 Aturan Cuti & Izin
 
-| ID | Aturan | Nilai Default | Sumber Konfigurasi | Status |
-|---|---|---|---|---|
-| BR-C01 | Hak cuti tahunan | 12 hari kerja/tahun | `system_parameters.annual_leave_days` | Terkonfirmasi |
-| BR-C02 | Masa kerja untuk hak penuh | 12 bulan berturut-turut | `system_parameters.annual_leave_eligibility_months` | Terkonfirmasi |
-| BR-C03 | Formula prorata tahun pertama | `(bulan_kerja_efektif ÷ 12) × 12` | `system_parameters.leave_prorate_formula` | Terkonfirmasi |
-| BR-C04 | Basis siklus cuti | **KONFLIK — `CALENDAR_YEAR` vs `ANNIVERSARY`** | `system_parameters.leave_cycle_basis` | ⚠️ **OQ-02** |
-| BR-C05 | Cuti Advance maksimum | 3 hari kerja | `leave_types.max_days_per_request` (`CUTI_ADVANCE`) | Terkonfirmasi |
-| BR-C06 | Masa kedaluwarsa cuti | 1 tahun sejak jatuh tempo | `system_parameters.leave_expiry_months` | Terkonfirmasi |
-| BR-C07 | Notice period cuti tahunan | 7 hari kerja | `leave_types.min_notice_days` | Terkonfirmasi |
-| BR-C08 | Notice period izin | 1 hari (H-1) | `leave_types.min_notice_days` (`IZIN`) | Terkonfirmasi |
-| BR-C09 | SLA keputusan approval | 2 hari kerja | `approval_workflow_steps.sla_working_days` | Terkonfirmasi |
-| BR-C10 | Cuti Bersama mengurangi hak cuti | Ya | `holidays.deducts_annual_leave` | Terkonfirmasi |
-| BR-C11 | Sisa cuti saat resign | Dibayarkan pada gaji bulan terakhir | `system_parameters.leave_payout_on_resign` | Terkonfirmasi |
-| BR-C12 | Alur approval cuti | Atasan Langsung → Division Head | `approval_workflows` (`LEAVE_DEFAULT`) | Terkonfirmasi |
-| BR-C13 | Alur approval izin | Atasan Langsung | `approval_workflows` (`PERMIT_DEFAULT`) | Terkonfirmasi |
+| ID     | Aturan                           | Nilai Default                                  | Sumber Konfigurasi                                  | Status        |
+| ------ | -------------------------------- | ---------------------------------------------- | --------------------------------------------------- | ------------- |
+| BR-C01 | Hak cuti tahunan                 | 12 hari kerja/tahun                            | `system_parameters.annual_leave_days`               | Terkonfirmasi |
+| BR-C02 | Masa kerja untuk hak penuh       | 12 bulan berturut-turut                        | `system_parameters.annual_leave_eligibility_months` | Terkonfirmasi |
+| BR-C03 | Formula prorata tahun pertama    | `(bulan_kerja_efektif ÷ 12) × 12`              | `system_parameters.leave_prorate_formula`           | Terkonfirmasi |
+| BR-C04 | Basis siklus cuti                | **KONFLIK — `CALENDAR_YEAR` vs `ANNIVERSARY`** | `system_parameters.leave_cycle_basis`               | ⚠️ **OQ-02**  |
+| BR-C05 | Cuti Advance maksimum            | 3 hari kerja                                   | `leave_types.max_days_per_request` (`CUTI_ADVANCE`) | Terkonfirmasi |
+| BR-C06 | Masa kedaluwarsa cuti            | 1 tahun sejak jatuh tempo                      | `system_parameters.leave_expiry_months`             | Terkonfirmasi |
+| BR-C07 | Notice period cuti tahunan       | 7 hari kerja                                   | `leave_types.min_notice_days`                       | Terkonfirmasi |
+| BR-C08 | Notice period izin               | 1 hari (H-1)                                   | `leave_types.min_notice_days` (`IZIN`)              | Terkonfirmasi |
+| BR-C09 | SLA keputusan approval           | 2 hari kerja                                   | `approval_workflow_steps.sla_working_days`          | Terkonfirmasi |
+| BR-C10 | Cuti Bersama mengurangi hak cuti | Ya                                             | `holidays.deducts_annual_leave`                     | Terkonfirmasi |
+| BR-C11 | Sisa cuti saat resign            | Dibayarkan pada gaji bulan terakhir            | `system_parameters.leave_payout_on_resign`          | Terkonfirmasi |
+| BR-C12 | Alur approval cuti               | Atasan Langsung → Division Head                | `approval_workflows` (`LEAVE_DEFAULT`)              | Terkonfirmasi |
+| BR-C13 | Alur approval izin               | Atasan Langsung                                | `approval_workflows` (`PERMIT_DEFAULT`)             | Terkonfirmasi |
 
 ### 4.3 Aturan Absensi
 
-| ID | Aturan | Nilai Default | Sumber Konfigurasi | Status |
-|---|---|---|---|---|
-| BR-A01 | Radius geofence | 150 m | `branches.geofence_radius_m` | ⚠️ Asumsi |
-| BR-A02 | Kebijakan lokasi per jabatan | `GEOFENCE_TRACKED` untuk Sales/Driver; `GEOFENCE_STRICT` untuk Staff HO | `system_parameters` per `job_position` | ⚠️ Asumsi |
-| BR-A03 | Toleransi keterlambatan | Per `work_schedule_days.late_tolerance_minutes` | `work_schedule_days` | ⚠️ **OQ-11** |
-| BR-A04 | Ambang selisih waktu offline sync | 12 jam | `system_parameters.offline_sync_max_drift_hours` | ⚠️ Asumsi |
-| BR-A05 | Jam kerja standar | **BELUM TERKONFIRMASI** | `work_schedules` | ⚠️ **OQ-11** |
-| BR-A06 | Aksi saat mock GPS terdeteksi | Tandai, jangan blokir | `system_parameters.mock_gps_action` | Keputusan produk |
+| ID     | Aturan                            | Nilai Default                                                           | Sumber Konfigurasi                               | Status           |
+| ------ | --------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------ | ---------------- |
+| BR-A01 | Radius geofence                   | 150 m                                                                   | `branches.geofence_radius_m`                     | ⚠️ Asumsi        |
+| BR-A02 | Kebijakan lokasi per jabatan      | `GEOFENCE_TRACKED` untuk Sales/Driver; `GEOFENCE_STRICT` untuk Staff HO | `system_parameters` per `job_position`           | ⚠️ Asumsi        |
+| BR-A03 | Toleransi keterlambatan           | Per `work_schedule_days.late_tolerance_minutes`                         | `work_schedule_days`                             | ⚠️ **OQ-11**     |
+| BR-A04 | Ambang selisih waktu offline sync | 12 jam                                                                  | `system_parameters.offline_sync_max_drift_hours` | ⚠️ Asumsi        |
+| BR-A05 | Jam kerja standar                 | **BELUM TERKONFIRMASI**                                                 | `work_schedules`                                 | ⚠️ **OQ-11**     |
+| BR-A06 | Aksi saat mock GPS terdeteksi     | Tandai, jangan blokir                                                   | `system_parameters.mock_gps_action`              | Keputusan produk |
 
 ### 4.4 Aturan Pinjaman, Perdin & SIM (v2)
 
-| ID | Aturan | Nilai Default | Sumber | Status |
-|---|---|---|---|---|
-| BR-L01 | Masa kerja minimum pinjaman | 2 tahun berturut-turut | `loan_types.min_service_months = 24` | Terkonfirmasi |
-| BR-L02 | Frekuensi pengajuan pinjaman | Maks. 1× per tahun | `loan_types.max_per_year = 1` | Terkonfirmasi |
-| BR-L03 | Outstanding memblokir pengajuan baru | Ya | Aturan validasi terkonfigurasi | Terkonfirmasi |
-| BR-L04 | Jeda setelah pinjaman lunas | 1 bulan dari cicilan terakhir | `system_parameters.loan_cooldown_months` | Terkonfirmasi |
-| BR-L05 | Plafon & tenor pinjaman | **BELUM ADA DATA** | `loan_types` | ⚠️ **OQ-04** |
-| BR-L06 | Alur approval pinjaman | Atasan → Div. Head → HCGA/Comben → FAT Manager | `approval_workflows` | Terkonfirmasi |
-| BR-T01 | Notice perjalanan dinas | H-7 hari kerja (H-1 bila darurat) | `system_parameters.trip_notice_days` | Terkonfirmasi |
-| BR-T02 | Batas waktu LPJ | 7 hari setelah kembali | `system_parameters.trip_report_due_days` | Terkonfirmasi |
-| BR-T03 | Sanksi LPJ telat | Uang muka menjadi tanggungan pribadi, dipotong payroll berjalan | Aturan otomatis + `payroll_components` | Terkonfirmasi |
-| BR-T04 | LPJ outstanding memblokir uang muka baru | Ya | Aturan validasi terkonfigurasi | Terkonfirmasi |
-| BR-T05 | Akomodasi menginap di kerabat | Maks. 50% dari tarif | `perdiem_rates` + modifier | Terkonfirmasi |
-| BR-T06 | Sewa roda 4 | > 3 lokasi & jarak ≥ 60 km, approval min. Manager | Aturan kondisional workflow | Terkonfirmasi |
-| BR-T07 | Sewa roda 2 | > 3 lokasi & jarak ≥ 30 km, approval min. Manager | Aturan kondisional workflow | Terkonfirmasi |
-| BR-T08 | Pengganti hari libur saat perdin | Diambil maks. 14 hari setelah penugasan | `leave_types` (`LIBUR_PENGGANTI`) | Terkonfirmasi |
-| BR-T09 | Tarif uang makan / saku / akomodasi / transport | **BELUM ADA LAMPIRAN SK** | `perdiem_rates` | ⚠️ **OQ-05** |
-| BR-S01 | Eligibility pembiayaan SIM | Jabatan Driver, masa kerja ≥ 1 tahun | Aturan validasi terkonfigurasi | Terkonfirmasi |
-| BR-S02 | Skema pembiayaan SIM | 50% perusahaan : 50% karyawan | `system_parameters.license_company_share_pct` | Terkonfirmasi |
-| BR-S03 | Notice pengajuan SIM | ≥ 30 hari sebelum SIM habis | `system_parameters.license_notice_days` | Terkonfirmasi |
-| BR-S04 | Plafon nominal SIM | **BELUM ADA DATA** | `system_parameters` | ⚠️ **OQ-06** |
-| BR-S05 | Alur approval SIM | Dept. Head → Comben/HCGA → Finance | `approval_workflows` | Terkonfirmasi |
+| ID     | Aturan                                          | Nilai Default                                                   | Sumber                                        | Status        |
+| ------ | ----------------------------------------------- | --------------------------------------------------------------- | --------------------------------------------- | ------------- |
+| BR-L01 | Masa kerja minimum pinjaman                     | 2 tahun berturut-turut                                          | `loan_types.min_service_months = 24`          | Terkonfirmasi |
+| BR-L02 | Frekuensi pengajuan pinjaman                    | Maks. 1× per tahun                                              | `loan_types.max_per_year = 1`                 | Terkonfirmasi |
+| BR-L03 | Outstanding memblokir pengajuan baru            | Ya                                                              | Aturan validasi terkonfigurasi                | Terkonfirmasi |
+| BR-L04 | Jeda setelah pinjaman lunas                     | 1 bulan dari cicilan terakhir                                   | `system_parameters.loan_cooldown_months`      | Terkonfirmasi |
+| BR-L05 | Plafon & tenor pinjaman                         | **BELUM ADA DATA**                                              | `loan_types`                                  | ⚠️ **OQ-04**  |
+| BR-L06 | Alur approval pinjaman                          | Atasan → Div. Head → HCGA/Comben → FAT Manager                  | `approval_workflows`                          | Terkonfirmasi |
+| BR-T01 | Notice perjalanan dinas                         | H-7 hari kerja (H-1 bila darurat)                               | `system_parameters.trip_notice_days`          | Terkonfirmasi |
+| BR-T02 | Batas waktu LPJ                                 | 7 hari setelah kembali                                          | `system_parameters.trip_report_due_days`      | Terkonfirmasi |
+| BR-T03 | Sanksi LPJ telat                                | Uang muka menjadi tanggungan pribadi, dipotong payroll berjalan | Aturan otomatis + `payroll_components`        | Terkonfirmasi |
+| BR-T04 | LPJ outstanding memblokir uang muka baru        | Ya                                                              | Aturan validasi terkonfigurasi                | Terkonfirmasi |
+| BR-T05 | Akomodasi menginap di kerabat                   | Maks. 50% dari tarif                                            | `perdiem_rates` + modifier                    | Terkonfirmasi |
+| BR-T06 | Sewa roda 4                                     | > 3 lokasi & jarak ≥ 60 km, approval min. Manager               | Aturan kondisional workflow                   | Terkonfirmasi |
+| BR-T07 | Sewa roda 2                                     | > 3 lokasi & jarak ≥ 30 km, approval min. Manager               | Aturan kondisional workflow                   | Terkonfirmasi |
+| BR-T08 | Pengganti hari libur saat perdin                | Diambil maks. 14 hari setelah penugasan                         | `leave_types` (`LIBUR_PENGGANTI`)             | Terkonfirmasi |
+| BR-T09 | Tarif uang makan / saku / akomodasi / transport | **BELUM ADA LAMPIRAN SK**                                       | `perdiem_rates`                               | ⚠️ **OQ-05**  |
+| BR-S01 | Eligibility pembiayaan SIM                      | Jabatan Driver, masa kerja ≥ 1 tahun                            | Aturan validasi terkonfigurasi                | Terkonfirmasi |
+| BR-S02 | Skema pembiayaan SIM                            | 50% perusahaan : 50% karyawan                                   | `system_parameters.license_company_share_pct` | Terkonfirmasi |
+| BR-S03 | Notice pengajuan SIM                            | ≥ 30 hari sebelum SIM habis                                     | `system_parameters.license_notice_days`       | Terkonfirmasi |
+| BR-S04 | Plafon nominal SIM                              | **BELUM ADA DATA**                                              | `system_parameters`                           | ⚠️ **OQ-06**  |
+| BR-S05 | Alur approval SIM                               | Dept. Head → Comben/HCGA → Finance                              | `approval_workflows`                          | Terkonfirmasi |
 
 ---
 
@@ -333,14 +336,15 @@ Karyawan unggah SIM baru → Comben verifikasi → tutup dokumen
 
 #### 4.5.1 Klasifikasi Master Data
 
-| Kelas | Definisi | Perilaku Saat Diubah | Contoh |
-|---|---|---|---|
-| **Kelas A — Finansial** | Memengaruhi perhitungan uang | **WAJIB effective-dated.** Perubahan menciptakan baris baru. Baris lama tidak boleh disentuh | `overtime_rate_rules`, `bpjs_rates`, `attendance_allowance_rules`, `employee_component_assignments`, `perdiem_rates`, `system_parameters` |
-| **Kelas B — Struktural** | Memengaruhi routing & scope | **WAJIB effective-dated.** Perubahan struktur tidak boleh mengubah dokumen historis | `employee_assignments`, `reporting_lines` |
-| **Kelas C — Referensial** | Daftar pilihan & atribut deskriptif | Update in-place diizinkan; hapus dilarang, hanya `is_active = false` | `job_grades`, `branches`, `divisions`, `job_positions`, `reference_data`, `banks` |
-| **Kelas D — Sistem** | Registry teknis | Hanya lewat seed migration (permission) atau Super Admin (menu, feature flag) | `permissions`, `menus`, `sensitive_fields`, `feature_flags` |
+| Kelas                     | Definisi                            | Perilaku Saat Diubah                                                                         | Contoh                                                                                                                                    |
+| ------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Kelas A — Finansial**   | Memengaruhi perhitungan uang        | **WAJIB effective-dated.** Perubahan menciptakan baris baru. Baris lama tidak boleh disentuh | `overtime_rate_rules`, `bpjs_rates`, `attendance_allowance_rules`, `employee_component_assignments`, `perdiem_rates`, `system_parameters` |
+| **Kelas B — Struktural**  | Memengaruhi routing & scope         | **WAJIB effective-dated.** Perubahan struktur tidak boleh mengubah dokumen historis          | `employee_assignments`, `reporting_lines`                                                                                                 |
+| **Kelas C — Referensial** | Daftar pilihan & atribut deskriptif | Update in-place diizinkan; hapus dilarang, hanya `is_active = false`                         | `job_grades`, `branches`, `divisions`, `job_positions`, `reference_data`, `banks`                                                         |
+| **Kelas D — Sistem**      | Registry teknis                     | Hanya lewat seed migration (permission) atau Super Admin (menu, feature flag)                | `permissions`, `menus`, `sensitive_fields`, `feature_flags`                                                                               |
 
 **Aturan mengikat:**
+
 1. Setiap tabel Kelas A dan B WAJIB memiliki `effective_from` (NOT NULL) dan `effective_to` (NULL = berlaku hingga sekarang).
 2. Setiap tabel Kelas A dan B WAJIB memiliki constraint `EXCLUDE USING gist` anti-tumpang-tindih, seperti pola pada `system_parameters` (Seksi 6.2).
 3. Setiap pembacaan tabel Kelas A dan B WAJIB menyertakan tanggal acuan. Query tanpa filter tanggal adalah **cacat blocker**.
@@ -348,7 +352,7 @@ Karyawan unggah SIM baru → Comben verifikasi → tutup dokumen
 
 #### 4.5.2 Pola Layar Master Data (Wajib Seragam)
 
-Seluruh layar master WAJIB memakai pola yang sama agar dapat dibangun sebagai *generic CRUD scaffold*, bukan 36 layar buatan tangan:
+Seluruh layar master WAJIB memakai pola yang sama agar dapat dibangun sebagai _generic CRUD scaffold_, bukan 36 layar buatan tangan:
 
 ```
 ┌─ Header ────────────────────────────────────────────────┐
@@ -367,32 +371,32 @@ Seluruh layar master WAJIB memakai pola yang sama agar dapat dibangun sebagai *g
 └──────────────────────────────────────────────────────────┘
 ```
 
-| # | Requirement Teknis |
-|---|---|
-| BR-MD-01 | Dibangun sebagai **satu komponen generik** (`<MasterDataTable>` + `<MasterDataForm>`) yang dikonfigurasi lewat definisi skema per entity, bukan 36 halaman terpisah |
-| BR-MD-02 | Definisi kolom, validasi, dan label WAJIB berasal dari file skema deklaratif per entity (TypeScript config object), bukan JSX yang di-*copy-paste* |
-| BR-MD-03 | Panel "Riwayat Perubahan" WAJIB membaca dari `audit_logs` dengan filter `entity_name` + `entity_id` |
-| BR-MD-04 | Preview dampak (`⚠ Dampak: ...`) WAJIB dihitung server-side lewat endpoint `POST /config/{entity}/impact-preview` sebelum simpan |
+| #        | Requirement Teknis                                                                                                                                                      |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-MD-01 | Dibangun sebagai **satu komponen generik** (`<MasterDataTable>` + `<MasterDataForm>`) yang dikonfigurasi lewat definisi skema per entity, bukan 36 halaman terpisah     |
+| BR-MD-02 | Definisi kolom, validasi, dan label WAJIB berasal dari file skema deklaratif per entity (TypeScript config object), bukan JSX yang di-_copy-paste_                      |
+| BR-MD-03 | Panel "Riwayat Perubahan" WAJIB membaca dari `audit_logs` dengan filter `entity_name` + `entity_id`                                                                     |
+| BR-MD-04 | Preview dampak (`⚠ Dampak: ...`) WAJIB dihitung server-side lewat endpoint `POST /config/{entity}/impact-preview` sebelum simpan                                        |
 | BR-MD-05 | Import Excel WAJIB memakai pipeline yang sama dengan import karyawan: staging table, dry-run, laporan error, atomic per batch, `import_batch_id` yang dapat di-rollback |
 
 #### 4.5.3 Endpoint Master Data
 
-| Method | Endpoint | Permission |
-|---|---|---|
-| GET/POST | `/master/companies` | `master.company.read` / `.manage` |
-| GET/POST/PATCH | `/master/branches` | `master.branch.read` / `.manage` |
-| GET/POST/PATCH | `/master/divisions` \| `/departments` | `master.org.read` / `.manage` |
-| GET/POST/PATCH | `/master/job-positions` | `master.position.read` / `.manage` |
-| GET/POST/PATCH | `/master/job-grades` | `master.grade.read` / `.manage` |
-| GET/POST/PATCH | `/master/banks` | `master.bank.read` / `.manage` |
-| GET/POST/PATCH | `/master/reference-data` | `master.reference.read` / `.manage` |
-| GET/POST/PATCH | `/master/payroll-components` | `master.payroll_component.read` / `.manage` |
-| GET/POST/PATCH | `/master/attendance-allowance-rules` | `master.allowance_rule.read` / `.manage` |
-| GET/POST/PATCH | `/master/bpjs-rates` | `master.bpjs.read` / `.manage` |
-| POST | `/master/{entity}/impact-preview` | `{entity}.manage` |
-| POST | `/master/{entity}/import` | `{entity}.manage` |
-| GET | `/master/{entity}/export` | `{entity}.read` |
-| GET | `/master/{entity}/:id/history` | `audit.log.read` |
+| Method         | Endpoint                              | Permission                                  |
+| -------------- | ------------------------------------- | ------------------------------------------- |
+| GET/POST       | `/master/companies`                   | `master.company.read` / `.manage`           |
+| GET/POST/PATCH | `/master/branches`                    | `master.branch.read` / `.manage`            |
+| GET/POST/PATCH | `/master/divisions` \| `/departments` | `master.org.read` / `.manage`               |
+| GET/POST/PATCH | `/master/job-positions`               | `master.position.read` / `.manage`          |
+| GET/POST/PATCH | `/master/job-grades`                  | `master.grade.read` / `.manage`             |
+| GET/POST/PATCH | `/master/banks`                       | `master.bank.read` / `.manage`              |
+| GET/POST/PATCH | `/master/reference-data`              | `master.reference.read` / `.manage`         |
+| GET/POST/PATCH | `/master/payroll-components`          | `master.payroll_component.read` / `.manage` |
+| GET/POST/PATCH | `/master/attendance-allowance-rules`  | `master.allowance_rule.read` / `.manage`    |
+| GET/POST/PATCH | `/master/bpjs-rates`                  | `master.bpjs.read` / `.manage`              |
+| POST           | `/master/{entity}/impact-preview`     | `{entity}.manage`                           |
+| POST           | `/master/{entity}/import`             | `{entity}.manage`                           |
+| GET            | `/master/{entity}/export`             | `{entity}.read`                             |
+| GET            | `/master/{entity}/:id/history`        | `audit.log.read`                            |
 
 ### 4.6 Registry Format, Validasi & Laporan (Modul M8B)
 
@@ -477,34 +481,34 @@ CREATE TABLE report_definitions (
 
 #### 4.6.2 Aturan Implementasi
 
-| # | Aturan | Konsekuensi Pelanggaran |
-|---|---|---|
-| BR-FMT-01 | Tanggal disimpan sebagai `DATE`/`TIMESTAMPTZ` PostgreSQL. `DDMMYYYY` **hanya** format tampilan/input | Menyimpan `VARCHAR(8)` merusak `ORDER BY`, `BETWEEN`, dan perhitungan hari kerja → **cacat blocker** |
-| BR-FMT-02 | API bertukar data dalam ISO 8601. Konversi terjadi di klien | Mengubah kontrak API demi preferensi tampilan mengunci integrasi masa depan |
-| BR-FMT-03 | Frontend membaca format dari `GET /config/formats` saat bootstrap, disimpan di provider global | String format yang di-*hardcode* di komponen = **cacat blocker** |
-| BR-FMT-04 | Flutter: buat satu `AppFormatter` singleton yang di-inject; **dilarang** memanggil `DateFormat(...)` langsung di widget | Format tidak konsisten antar layar |
-| BR-FMT-05 | Web: buat satu modul `lib/format.ts`; **dilarang** memanggil `Intl.DateTimeFormat` atau `dayjs().format('...')` di komponen | Sama seperti di atas |
-| BR-VAL-01 | Validasi backend adalah sumber kebenaran. Frontend boleh mencerminkannya lewat `GET /config/validation-rules?entity=...` untuk umpan balik instan | Validasi hanya di frontend = dapat di-*bypass* |
-| BR-VAL-02 | Severity `WARNING` **wajib** disediakan untuk field yang datanya sudah kotor (NIK KTP, no. HP, BPJS). Memaksa `ERROR` akan menggagalkan migrasi 300 baris | Migrasi mandek |
-| BR-VAL-03 | Pesan error tersimpan di database dalam Bahasa Indonesia dan dapat diedit HCGA tanpa deploy | — |
-| BR-NUM-01 | Generator NIK & nomor dokumen wajib memakai `SELECT ... FOR UPDATE` atau `pg_advisory_xact_lock` pada baris sequence | Tabrakan nomor pada input bersamaan |
-| BR-NUM-02 | Nomor dibangkitkan saat **submit**, bukan saat draft | Lompatan nomor → temuan audit ISO |
-| BR-RPT-01 | Renderer laporan menerima `report_code` + filter, membaca definisi dari `report_definitions`, lalu mengeksekusi query terdaftar. **Dilarang** menyusun SQL dari input pengguna | SQL injection |
-| BR-RPT-02 | Renderer wajib menerapkan scope guard yang sama dengan API biasa | Kebocoran data lintas cabang lewat laporan |
+| #         | Aturan                                                                                                                                                                         | Konsekuensi Pelanggaran                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| BR-FMT-01 | Tanggal disimpan sebagai `DATE`/`TIMESTAMPTZ` PostgreSQL. `DDMMYYYY` **hanya** format tampilan/input                                                                           | Menyimpan `VARCHAR(8)` merusak `ORDER BY`, `BETWEEN`, dan perhitungan hari kerja → **cacat blocker** |
+| BR-FMT-02 | API bertukar data dalam ISO 8601. Konversi terjadi di klien                                                                                                                    | Mengubah kontrak API demi preferensi tampilan mengunci integrasi masa depan                          |
+| BR-FMT-03 | Frontend membaca format dari `GET /config/formats` saat bootstrap, disimpan di provider global                                                                                 | String format yang di-_hardcode_ di komponen = **cacat blocker**                                     |
+| BR-FMT-04 | Flutter: buat satu `AppFormatter` singleton yang di-inject; **dilarang** memanggil `DateFormat(...)` langsung di widget                                                        | Format tidak konsisten antar layar                                                                   |
+| BR-FMT-05 | Web: buat satu modul `lib/format.ts`; **dilarang** memanggil `Intl.DateTimeFormat` atau `dayjs().format('...')` di komponen                                                    | Sama seperti di atas                                                                                 |
+| BR-VAL-01 | Validasi backend adalah sumber kebenaran. Frontend boleh mencerminkannya lewat `GET /config/validation-rules?entity=...` untuk umpan balik instan                              | Validasi hanya di frontend = dapat di-_bypass_                                                       |
+| BR-VAL-02 | Severity `WARNING` **wajib** disediakan untuk field yang datanya sudah kotor (NIK KTP, no. HP, BPJS). Memaksa `ERROR` akan menggagalkan migrasi 300 baris                      | Migrasi mandek                                                                                       |
+| BR-VAL-03 | Pesan error tersimpan di database dalam Bahasa Indonesia dan dapat diedit HCGA tanpa deploy                                                                                    | —                                                                                                    |
+| BR-NUM-01 | Generator NIK & nomor dokumen wajib memakai `SELECT ... FOR UPDATE` atau `pg_advisory_xact_lock` pada baris sequence                                                           | Tabrakan nomor pada input bersamaan                                                                  |
+| BR-NUM-02 | Nomor dibangkitkan saat **submit**, bukan saat draft                                                                                                                           | Lompatan nomor → temuan audit ISO                                                                    |
+| BR-RPT-01 | Renderer laporan menerima `report_code` + filter, membaca definisi dari `report_definitions`, lalu mengeksekusi query terdaftar. **Dilarang** menyusun SQL dari input pengguna | SQL injection                                                                                        |
+| BR-RPT-02 | Renderer wajib menerapkan scope guard yang sama dengan API biasa                                                                                                               | Kebocoran data lintas cabang lewat laporan                                                           |
 
 #### 4.6.3 Endpoint
 
-| Method | Endpoint | Permission |
-|---|---|---|
-| GET | `/config/formats` | *(publik untuk user terautentikasi)* |
-| PATCH | `/config/formats` | `config.format.manage` |
-| GET | `/config/validation-rules` | *(publik untuk user terautentikasi)* |
-| POST/PATCH | `/config/validation-rules` | `config.validation.manage` |
-| GET/PATCH | `/config/number-sequences` | `config.sequence.manage` |
-| GET | `/config/number-sequences/:code/preview` | `config.sequence.manage` |
-| GET/POST/PATCH | `/config/reports` | `config.report.manage` |
-| POST | `/reports/:code/generate` | Dari `report_definitions.permission_code` |
-| GET | `/config/app-settings` | *(publik untuk user terautentikasi)* — dipanggil Flutter saat start |
+| Method         | Endpoint                                 | Permission                                                          |
+| -------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| GET            | `/config/formats`                        | _(publik untuk user terautentikasi)_                                |
+| PATCH          | `/config/formats`                        | `config.format.manage`                                              |
+| GET            | `/config/validation-rules`               | _(publik untuk user terautentikasi)_                                |
+| POST/PATCH     | `/config/validation-rules`               | `config.validation.manage`                                          |
+| GET/PATCH      | `/config/number-sequences`               | `config.sequence.manage`                                            |
+| GET            | `/config/number-sequences/:code/preview` | `config.sequence.manage`                                            |
+| GET/POST/PATCH | `/config/reports`                        | `config.report.manage`                                              |
+| POST           | `/reports/:code/generate`                | Dari `report_definitions.permission_code`                           |
+| GET            | `/config/app-settings`                   | _(publik untuk user terautentikasi)_ — dipanggil Flutter saat start |
 
 ---
 
@@ -613,15 +617,15 @@ CREATE INDEX idx_att_entity ON attachments(entity_name, entity_id);
 CREATE INDEX idx_att_orphan ON attachments(uploaded_at) WHERE is_orphan;
 ```
 
-| # | Aturan Implementasi | Konsekuensi Pelanggaran |
-|---|---|---|
-| BR-FILE-01 | **Tidak ada kolom `BYTEA`/`BLOB` di seluruh skema.** Gerbang CI memindai migration dan gagal bila menemukannya | Backup membengkak, restore gagal → **cacat blocker** |
+| #          | Aturan Implementasi                                                                                                                                                       | Konsekuensi Pelanggaran                                                |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| BR-FILE-01 | **Tidak ada kolom `BYTEA`/`BLOB` di seluruh skema.** Gerbang CI memindai migration dan gagal bila menemukannya                                                            | Backup membengkak, restore gagal → **cacat blocker**                   |
 | BR-FILE-02 | Alur unggah: `POST /uploads/presign` → klien PUT langsung ke storage → `POST /uploads/confirm` (kirim `object_key` + checksum) → transaksi commit set `is_orphan = false` | Berkas melewati memori server = kehabisan memori saat unggah bersamaan |
-| BR-FILE-03 | `StorageDriver` adalah antarmuka dengan dua implementasi: `LocalDiskDriver` (default, tanpa konfigurasi) dan `S3Driver` (aktif dengan mengubah `STORAGE_DRIVER=s3`) | — |
-| BR-FILE-04 | Kompresi kualitas **70** dilakukan di klien: Flutter `flutter_image_compress(quality: 70)`, Web `canvas.toBlob('image/jpeg', 0.7)`. Server memverifikasi hasil akhir | Beban server naik, kuota data pengguna terbakar |
-| BR-FILE-05 | Verifikasi tipe berkas dari **magic bytes** (`file-type`), bukan ekstensi/`Content-Type` | Unggahan berbahaya menyamar sebagai gambar |
-| BR-FILE-06 | Job harian membersihkan `attachments WHERE is_orphan AND uploaded_at < NOW() - 24h` dan yang melewati `purge_after` | Storage penuh oleh berkas batal |
-| BR-FILE-07 | Mobile: antrean unggah di Drift dengan retry *exponential backoff*; transaksi utama tersimpan dengan `attachment_pending = true` | Absensi gagal hanya karena foto gagal terkirim |
+| BR-FILE-03 | `StorageDriver` adalah antarmuka dengan dua implementasi: `LocalDiskDriver` (default, tanpa konfigurasi) dan `S3Driver` (aktif dengan mengubah `STORAGE_DRIVER=s3`)       | —                                                                      |
+| BR-FILE-04 | Kompresi kualitas **70** dilakukan di klien: Flutter `flutter_image_compress(quality: 70)`, Web `canvas.toBlob('image/jpeg', 0.7)`. Server memverifikasi hasil akhir      | Beban server naik, kuota data pengguna terbakar                        |
+| BR-FILE-05 | Verifikasi tipe berkas dari **magic bytes** (`file-type`), bukan ekstensi/`Content-Type`                                                                                  | Unggahan berbahaya menyamar sebagai gambar                             |
+| BR-FILE-06 | Job harian membersihkan `attachments WHERE is_orphan AND uploaded_at < NOW() - 24h` dan yang melewati `purge_after`                                                       | Storage penuh oleh berkas batal                                        |
+| BR-FILE-07 | Mobile: antrean unggah di Drift dengan retry _exponential backoff_; transaksi utama tersimpan dengan `attachment_pending = true`                                          | Absensi gagal hanya karena foto gagal terkirim                         |
 
 #### 4.7.3 Tarif Pajak (TER) & BPJS
 
@@ -652,13 +656,13 @@ ALTER TABLE bpjs_rates
     ADD COLUMN rounding_rule VARCHAR(20) DEFAULT 'ROUND';
 ```
 
-| # | Aturan |
-|---|---|
-| BR-TAX-01 | Tabel `tax_ter_brackets` **wajib effective-dated** (Kelas A). Perubahan tarif tidak boleh mengubah perhitungan periode lampau |
-| BR-TAX-02 | Nilai dikosongkan sampai OQ-23 dijawab. Sistem menampilkan "TER belum dikonfigurasi" dan **tidak menghitung PPh21**, bukan menghitung dengan 0% |
-| BR-TAX-03 | Import Excel wajib tersedia untuk `tax_ter_brackets` (puluhan baris per kategori) |
+| #         | Aturan                                                                                                                                                      |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-TAX-01 | Tabel `tax_ter_brackets` **wajib effective-dated** (Kelas A). Perubahan tarif tidak boleh mengubah perhitungan periode lampau                               |
+| BR-TAX-02 | Nilai dikosongkan sampai OQ-23 dijawab. Sistem menampilkan "TER belum dikonfigurasi" dan **tidak menghitung PPh21**, bukan menghitung dengan 0%             |
+| BR-TAX-03 | Import Excel wajib tersedia untuk `tax_ter_brackets` (puluhan baris per kategori)                                                                           |
 | BR-TAX-04 | Setiap perhitungan menyimpan `ter_category`, `bracket_id`, `rate_percent`, dan `effective_from` ke `calculation_trace` — bukti wajib saat pemeriksaan pajak |
-| BR-TAX-05 | **Sampai OQ-21 diputuskan, jalankan Opsi A**: TER dihitung dan ditampilkan sebagai *referensi* di feeder, belum memotong gaji |
+| BR-TAX-05 | **Sampai OQ-21 diputuskan, jalankan Opsi A**: TER dihitung dan ditampilkan sebagai _referensi_ di feeder, belum memotong gaji                               |
 
 ---
 
@@ -666,24 +670,24 @@ ALTER TABLE bpjs_rates
 
 ### 5.1 Tumpukan Teknologi
 
-| Lapisan | Teknologi | Alasan |
-|---|---|---|
-| Web Frontend | **Next.js 15 (App Router)** + TypeScript + **shadcn/ui** + Tailwind CSS | Component-driven, aksesibel, tanpa dependensi berat |
-| Mobile | **Flutter 3.x (Dart)** | Ditetapkan PO. Performa native, konsisten di Android entry-level, satu basis kode dua platform |
-| Mobile — State & Arsitektur | Riverpod + `freezed` + `dio` + `retrofit` | State management yang dapat diuji; klien HTTP dengan interceptor auth & retry |
-| Mobile — Local DB | **Drift (SQLite)** + `flutter_secure_storage` | Antrean absensi offline terenkripsi, query yang aman secara tipe |
-| Mobile — Lokasi & Kamera | `geolocator` (termasuk `isMocked`), `camera`, `flutter_image_compress` | Deteksi mock GPS bawaan; kompresi swafoto di device |
-| Mobile — Background Sync | `workmanager` + `connectivity_plus` | Sinkronisasi antrean offline saat sinyal kembali |
-| Backend API | **NestJS (Node 22)** + TypeScript | Modular, DI, dekorator cocok untuk anotasi permission |
-| ORM | Prisma | Migration ketat, middleware untuk scope guard |
-| Database | **PostgreSQL 16** | JSONB untuk `calculation_trace`, RLS, CTE rekursif untuk `TEAM_TREE` |
-| Cache & Queue | Redis 7 + BullMQ | Cache permission, job terjadwal, antrean notifikasi |
-| Object Storage | S3-compatible (MinIO on-prem / S3) | Foto absensi, lampiran, PDF slip |
-| Auth | JWT (access 15 mnt + refresh 7 hr, rotasi) + Argon2id | Standar, tanpa vendor lock |
-| Push | Firebase Cloud Messaging | Gratis, andal di Android |
-| PDF | Puppeteer (worker terpisah) | Slip gaji dari template HTML yang dapat diedit |
-| Observability | OpenTelemetry + Grafana/Loki + Sentry | Wajib untuk debugging payroll |
-| CI/CD | GitHub Actions → Docker → target hosting | — |
+| Lapisan                     | Teknologi                                                               | Alasan                                                                                         |
+| --------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Web Frontend                | **Next.js 15 (App Router)** + TypeScript + **shadcn/ui** + Tailwind CSS | Component-driven, aksesibel, tanpa dependensi berat                                            |
+| Mobile                      | **Flutter 3.x (Dart)**                                                  | Ditetapkan PO. Performa native, konsisten di Android entry-level, satu basis kode dua platform |
+| Mobile — State & Arsitektur | Riverpod + `freezed` + `dio` + `retrofit`                               | State management yang dapat diuji; klien HTTP dengan interceptor auth & retry                  |
+| Mobile — Local DB           | **Drift (SQLite)** + `flutter_secure_storage`                           | Antrean absensi offline terenkripsi, query yang aman secara tipe                               |
+| Mobile — Lokasi & Kamera    | `geolocator` (termasuk `isMocked`), `camera`, `flutter_image_compress`  | Deteksi mock GPS bawaan; kompresi swafoto di device                                            |
+| Mobile — Background Sync    | `workmanager` + `connectivity_plus`                                     | Sinkronisasi antrean offline saat sinyal kembali                                               |
+| Backend API                 | **NestJS (Node 22)** + TypeScript                                       | Modular, DI, dekorator cocok untuk anotasi permission                                          |
+| ORM                         | Prisma                                                                  | Migration ketat, middleware untuk scope guard                                                  |
+| Database                    | **PostgreSQL 16**                                                       | JSONB untuk `calculation_trace`, RLS, CTE rekursif untuk `TEAM_TREE`                           |
+| Cache & Queue               | Redis 7 + BullMQ                                                        | Cache permission, job terjadwal, antrean notifikasi                                            |
+| Object Storage              | S3-compatible (MinIO on-prem / S3)                                      | Foto absensi, lampiran, PDF slip                                                               |
+| Auth                        | JWT (access 15 mnt + refresh 7 hr, rotasi) + Argon2id                   | Standar, tanpa vendor lock                                                                     |
+| Push                        | Firebase Cloud Messaging                                                | Gratis, andal di Android                                                                       |
+| PDF                         | Puppeteer (worker terpisah)                                             | Slip gaji dari template HTML yang dapat diedit                                                 |
+| Observability               | OpenTelemetry + Grafana/Loki + Sentry                                   | Wajib untuk debugging payroll                                                                  |
+| CI/CD                       | GitHub Actions → Docker → target hosting                                | —                                                                                              |
 
 > ⚠️ Keputusan hosting menunggu **OQ-13**. Seluruh komponen dipilih agar netral cloud/on-prem.
 
@@ -757,6 +761,7 @@ async resolve<T>(key: string, asOf: Date, scope?: ParamScope): Promise<T> {
   // LIMIT 1
 }
 ```
+
 **Aturan review:** setiap pemanggilan `resolve()` tanpa argumen `asOf` adalah **cacat blocker**.
 
 #### (2) Formula Engine dengan Whitelist
@@ -776,7 +781,8 @@ evaluate(expression: string, context: Record<string, number>): {
   trace: CalculationTrace;   // WAJIB: expression, variabel, nilai antara, hasil
 }
 ```
-> **Trade-off yang diakui secara sadar:** *primitive* matematika dan daftar variabel yang tersedia tetap berada di kode. Yang dikonfigurasi adalah **komposisinya**. Ini batas yang wajar — mengonfigurasi primitive akan menghasilkan bahasa pemrograman buatan sendiri yang tidak dapat dipelihara. Dokumentasikan daftar variabel yang tersedia di UI konfigurasi.
+
+> **Trade-off yang diakui secara sadar:** _primitive_ matematika dan daftar variabel yang tersedia tetap berada di kode. Yang dikonfigurasi adalah **komposisinya**. Ini batas yang wajar — mengonfigurasi primitive akan menghasilkan bahasa pemrograman buatan sendiri yang tidak dapat dipelihara. Dokumentasikan daftar variabel yang tersedia di UI konfigurasi.
 
 #### (3) Permission & Scope Guard
 
@@ -795,7 +801,7 @@ async approve(@Param('id') id: string) { /* ... */ }
 prisma.$use(async (params, next) => {
   if (SCOPED_MODELS.includes(params.model)) {
     params.args.where = {
-      AND: [params.args.where, await scopeResolver.build(ctx.user, params.model)]
+      AND: [params.args.where, await scopeResolver.build(ctx.user, params.model)],
     };
   }
   return next(params);
@@ -837,6 +843,7 @@ prisma.$use(async (params, next) => {
   ]
 }
 ```
+
 **Aturan tegas:** `approval_instances` menyimpan `workflow_version` saat instance dibuat. Perubahan definisi **tidak boleh** mengubah instance yang sedang berjalan.
 
 ---
@@ -1088,18 +1095,18 @@ SELECT DISTINCT id FROM subordinates;
 
 ### 6.4 Indeks Kritis
 
-| Tabel | Indeks | Alasan |
-|---|---|---|
-| `attendance_logs` | `(employee_id, server_time DESC)` | Query riwayat absen |
-| `attendance_logs` | `(is_mock_location) WHERE is_mock_location = TRUE` (parsial) | Antrean verifikasi anomali |
-| `attendance_daily` | `(employee_id, work_date)` UNIQUE | Idempotensi job rekap |
-| `attendance_daily` | `(payroll_period_id, status)` | Agregasi feeder |
-| `employee_assignments` | `(employee_id, effective_from DESC)` | Resolusi penugasan pada tanggal |
-| `reporting_lines` | `(supervisor_id, effective_from)` | Penelusuran TEAM_TREE |
-| `leave_balance_ledger` | `(leave_balance_id, created_at)` | Rekonstruksi saldo |
-| `approval_tasks` | `(assignee_user_id, status, due_at)` | Approval Inbox & job SLA |
-| `system_parameters` | `(param_key, effective_from DESC)` | Resolver parameter (panas) |
-| `audit_logs` | Partisi bulanan berdasarkan `created_at` | Volume tinggi, retensi panjang |
+| Tabel                  | Indeks                                                       | Alasan                          |
+| ---------------------- | ------------------------------------------------------------ | ------------------------------- |
+| `attendance_logs`      | `(employee_id, server_time DESC)`                            | Query riwayat absen             |
+| `attendance_logs`      | `(is_mock_location) WHERE is_mock_location = TRUE` (parsial) | Antrean verifikasi anomali      |
+| `attendance_daily`     | `(employee_id, work_date)` UNIQUE                            | Idempotensi job rekap           |
+| `attendance_daily`     | `(payroll_period_id, status)`                                | Agregasi feeder                 |
+| `employee_assignments` | `(employee_id, effective_from DESC)`                         | Resolusi penugasan pada tanggal |
+| `reporting_lines`      | `(supervisor_id, effective_from)`                            | Penelusuran TEAM_TREE           |
+| `leave_balance_ledger` | `(leave_balance_id, created_at)`                             | Rekonstruksi saldo              |
+| `approval_tasks`       | `(assignee_user_id, status, due_at)`                         | Approval Inbox & job SLA        |
+| `system_parameters`    | `(param_key, effective_from DESC)`                           | Resolver parameter (panas)      |
+| `audit_logs`           | Partisi bulanan berdasarkan `created_at`                     | Volume tinggi, retensi panjang  |
 
 ---
 
@@ -1110,42 +1117,43 @@ SELECT DISTINCT id FROM subordinates;
 
 ### 7.1 Autentikasi & Sesi
 
-| Method | Endpoint | Permission | Keterangan |
-|---|---|---|---|
-| POST | `/auth/login` | — | NIK/email + password → token pair |
-| POST | `/auth/refresh` | — | Rotasi refresh token |
-| POST | `/auth/logout` | — | Cabut refresh token |
-| POST | `/auth/forgot-password` | — | Kirim OTP ke HP terdaftar |
-| POST | `/auth/reset-password` | — | OTP + password baru |
-| POST | `/auth/2fa/enroll` \| `/verify` | — | TOTP |
-| GET | `/me` | — | Profil + grup + permission efektif |
-| GET | `/me/navigation` | — | **Struktur menu dinamis (web/mobile)** |
-| GET | `/me/devices` | — | Daftar device terikat |
-| DELETE | `/me/devices/:id` | — | Cabut device |
+| Method | Endpoint                        | Permission | Keterangan                             |
+| ------ | ------------------------------- | ---------- | -------------------------------------- |
+| POST   | `/auth/login`                   | —          | NIK/email + password → token pair      |
+| POST   | `/auth/refresh`                 | —          | Rotasi refresh token                   |
+| POST   | `/auth/logout`                  | —          | Cabut refresh token                    |
+| POST   | `/auth/forgot-password`         | —          | Kirim OTP ke HP terdaftar              |
+| POST   | `/auth/reset-password`          | —          | OTP + password baru                    |
+| POST   | `/auth/2fa/enroll` \| `/verify` | —          | TOTP                                   |
+| GET    | `/me`                           | —          | Profil + grup + permission efektif     |
+| GET    | `/me/navigation`                | —          | **Struktur menu dinamis (web/mobile)** |
+| GET    | `/me/devices`                   | —          | Daftar device terikat                  |
+| DELETE | `/me/devices/:id`               | —          | Cabut device                           |
 
 ### 7.2 Modul 0 — User & Akses
 
-| Method | Endpoint | Permission |
-|---|---|---|
-| GET/POST | `/users` | `identity.user.read` / `.create` |
-| GET/PATCH | `/users/:id` | `identity.user.read` / `.update` |
-| POST | `/users/:id/activate` \| `/deactivate` \| `/unlock` | `identity.user.update` |
-| POST | `/users/:id/force-logout` | `identity.user.manage_session` |
-| POST | `/users/:id/reset-password` | `identity.user.reset_password` |
-| GET/POST | `/users/:id/overrides` | `identity.override.read` / `.create` |
-| GET | `/users/:id/effective-access` | `identity.user.read` — **layar simulasi** |
-| GET/POST | `/groups` | `identity.group.read` / `.create` |
-| GET/PATCH/DELETE | `/groups/:id` | `identity.group.*` |
-| POST | `/groups/:id/clone` | `identity.group.create` |
-| GET/PUT | `/groups/:id/permissions` | `identity.group.read` / `.assign_permission` |
-| GET/POST/DELETE | `/groups/:id/members` | `identity.group.assign_member` |
-| GET | `/permissions` | `identity.permission.read` |
-| GET/POST/PATCH | `/menus` | `config.menu.read` / `.manage` |
-| POST | `/menus/reorder` | `config.menu.manage` |
-| GET/POST | `/delegations` | `workflow.delegation.read` / `.create` |
-| GET | `/audit-logs` | `audit.log.read` |
+| Method           | Endpoint                                            | Permission                                   |
+| ---------------- | --------------------------------------------------- | -------------------------------------------- |
+| GET/POST         | `/users`                                            | `identity.user.read` / `.create`             |
+| GET/PATCH        | `/users/:id`                                        | `identity.user.read` / `.update`             |
+| POST             | `/users/:id/activate` \| `/deactivate` \| `/unlock` | `identity.user.update`                       |
+| POST             | `/users/:id/force-logout`                           | `identity.user.manage_session`               |
+| POST             | `/users/:id/reset-password`                         | `identity.user.reset_password`               |
+| GET/POST         | `/users/:id/overrides`                              | `identity.override.read` / `.create`         |
+| GET              | `/users/:id/effective-access`                       | `identity.user.read` — **layar simulasi**    |
+| GET/POST         | `/groups`                                           | `identity.group.read` / `.create`            |
+| GET/PATCH/DELETE | `/groups/:id`                                       | `identity.group.*`                           |
+| POST             | `/groups/:id/clone`                                 | `identity.group.create`                      |
+| GET/PUT          | `/groups/:id/permissions`                           | `identity.group.read` / `.assign_permission` |
+| GET/POST/DELETE  | `/groups/:id/members`                               | `identity.group.assign_member`               |
+| GET              | `/permissions`                                      | `identity.permission.read`                   |
+| GET/POST/PATCH   | `/menus`                                            | `config.menu.read` / `.manage`               |
+| POST             | `/menus/reorder`                                    | `config.menu.manage`                         |
+| GET/POST         | `/delegations`                                      | `workflow.delegation.read` / `.create`       |
+| GET              | `/audit-logs`                                       | `audit.log.read`                             |
 
 **Contoh — `PUT /groups/:id/permissions`**
+
 ```json
 {
   "permissions": [
@@ -1164,22 +1172,36 @@ SELECT DISTINCT id FROM subordinates;
 ```
 
 **Contoh — `GET /me/navigation` (respons)**
+
 ```json
 {
   "platform": "MOBILE",
   "menus": [
-    { "code": "HOME",       "label": "Beranda",  "icon": "home",
-      "route": "/home",     "children": [] },
-    { "code": "ATTENDANCE", "label": "Absensi",  "icon": "fingerprint",
-      "route": "/attendance", "children": [] },
-    { "code": "LEAVE",      "label": "Cuti & Izin", "icon": "calendar",
+    { "code": "HOME", "label": "Beranda", "icon": "home", "route": "/home", "children": [] },
+    {
+      "code": "ATTENDANCE",
+      "label": "Absensi",
+      "icon": "fingerprint",
+      "route": "/attendance",
+      "children": []
+    },
+    {
+      "code": "LEAVE",
+      "label": "Cuti & Izin",
+      "icon": "calendar",
       "route": "/leave",
       "children": [
         { "code": "LEAVE_REQUEST", "label": "Pengajuan", "route": "/leave/new" },
         { "code": "LEAVE_BALANCE", "label": "Saldo Cuti", "route": "/leave/balance" }
-      ]},
-    { "code": "PAYSLIP",    "label": "Slip Gaji", "icon": "receipt",
-      "route": "/payslip",  "children": [] }
+      ]
+    },
+    {
+      "code": "PAYSLIP",
+      "label": "Slip Gaji",
+      "icon": "receipt",
+      "route": "/payslip",
+      "children": []
+    }
   ],
   "cache_ttl_seconds": 300
 }
@@ -1187,86 +1209,87 @@ SELECT DISTINCT id FROM subordinates;
 
 ### 7.3 Modul Operasional (ringkas)
 
-| Method | Endpoint | Permission |
-|---|---|---|
-| POST | `/attendance/check-in` \| `/check-out` | `attendance.log.create` |
-| POST | `/attendance/sync` | `attendance.log.create` — batch offline, idempoten via `client_request_id` |
-| GET | `/attendance/daily` | `attendance.daily.read` |
-| POST | `/attendance/corrections` | `attendance.correction.create` |
-| POST | `/attendance/proxy` | `attendance.log.create_proxy` |
-| GET | `/leave/balances` | `leave.balance.read` |
-| POST | `/leave/requests` | `leave.request.create` |
-| POST | `/leave/requests/:id/cancel` | `leave.request.cancel` |
-| GET | `/leave/team-calendar` | `leave.request.read` |
-| POST | `/overtime/requests` | `overtime.request.create` |
-| GET | `/approvals/inbox` | `workflow.task.read` |
-| POST | `/approvals/tasks/:id/act` | `workflow.task.act` |
-| POST | `/approvals/bulk-act` | `workflow.task.act` |
-| POST | `/payroll/periods/:id/validate` | `payroll.period.close` |
-| POST | `/payroll/periods/:id/lock` \| `/close` | `payroll.period.close` |
-| GET | `/payroll/periods/:id/feeder` | `payroll.feeder.read` |
-| GET | `/payroll/periods/:id/feeder/export` | `payroll.feeder.export` |
-| GET | `/payroll/feeder-lines/:id/trace` | `payroll.feeder.read` |
-| POST | `/payslips/import` \| `/publish` \| `/:id/revoke` | `payroll.payslip.publish` |
-| GET | `/payslips/me` | `payroll.payslip.read_self` |
-| GET/POST/PATCH | `/config/parameters` | `config.parameter.*` |
-| GET/POST/PATCH | `/config/workflows` | `config.workflow.*` |
-| GET/POST/PATCH | `/config/leave-types` | `config.leave_type.*` |
-| GET/POST/PATCH | `/config/overtime-rules` | `config.overtime_rule.*` |
-| GET/POST | `/config/holidays` | `config.holiday.*` |
+| Method         | Endpoint                                          | Permission                                                                 |
+| -------------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| POST           | `/attendance/check-in` \| `/check-out`            | `attendance.log.create`                                                    |
+| POST           | `/attendance/sync`                                | `attendance.log.create` — batch offline, idempoten via `client_request_id` |
+| GET            | `/attendance/daily`                               | `attendance.daily.read`                                                    |
+| POST           | `/attendance/corrections`                         | `attendance.correction.create`                                             |
+| POST           | `/attendance/proxy`                               | `attendance.log.create_proxy`                                              |
+| GET            | `/leave/balances`                                 | `leave.balance.read`                                                       |
+| POST           | `/leave/requests`                                 | `leave.request.create`                                                     |
+| POST           | `/leave/requests/:id/cancel`                      | `leave.request.cancel`                                                     |
+| GET            | `/leave/team-calendar`                            | `leave.request.read`                                                       |
+| POST           | `/overtime/requests`                              | `overtime.request.create`                                                  |
+| GET            | `/approvals/inbox`                                | `workflow.task.read`                                                       |
+| POST           | `/approvals/tasks/:id/act`                        | `workflow.task.act`                                                        |
+| POST           | `/approvals/bulk-act`                             | `workflow.task.act`                                                        |
+| POST           | `/payroll/periods/:id/validate`                   | `payroll.period.close`                                                     |
+| POST           | `/payroll/periods/:id/lock` \| `/close`           | `payroll.period.close`                                                     |
+| GET            | `/payroll/periods/:id/feeder`                     | `payroll.feeder.read`                                                      |
+| GET            | `/payroll/periods/:id/feeder/export`              | `payroll.feeder.export`                                                    |
+| GET            | `/payroll/feeder-lines/:id/trace`                 | `payroll.feeder.read`                                                      |
+| POST           | `/payslips/import` \| `/publish` \| `/:id/revoke` | `payroll.payslip.publish`                                                  |
+| GET            | `/payslips/me`                                    | `payroll.payslip.read_self`                                                |
+| GET/POST/PATCH | `/config/parameters`                              | `config.parameter.*`                                                       |
+| GET/POST/PATCH | `/config/workflows`                               | `config.workflow.*`                                                        |
+| GET/POST/PATCH | `/config/leave-types`                             | `config.leave_type.*`                                                      |
+| GET/POST/PATCH | `/config/overtime-rules`                          | `config.overtime_rule.*`                                                   |
+| GET/POST       | `/config/holidays`                                | `config.holiday.*`                                                         |
 
 ### 7.4 Konvensi
 
-| Aspek | Aturan |
-|---|---|
-| Format tanggal | ISO 8601 dengan offset (`2026-08-07T09:15:00+07:00`) |
-| Penyimpanan waktu | UTC di database; konversi ke zona cabang di lapisan penyajian |
-| Nominal uang | `DECIMAL(18,2)`; dikirim sebagai string di JSON untuk mencegah galat float |
-| Paginasi | `?page=1&limit=50` (maks. 200), respons berisi `meta.total` |
-| Format error | `{ "error": { "code": "LEAVE_INSUFFICIENT_BALANCE", "message": "...", "details": {...} } }` |
-| Idempotensi | Header `Idempotency-Key` wajib untuk seluruh POST yang mengubah state |
-| Versioning | Prefix path `/v1`; perubahan yang merusak kompatibilitas → `/v2` |
-| Rate limit | 100 req/menit per user; 10 req/menit untuk endpoint auth |
+| Aspek             | Aturan                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| Format tanggal    | ISO 8601 dengan offset (`2026-08-07T09:15:00+07:00`)                                        |
+| Penyimpanan waktu | UTC di database; konversi ke zona cabang di lapisan penyajian                               |
+| Nominal uang      | `DECIMAL(18,2)`; dikirim sebagai string di JSON untuk mencegah galat float                  |
+| Paginasi          | `?page=1&limit=50` (maks. 200), respons berisi `meta.total`                                 |
+| Format error      | `{ "error": { "code": "LEAVE_INSUFFICIENT_BALANCE", "message": "...", "details": {...} } }` |
+| Idempotensi       | Header `Idempotency-Key` wajib untuk seluruh POST yang mengubah state                       |
+| Versioning        | Prefix path `/v1`; perubahan yang merusak kompatibilitas → `/v2`                            |
+| Rate limit        | 100 req/menit per user; 10 req/menit untuk endpoint auth                                    |
 
 ---
 
 ## 8. Non-Functional Requirements
 
-| Kategori | Persyaratan |
-|---|---|
-| **Performa** | API p95 ≤ 500 ms; submit absen p95 ≤ 3 dtk pada 3G; agregasi feeder 300 karyawan ≤ 60 dtk |
-| **Skalabilitas** | Dirancang untuk 2.000 karyawan (6× populasi saat ini) tanpa perubahan arsitektur |
-| **Ketersediaan** | ≥ 99,5% pada jam 06.00–20.00 WIB; jendela pemeliharaan di luar tanggal 20–25 |
-| **Keamanan — Transport** | TLS 1.3; HSTS; certificate pinning di mobile |
-| **Keamanan — At Rest** | Enkripsi kolom (AES-256) untuk: `bank_account_no`, `id_card_no`, `tax_id`, komponen gaji |
-| **Keamanan — Password** | Argon2id (memory ≥ 64 MB, iterations ≥ 3) |
-| **Keamanan — Sesi** | Access token 15 mnt, refresh 7 hr dengan rotasi + deteksi penggunaan ulang |
-| **Keamanan — Aplikasi** | OWASP Top 10; scan dependensi di CI; SAST wajib lulus sebelum merge |
-| **Privasi (UU PDP)** | Persetujuan pengumpulan data lokasi & biometrik saat onboarding; retensi & anonimisasi terkonfigurasi; hak akses & koreksi data lewat ESS |
-| **Audit** | Seluruh aksi CRUD pada entitas sensitif tercatat; log *append-only*; retensi ≥ 5 tahun (ISO 9001 Klausul 7.5) |
-| **Backup** | Full harian + WAL kontinu; RPO ≤ 15 menit; RTO ≤ 4 jam; uji restore triwulanan |
-| **Kompatibilitas Mobile** | Android 9+ (API 28), RAM 2 GB; iOS 15+; APK ≤ 40 MB |
-| **Aksesibilitas Web** | WCAG 2.1 AA; kontras ≥ 4.5:1; navigasi keyboard penuh (shadcn/ui + Radix memenuhi baseline) |
-| **Lokalisasi** | Bahasa Indonesia; format Rupiah `Rp 1.234.567`; kalender hari libur Indonesia |
-| **Observability** | Distributed tracing; alert pada: kegagalan job rekap absensi, antrean sync menumpuk, lonjakan 403 |
+| Kategori                  | Persyaratan                                                                                                                               |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Performa**              | API p95 ≤ 500 ms; submit absen p95 ≤ 3 dtk pada 3G; agregasi feeder 300 karyawan ≤ 60 dtk                                                 |
+| **Skalabilitas**          | Dirancang untuk 2.000 karyawan (6× populasi saat ini) tanpa perubahan arsitektur                                                          |
+| **Ketersediaan**          | ≥ 99,5% pada jam 06.00–20.00 WIB; jendela pemeliharaan di luar tanggal 20–25                                                              |
+| **Keamanan — Transport**  | TLS 1.3; HSTS; certificate pinning di mobile                                                                                              |
+| **Keamanan — At Rest**    | Enkripsi kolom (AES-256) untuk: `bank_account_no`, `id_card_no`, `tax_id`, komponen gaji                                                  |
+| **Keamanan — Password**   | Argon2id (memory ≥ 64 MB, iterations ≥ 3)                                                                                                 |
+| **Keamanan — Sesi**       | Access token 15 mnt, refresh 7 hr dengan rotasi + deteksi penggunaan ulang                                                                |
+| **Keamanan — Aplikasi**   | OWASP Top 10; scan dependensi di CI; SAST wajib lulus sebelum merge                                                                       |
+| **Privasi (UU PDP)**      | Persetujuan pengumpulan data lokasi & biometrik saat onboarding; retensi & anonimisasi terkonfigurasi; hak akses & koreksi data lewat ESS |
+| **Audit**                 | Seluruh aksi CRUD pada entitas sensitif tercatat; log _append-only_; retensi ≥ 5 tahun (ISO 9001 Klausul 7.5)                             |
+| **Backup**                | Full harian + WAL kontinu; RPO ≤ 15 menit; RTO ≤ 4 jam; uji restore triwulanan                                                            |
+| **Kompatibilitas Mobile** | Android 9+ (API 28), RAM 2 GB; iOS 15+; APK ≤ 40 MB                                                                                       |
+| **Aksesibilitas Web**     | WCAG 2.1 AA; kontras ≥ 4.5:1; navigasi keyboard penuh (shadcn/ui + Radix memenuhi baseline)                                               |
+| **Lokalisasi**            | Bahasa Indonesia; format Rupiah `Rp 1.234.567`; kalender hari libur Indonesia                                                             |
+| **Observability**         | Distributed tracing; alert pada: kegagalan job rekap absensi, antrean sync menumpuk, lonjakan 403                                         |
 
 ---
 
 ## 9. Strategi Migrasi Data
 
-| Tahap | Aktivitas | Sumber | Risiko | Mitigasi |
-|---|---|---|---|---|
-| M-1 | Master entitas, cabang, divisi, jabatan, golongan | Manual dari `Matriks Gaji & Tunjangan` | Penamaan tidak konsisten (`PT LMN - Cirebon` vs `PT. LMN - Cirebon`) | **Normalisasi wajib.** Buat tabel pemetaan; bersihkan sebelum impor |
-| M-2 | Master karyawan (300 baris, 24 kolom) | `data_pegawai_master` | Data **tersedia**, namun kotor: NIK KTP 15/17 digit, placeholder `000000`/`9999-01-01`/`1970-01-01`, casing & trailing space tidak konsisten | Severity `WARNING` pada validasi; laporan anomali per baris; Comben memutuskan, bukan sistem membersihkan diam-diam |
-| M-2b | Nama Bank & Nama Pemilik Rekening | **Tidak ada di template** | Transfer gaji & uang muka gagal | **OQ-03c** — Comben lengkapi terpisah |
-| M-3 | Garis pelaporan (atasan & division head) | **Tidak ada di template** | Tanpa ini approval tidak jalan | **BLOCKER — OQ-03 & OQ-10** |
-| M-4 | Komponen gaji per karyawan | `GAJI POKOK` tersedia di template; tunjangan lain **belum** | Nilai tunjangan per karyawan kosong | Impor Gaji Pokok sebagai `employee_component_assignments` Kelas A; tunjangan diturunkan dari matriks jabatan (FR-M1B-011b), nominal dilengkapi Comben |
-| M-5 | Saldo cuti berjalan | Rekap manual (sumber mencatat migrasi 2025 dilakukan manual karena backdate) | Salah saldo → keluhan massal | Impor sebagai entri ledger `OPENING_BALANCE`; verifikasi ganda oleh Comben; publikasikan ke karyawan untuk dikonfirmasi sebelum go-live |
-| M-6 | Kalender hari libur 2026 | SKB 3 Menteri | Salah tipe (Libur Nasional vs Cuti Bersama) | Review Comben; Cuti Bersama mengurangi hak cuti, Libur Nasional tidak |
-| M-7 | Pinjaman outstanding | Belum tersedia | v2 | Impor sebagai saldo awal berikut jadwal angsuran |
+| Tahap | Aktivitas                                         | Sumber                                                                       | Risiko                                                                                                                                       | Mitigasi                                                                                                                                              |
+| ----- | ------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M-1   | Master entitas, cabang, divisi, jabatan, golongan | Manual dari `Matriks Gaji & Tunjangan`                                       | Penamaan tidak konsisten (`PT LMN - Cirebon` vs `PT. LMN - Cirebon`)                                                                         | **Normalisasi wajib.** Buat tabel pemetaan; bersihkan sebelum impor                                                                                   |
+| M-2   | Master karyawan (300 baris, 24 kolom)             | `data_pegawai_master`                                                        | Data **tersedia**, namun kotor: NIK KTP 15/17 digit, placeholder `000000`/`9999-01-01`/`1970-01-01`, casing & trailing space tidak konsisten | Severity `WARNING` pada validasi; laporan anomali per baris; Comben memutuskan, bukan sistem membersihkan diam-diam                                   |
+| M-2b  | Nama Bank & Nama Pemilik Rekening                 | **Tidak ada di template**                                                    | Transfer gaji & uang muka gagal                                                                                                              | **OQ-03c** — Comben lengkapi terpisah                                                                                                                 |
+| M-3   | Garis pelaporan (atasan & division head)          | **Tidak ada di template**                                                    | Tanpa ini approval tidak jalan                                                                                                               | **BLOCKER — OQ-03 & OQ-10**                                                                                                                           |
+| M-4   | Komponen gaji per karyawan                        | `GAJI POKOK` tersedia di template; tunjangan lain **belum**                  | Nilai tunjangan per karyawan kosong                                                                                                          | Impor Gaji Pokok sebagai `employee_component_assignments` Kelas A; tunjangan diturunkan dari matriks jabatan (FR-M1B-011b), nominal dilengkapi Comben |
+| M-5   | Saldo cuti berjalan                               | Rekap manual (sumber mencatat migrasi 2025 dilakukan manual karena backdate) | Salah saldo → keluhan massal                                                                                                                 | Impor sebagai entri ledger `OPENING_BALANCE`; verifikasi ganda oleh Comben; publikasikan ke karyawan untuk dikonfirmasi sebelum go-live               |
+| M-6   | Kalender hari libur 2026                          | SKB 3 Menteri                                                                | Salah tipe (Libur Nasional vs Cuti Bersama)                                                                                                  | Review Comben; Cuti Bersama mengurangi hak cuti, Libur Nasional tidak                                                                                 |
+| M-7   | Pinjaman outstanding                              | Belum tersedia                                                               | v2                                                                                                                                           | Impor sebagai saldo awal berikut jadwal angsuran                                                                                                      |
 
 **Aturan migrasi yang mengikat:**
-1. Seluruh impor lewat *staging table* dengan validasi, **tidak pernah** langsung ke tabel produksi.
+
+1. Seluruh impor lewat _staging table_ dengan validasi, **tidak pernah** langsung ke tabel produksi.
 2. Setiap batch impor punya `import_batch_id` dan **dapat di-rollback penuh**.
 3. Saldo cuti diimpor sebagai **entri ledger**, bukan angka saldo, agar riwayat dapat direkonstruksi.
 4. Karyawan **wajib mengonfirmasi** saldo cuti awalnya lewat ESS sebelum go-live. Sengketa diselesaikan sebelum, bukan sesudah.
@@ -1275,26 +1298,26 @@ SELECT DISTINCT id FROM subordinates;
 
 ## 10. Rencana Rilis & Modul
 
-| Sprint | Minggu | Modul | Deliverable Kunci | Status |
-|---|---|---|---|---|
-| S0 | 1–2 | Fondasi | Repo (NestJS + Next.js + Flutter), CI/CD, Docker, skema DB inti, seed permission, design system shadcn, `AppFormatter` Flutter & `lib/format.ts` web | Belum mulai |
-| S0b | 2 | **M8B** Format & Validasi | `format_settings`, `validation_rules`, `number_sequences` (generator NIK), endpoint `/config/formats` & `/config/app-settings` | Belum mulai |
-| S1 | 3–4 | **M0** Identity | Auth, JWT, users, groups, permissions, PermissionGuard | Belum mulai |
-| S2 | 5–6 | **M0** Akses | Data scope resolver, field masking, menu registry, `/me/navigation`, layar simulasi, audit log | Belum mulai |
-| S3a | 7 | **M1B** Master Data | Scaffold CRUD generik + 12 master organisasi & referensi (entitas, cabang, divisi, departemen, jabatan, **golongan**, bank, reference_data) | Belum mulai |
-| S3b | 8 | **M1** Org & Karyawan | Karyawan, penugasan ber-tanggal efektif, garis pelaporan, import Excel | **Tergantung OQ-03** |
-| S4 | 9–10 | **M2** Absensi (backend) | Jadwal, kalender libur, geofence, API absen, job rekap harian | **Tergantung OQ-11** |
-| S4b | 10 | **M2B** Roster Management | Pola jadwal (4 seed), penugasan berjenjang, kalender roster, override per tanggal | **Tergantung OQ-19** |
-| S5 | 11–12 | **M2** Absensi (mobile Flutter) | Absen mobile, offline queue (Drift), swafoto q70, deteksi mock GPS, papan kehadiran | Belum mulai |
-| S6 | 13–14 | **M7** Workflow | Workflow engine, approval inbox, delegasi, SLA & eskalasi, notifikasi | Belum mulai |
-| S7 | 15–16 | **M3** Cuti & Izin | Jenis cuti config, saldo & ledger, prorata, advance, pengajuan, approval | **Tergantung OQ-02** |
-| S8 | 17–18 | **M4** Lembur | Matriks tarif config, perintah lembur, realisasi dari absensi, approval | **Tergantung OQ-01** |
-| S9 | 19–20 | **M6** Payroll Feeder | Periode, validasi pra-tutup, agregasi, calculation trace, export | Belum mulai |
-| S10 | 21–22 | **M5** ESS & Payslip | Import payroll, publish slip, PIN protection, PDF | Belum mulai |
-| S11 | 23–24 | **M8/M8B/M9** | Layar Pengaturan Umum, katalog & renderer laporan (17 laporan seed), dashboard, penguatan audit | Belum mulai |
-| UAT | 25–26 | Semua | Parallel run 1 siklus payroll, perbaikan | — |
-| Go-Live | 27 | — | Pilot HO Bandung + 2 cabang | — |
-| Rollout | 28–32 | — | 18 area kerja bertahap | — |
+| Sprint  | Minggu | Modul                           | Deliverable Kunci                                                                                                                                    | Status               |
+| ------- | ------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| S0      | 1–2    | Fondasi                         | Repo (NestJS + Next.js + Flutter), CI/CD, Docker, skema DB inti, seed permission, design system shadcn, `AppFormatter` Flutter & `lib/format.ts` web | Belum mulai          |
+| S0b     | 2      | **M8B** Format & Validasi       | `format_settings`, `validation_rules`, `number_sequences` (generator NIK), endpoint `/config/formats` & `/config/app-settings`                       | Belum mulai          |
+| S1      | 3–4    | **M0** Identity                 | Auth, JWT, users, groups, permissions, PermissionGuard                                                                                               | Belum mulai          |
+| S2      | 5–6    | **M0** Akses                    | Data scope resolver, field masking, menu registry, `/me/navigation`, layar simulasi, audit log                                                       | Belum mulai          |
+| S3a     | 7      | **M1B** Master Data             | Scaffold CRUD generik + 12 master organisasi & referensi (entitas, cabang, divisi, departemen, jabatan, **golongan**, bank, reference_data)          | Belum mulai          |
+| S3b     | 8      | **M1** Org & Karyawan           | Karyawan, penugasan ber-tanggal efektif, garis pelaporan, import Excel                                                                               | **Tergantung OQ-03** |
+| S4      | 9–10   | **M2** Absensi (backend)        | Jadwal, kalender libur, geofence, API absen, job rekap harian                                                                                        | **Tergantung OQ-11** |
+| S4b     | 10     | **M2B** Roster Management       | Pola jadwal (4 seed), penugasan berjenjang, kalender roster, override per tanggal                                                                    | **Tergantung OQ-19** |
+| S5      | 11–12  | **M2** Absensi (mobile Flutter) | Absen mobile, offline queue (Drift), swafoto q70, deteksi mock GPS, papan kehadiran                                                                  | Belum mulai          |
+| S6      | 13–14  | **M7** Workflow                 | Workflow engine, approval inbox, delegasi, SLA & eskalasi, notifikasi                                                                                | Belum mulai          |
+| S7      | 15–16  | **M3** Cuti & Izin              | Jenis cuti config, saldo & ledger, prorata, advance, pengajuan, approval                                                                             | **Tergantung OQ-02** |
+| S8      | 17–18  | **M4** Lembur                   | Matriks tarif config, perintah lembur, realisasi dari absensi, approval                                                                              | **Tergantung OQ-01** |
+| S9      | 19–20  | **M6** Payroll Feeder           | Periode, validasi pra-tutup, agregasi, calculation trace, export                                                                                     | Belum mulai          |
+| S10     | 21–22  | **M5** ESS & Payslip            | Import payroll, publish slip, PIN protection, PDF                                                                                                    | Belum mulai          |
+| S11     | 23–24  | **M8/M8B/M9**                   | Layar Pengaturan Umum, katalog & renderer laporan (17 laporan seed), dashboard, penguatan audit                                                      | Belum mulai          |
+| UAT     | 25–26  | Semua                           | Parallel run 1 siklus payroll, perbaikan                                                                                                             | —                    |
+| Go-Live | 27     | —                               | Pilot HO Bandung + 2 cabang                                                                                                                          | —                    |
+| Rollout | 28–32  | —                               | 18 area kerja bertahap                                                                                                                               | —                    |
 
 > **Catatan penjadwalan:** S3, S4, S7, dan S8 memiliki ketergantungan pada Open Question yang belum terjawab. Jika OQ-03 tidak selesai pada akhir minggu 6, **seluruh jadwal setelah S3 bergeser 1:1**. Ini bukan risiko yang bisa diserap dengan lembur.
 
@@ -1304,48 +1327,48 @@ SELECT DISTINCT id FROM subordinates;
 
 ### 11.1 Modul 0 — Akses
 
-| ID | Skenario | Kriteria Lulus |
-|---|---|---|
-| UAT-M0-01 | Admin membuat grup baru "Admin Cabang Garut" dengan scope `BRANCH` | Selesai < 10 menit tanpa bantuan developer |
-| UAT-M0-02 | User grup tersebut login | Hanya melihat karyawan Garut; menu Payroll tidak muncul |
-| UAT-M0-03 | User mencoba akses `/employees/{id_karyawan_Bandung}` langsung | HTTP 403; tercatat sebagai `SECURITY_EVENT` di audit log |
-| UAT-M0-04 | Supervisor membuka data bawahan | Kolom gaji pokok tampil `***`; export Excel juga `***` |
-| UAT-M0-05 | Admin mengubah urutan & label menu | Perubahan terlihat oleh user dalam ≤ 5 menit tanpa deploy |
-| UAT-M0-06 | Admin memberi override `DENY` pada user yang grupnya punya izin | Akses ditolak (DENY menang) |
-| UAT-M0-07 | Karyawan diubah statusnya menjadi resign | Akun otomatis nonaktif; sesi aktif diakhiri |
-| UAT-M0-08 | Auditor menarik riwayat perubahan hak akses | Tersedia lengkap dengan before/after, aktor, timestamp |
+| ID        | Skenario                                                           | Kriteria Lulus                                            |
+| --------- | ------------------------------------------------------------------ | --------------------------------------------------------- |
+| UAT-M0-01 | Admin membuat grup baru "Admin Cabang Garut" dengan scope `BRANCH` | Selesai < 10 menit tanpa bantuan developer                |
+| UAT-M0-02 | User grup tersebut login                                           | Hanya melihat karyawan Garut; menu Payroll tidak muncul   |
+| UAT-M0-03 | User mencoba akses `/employees/{id_karyawan_Bandung}` langsung     | HTTP 403; tercatat sebagai `SECURITY_EVENT` di audit log  |
+| UAT-M0-04 | Supervisor membuka data bawahan                                    | Kolom gaji pokok tampil `***`; export Excel juga `***`    |
+| UAT-M0-05 | Admin mengubah urutan & label menu                                 | Perubahan terlihat oleh user dalam ≤ 5 menit tanpa deploy |
+| UAT-M0-06 | Admin memberi override `DENY` pada user yang grupnya punya izin    | Akses ditolak (DENY menang)                               |
+| UAT-M0-07 | Karyawan diubah statusnya menjadi resign                           | Akun otomatis nonaktif; sesi aktif diakhiri               |
+| UAT-M0-08 | Auditor menarik riwayat perubahan hak akses                        | Tersedia lengkap dengan before/after, aktor, timestamp    |
 
 ### 11.2 Absensi
 
-| ID | Skenario | Kriteria Lulus |
-|---|---|---|
-| UAT-M2-01 | Absen dalam radius geofence | Tercatat < 3 detik, status `HADIR` |
-| UAT-M2-02 | Absen dengan mode pesawat, lalu online kembali | Tersimpan lokal, sync otomatis, `is_offline_sync = true` |
-| UAT-M2-03 | Absen dengan aplikasi fake GPS aktif | Tercatat, ditandai `is_mock_location`, muncul di antrean verifikasi |
-| UAT-M2-04 | Salesman absen 5 km dari cabang | Diterima, ditandai `OUT_OF_ZONE`, jarak terlihat oleh approver |
-| UAT-M2-05 | Absen masuk tanpa absen pulang | Status `INCOMPLETE`, notifikasi terkirim ke karyawan & atasan |
-| UAT-M2-06 | Job rekap dijalankan dua kali | Hasil identik (idempoten), tidak ada duplikasi |
+| ID        | Skenario                                       | Kriteria Lulus                                                      |
+| --------- | ---------------------------------------------- | ------------------------------------------------------------------- |
+| UAT-M2-01 | Absen dalam radius geofence                    | Tercatat < 3 detik, status `HADIR`                                  |
+| UAT-M2-02 | Absen dengan mode pesawat, lalu online kembali | Tersimpan lokal, sync otomatis, `is_offline_sync = true`            |
+| UAT-M2-03 | Absen dengan aplikasi fake GPS aktif           | Tercatat, ditandai `is_mock_location`, muncul di antrean verifikasi |
+| UAT-M2-04 | Salesman absen 5 km dari cabang                | Diterima, ditandai `OUT_OF_ZONE`, jarak terlihat oleh approver      |
+| UAT-M2-05 | Absen masuk tanpa absen pulang                 | Status `INCOMPLETE`, notifikasi terkirim ke karyawan & atasan       |
+| UAT-M2-06 | Job rekap dijalankan dua kali                  | Hasil identik (idempoten), tidak ada duplikasi                      |
 
 ### 11.3 Cuti
 
-| ID | Skenario | Kriteria Lulus |
-|---|---|---|
-| UAT-M3-01 | Karyawan masa kerja 5 bulan mengajukan cuti tahunan | Ditolak; sistem menawarkan Cuti Advance maks. 3 hari |
-| UAT-M3-02 | Cuti diajukan H-3 | Diblokir dengan pesan jelas; opsi jalur darurat tersedia |
-| UAT-M3-03 | Cuti melintasi hari libur nasional | Hari libur tidak dihitung sebagai hari cuti |
-| UAT-M3-04 | Atasan tidak bertindak 3 hari kerja | Pengingat H+1, eskalasi H+2; **tidak** auto-approve |
-| UAT-M3-05 | Karyawan resign dengan sisa cuti 4 hari | Muncul sebagai komponen kompensasi di feeder bulan terakhir |
-| UAT-M3-06 | Admin menambah Cuti Bersama 2 hari | Preview dampak muncul; saldo terpotong setelah dikonfirmasi |
+| ID        | Skenario                                            | Kriteria Lulus                                              |
+| --------- | --------------------------------------------------- | ----------------------------------------------------------- |
+| UAT-M3-01 | Karyawan masa kerja 5 bulan mengajukan cuti tahunan | Ditolak; sistem menawarkan Cuti Advance maks. 3 hari        |
+| UAT-M3-02 | Cuti diajukan H-3                                   | Diblokir dengan pesan jelas; opsi jalur darurat tersedia    |
+| UAT-M3-03 | Cuti melintasi hari libur nasional                  | Hari libur tidak dihitung sebagai hari cuti                 |
+| UAT-M3-04 | Atasan tidak bertindak 3 hari kerja                 | Pengingat H+1, eskalasi H+2; **tidak** auto-approve         |
+| UAT-M3-05 | Karyawan resign dengan sisa cuti 4 hari             | Muncul sebagai komponen kompensasi di feeder bulan terakhir |
+| UAT-M3-06 | Admin menambah Cuti Bersama 2 hari                  | Preview dampak muncul; saldo terpotong setelah dikonfirmasi |
 
 ### 11.4 Payroll Feeder — **Gerbang Go/No-Go**
 
-| ID | Skenario | Kriteria Lulus |
-|---|---|---|
-| UAT-M6-01 | Parallel run 1 siklus penuh, HO Bandung | **Selisih Rp 0** pada Lembur, Potongan Absen, dan Tunjangan Kehadiran untuk seluruh karyawan |
-| UAT-M6-02 | Comben membuka drill-down sebuah angka lembur | Formula, ID aturan, versi parameter, dan nilai input terlihat |
-| UAT-M6-03 | Tutup periode dengan 3 cuti masih pending | Diblokir; daftar dokumen penghambat ditampilkan |
-| UAT-M6-04 | Admin mengubah divisor lembur, lalu buka periode lampau | Angka periode lampau **tidak berubah** |
-| UAT-M6-05 | Karyawan mutasi golongan di tengah periode | Lembur sebelum mutasi memakai tarif lama; sesudahnya tarif baru |
+| ID        | Skenario                                                | Kriteria Lulus                                                                               |
+| --------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| UAT-M6-01 | Parallel run 1 siklus penuh, HO Bandung                 | **Selisih Rp 0** pada Lembur, Potongan Absen, dan Tunjangan Kehadiran untuk seluruh karyawan |
+| UAT-M6-02 | Comben membuka drill-down sebuah angka lembur           | Formula, ID aturan, versi parameter, dan nilai input terlihat                                |
+| UAT-M6-03 | Tutup periode dengan 3 cuti masih pending               | Diblokir; daftar dokumen penghambat ditampilkan                                              |
+| UAT-M6-04 | Admin mengubah divisor lembur, lalu buka periode lampau | Angka periode lampau **tidak berubah**                                                       |
+| UAT-M6-05 | Karyawan mutasi golongan di tengah periode              | Lembur sebelum mutasi memakai tarif lama; sesudahnya tarif baru                              |
 
 > **Gerbang rilis:** UAT-M6-01 adalah syarat mutlak. Selisih ≠ Rp 0 berarti **no-go**, tanpa pengecualian. Sistem payroll yang angkanya tidak dapat dipercaya lebih buruk daripada Excel.
 
@@ -1359,46 +1382,46 @@ SELECT DISTINCT id FROM subordinates;
 
 ### 11A.1 Piramida Pengujian per Modul
 
-| Lapisan | Cakupan | Alat | Kapan Dijalankan | Gerbang |
-|---|---|---|---|---|
-| **Unit** | Rule engine, formula payroll, resolver scope, prorata cuti, tarif lembur, resolver jadwal | Jest (NestJS), `flutter_test` | Setiap commit | Coverage < ambang → **CI gagal** |
-| **Integrasi** | Endpoint + database nyata (Testcontainers PostgreSQL), transaksi, constraint, RLS | Jest + Supertest | Setiap PR | Ada kegagalan → **merge diblokir** |
-| **Kontrak** | Skema request/response vs OpenAPI; klien Flutter vs API | Pact / OpenAPI validator | Setiap PR | Ketidaksesuaian → **merge diblokir** |
-| **E2E Web** | Alur utama end-to-end di browser | Playwright | Nightly + sebelum rilis | Ada kegagalan → **rilis diblokir** |
-| **E2E Mobile** | Absen, offline sync, approval, slip gaji | `integration_test` Flutter + Patrol | Sebelum rilis | Ada kegagalan → **rilis diblokir** |
-| **Keamanan** | Uji scope guard, field masking, IDOR, SQL injection, unggahan berbahaya | Skenario khusus + OWASP ZAP | Sebelum rilis | Ada temuan High → **rilis diblokir** |
-| **Performa** | 300 karyawan, 1 periode payroll, 50 pengguna bersamaan | k6 | Sebelum rilis | p95 > SLO → **rilis diblokir** |
-| **UAT** | Skenario bisnis oleh pengguna nyata | Manual, ditandatangani PIC | Sebelum go-live | Belum ditandatangani → **go-live diblokir** |
+| Lapisan        | Cakupan                                                                                   | Alat                                | Kapan Dijalankan        | Gerbang                                     |
+| -------------- | ----------------------------------------------------------------------------------------- | ----------------------------------- | ----------------------- | ------------------------------------------- |
+| **Unit**       | Rule engine, formula payroll, resolver scope, prorata cuti, tarif lembur, resolver jadwal | Jest (NestJS), `flutter_test`       | Setiap commit           | Coverage < ambang → **CI gagal**            |
+| **Integrasi**  | Endpoint + database nyata (Testcontainers PostgreSQL), transaksi, constraint, RLS         | Jest + Supertest                    | Setiap PR               | Ada kegagalan → **merge diblokir**          |
+| **Kontrak**    | Skema request/response vs OpenAPI; klien Flutter vs API                                   | Pact / OpenAPI validator            | Setiap PR               | Ketidaksesuaian → **merge diblokir**        |
+| **E2E Web**    | Alur utama end-to-end di browser                                                          | Playwright                          | Nightly + sebelum rilis | Ada kegagalan → **rilis diblokir**          |
+| **E2E Mobile** | Absen, offline sync, approval, slip gaji                                                  | `integration_test` Flutter + Patrol | Sebelum rilis           | Ada kegagalan → **rilis diblokir**          |
+| **Keamanan**   | Uji scope guard, field masking, IDOR, SQL injection, unggahan berbahaya                   | Skenario khusus + OWASP ZAP         | Sebelum rilis           | Ada temuan High → **rilis diblokir**        |
+| **Performa**   | 300 karyawan, 1 periode payroll, 50 pengguna bersamaan                                    | k6                                  | Sebelum rilis           | p95 > SLO → **rilis diblokir**              |
+| **UAT**        | Skenario bisnis oleh pengguna nyata                                                       | Manual, ditandatangani PIC          | Sebelum go-live         | Belum ditandatangani → **go-live diblokir** |
 
 ### 11A.2 Definition of Done per Modul
 
 Modul **tidak boleh** dinyatakan selesai sebelum kesembilan butir berikut terpenuhi:
 
-| # | Kriteria | Bukti |
-|---|---|---|
-| 1 | Seluruh FR modul terimplementasi | Ceklis FR ditandai, ditautkan ke PR |
-| 2 | Unit test lulus dengan coverage ≥ ambang | Laporan coverage CI |
-| 3 | Integration test lulus untuk setiap endpoint | Laporan CI |
-| 4 | **Uji scope & masking** lulus untuk setiap grup pengguna | Matriks hasil uji akses |
-| 5 | Tidak ada angka kebijakan sebagai literal | Lint rule `no-magic-policy-number` lulus |
-| 6 | Setiap endpoint punya dekorator permission | Gerbang CI `permission-coverage` lulus |
-| 7 | Skenario UAT modul dieksekusi & ditandatangani PIC | Berkas UAT bertanda tangan |
-| 8 | Dokumentasi API diperbarui (OpenAPI) | Diff spesifikasi |
-| 9 | Bug Critical/High = 0 | Papan issue tracker |
+| #   | Kriteria                                                 | Bukti                                    |
+| --- | -------------------------------------------------------- | ---------------------------------------- |
+| 1   | Seluruh FR modul terimplementasi                         | Ceklis FR ditandai, ditautkan ke PR      |
+| 2   | Unit test lulus dengan coverage ≥ ambang                 | Laporan coverage CI                      |
+| 3   | Integration test lulus untuk setiap endpoint             | Laporan CI                               |
+| 4   | **Uji scope & masking** lulus untuk setiap grup pengguna | Matriks hasil uji akses                  |
+| 5   | Tidak ada angka kebijakan sebagai literal                | Lint rule `no-magic-policy-number` lulus |
+| 6   | Setiap endpoint punya dekorator permission               | Gerbang CI `permission-coverage` lulus   |
+| 7   | Skenario UAT modul dieksekusi & ditandatangani PIC       | Berkas UAT bertanda tangan               |
+| 8   | Dokumentasi API diperbarui (OpenAPI)                     | Diff spesifikasi                         |
+| 9   | Bug Critical/High = 0                                    | Papan issue tracker                      |
 
 ### 11A.3 Uji Wajib per Modul MVP
 
-| Modul | Uji Wajib Spesifik |
-|---|---|
-| **M0** Akses | Setiap grup × setiap permission × setiap scope (matriks kombinatorial); IDOR lewat manipulasi ID; `DENY` mengalahkan union grup; pencabutan permission mid-session |
-| **M1/M1B** Master | Import 300 baris (data kotor asli); rollback batch; overlap effective-date ditolak; hapus master yang dirujuk transaksi ditolak |
-| **M2** Absensi | Offline queue (mode pesawat 24 jam); mock GPS; jam device dimundurkan; idempotensi sync; job rekap dijalankan dua kali |
-| **M2B** Roster | Prioritas resolusi 5 tingkat; override per tanggal; karyawan tanpa jadwal memblokir tutup periode; rekalkulasi setelah jadwal diubah |
-| **M3** Cuti | Prorata tahun pertama; advance lalu resign; cuti lintas periode payroll; cuti bersama mengurangi saldo; `leave_eligible = false` memblokir |
-| **M4** Lembur | Tiap kombinasi golongan × tipe hari; mutasi golongan di tengah periode; tarif effective-dated |
-| **M5** Payslip | PIN/biometrik; revoke & terbitkan revisi; masking pada ekspor |
-| **M6** Payroll | **Parallel run selisih Rp 0**; validasi pra-tutup; `calculation_trace` lengkap; ubah parameter tidak mengubah periode lampau |
-| **M7** Workflow | Self-approval dilewati; approver resign; SLA & eskalasi; delegasi; race dua approver; definisi berubah saat instance berjalan |
+| Modul                  | Uji Wajib Spesifik                                                                                                                                                            |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M0** Akses           | Setiap grup × setiap permission × setiap scope (matriks kombinatorial); IDOR lewat manipulasi ID; `DENY` mengalahkan union grup; pencabutan permission mid-session            |
+| **M1/M1B** Master      | Import 300 baris (data kotor asli); rollback batch; overlap effective-date ditolak; hapus master yang dirujuk transaksi ditolak                                               |
+| **M2** Absensi         | Offline queue (mode pesawat 24 jam); mock GPS; jam device dimundurkan; idempotensi sync; job rekap dijalankan dua kali                                                        |
+| **M2B** Roster         | Prioritas resolusi 5 tingkat; override per tanggal; karyawan tanpa jadwal memblokir tutup periode; rekalkulasi setelah jadwal diubah                                          |
+| **M3** Cuti            | Prorata tahun pertama; advance lalu resign; cuti lintas periode payroll; cuti bersama mengurangi saldo; `leave_eligible = false` memblokir                                    |
+| **M4** Lembur          | Tiap kombinasi golongan × tipe hari; mutasi golongan di tengah periode; tarif effective-dated                                                                                 |
+| **M5** Payslip         | PIN/biometrik; revoke & terbitkan revisi; masking pada ekspor                                                                                                                 |
+| **M6** Payroll         | **Parallel run selisih Rp 0**; validasi pra-tutup; `calculation_trace` lengkap; ubah parameter tidak mengubah periode lampau                                                  |
+| **M7** Workflow        | Self-approval dilewati; approver resign; SLA & eskalasi; delegasi; race dua approver; definisi berubah saat instance berjalan                                                 |
 | **M8/M8B** Konfigurasi | Ubah format tanggal → seluruh layar ikut; ubah aturan validasi → langsung berlaku; **tidak ada BLOB di skema**; kompresi kualitas 70 terverifikasi; presigned URL kedaluwarsa |
 
 ### 11A.4 Gerbang CI (dijalankan mesin, bukan diingat manusia)
@@ -1409,9 +1432,9 @@ gates:
   - name: no-blob-columns
     run: grep -rEi "BYTEA|BLOB|LONGBLOB" prisma/migrations/ && exit 1 || exit 0
   - name: no-magic-policy-number
-    run: npx eslint --rule no-magic-policy-number src/    # 173, 25, 150000, 12, 173.0
+    run: npx eslint --rule no-magic-policy-number src/ # 173, 25, 150000, 12, 173.0
   - name: permission-coverage
-    run: node scripts/check-permission-decorators.js      # gagal bila ada endpoint tanpa @RequirePermission
+    run: node scripts/check-permission-decorators.js # gagal bila ada endpoint tanpa @RequirePermission
   - name: no-group-name-check
     run: grep -rE "group(\.name|_code)\s*===" src/ && exit 1 || exit 0
   - name: no-hardcoded-date-format
@@ -1424,31 +1447,31 @@ gates:
 
 ### 11A.5 Aturan Tegas
 
-| # | Aturan |
-|---|---|
-| QA-01 | **Modul tanpa test tidak boleh masuk `main`.** Tidak ada pengecualian untuk "kejar deadline" |
-| QA-02 | Test ditulis **bersamaan** dengan kode, bukan di sprint terpisah di akhir. Sprint "hardening" bukan pengganti |
-| QA-03 | Setiap bug yang ditemukan wajib menghasilkan **regression test** sebelum diperbaiki |
+| #     | Aturan                                                                                                               |
+| ----- | -------------------------------------------------------------------------------------------------------------------- |
+| QA-01 | **Modul tanpa test tidak boleh masuk `main`.** Tidak ada pengecualian untuk "kejar deadline"                         |
+| QA-02 | Test ditulis **bersamaan** dengan kode, bukan di sprint terpisah di akhir. Sprint "hardening" bukan pengganti        |
+| QA-03 | Setiap bug yang ditemukan wajib menghasilkan **regression test** sebelum diperbaiki                                  |
 | QA-04 | Data uji wajib memakai **cuplikan data asli yang dianonimkan** (termasuk baris kotornya), bukan data sempurna buatan |
-| QA-05 | UAT dijalankan oleh **Comben dan Admin Cabang sungguhan**, bukan oleh tim developer |
-| QA-06 | Setiap hasil UAT ditandatangani PIC modul; berkasnya menjadi rekaman ISO 9001 Klausul 7.5 |
+| QA-05 | UAT dijalankan oleh **Comben dan Admin Cabang sungguhan**, bukan oleh tim developer                                  |
+| QA-06 | Setiap hasil UAT ditandatangani PIC modul; berkasnya menjadi rekaman ISO 9001 Klausul 7.5                            |
 
 ---
 
 ## 12. Risiko & Mitigasi
 
-| # | Risiko | Dampak | Peluang | Mitigasi |
-|---|---|---|---|---|
-| R-01 | **Data master tidak lengkap (OQ-03)** | Kritis | Tinggi | Jadikan gerbang Sprint 3. Jangan mulai coding modul yang bergantung padanya. Tugaskan PIC Comben khusus |
-| R-02 | Konflik aturan lembur SPV (OQ-01) tidak terselesaikan | Tinggi | Sedang | Seed `NONE`; UI konfigurasi memungkinkan koreksi cepat tanpa deploy |
-| R-03 | Karyawan tanpa smartphone / literasi rendah | Tinggi | Tinggi | Fitur proxy attendance; pelatihan cabang; kartu panduan bergambar; pendamping (*champion*) per cabang |
-| R-04 | Penolakan Comben terhadap angka sistem | Kritis | Sedang | `calculation_trace` wajib; parallel run; libatkan Comben sebagai penguji sejak Sprint 7 |
-| R-05 | Penyalahgunaan fake GPS | Sedang | Tinggi | Deteksi + tandai; foto swafoto; laporan anomali mingguan; sanksi kebijakan HR (bukan teknis) |
-| R-06 | Sinyal buruk di cabang terpencil | Tinggi | Tinggi | Offline-first wajib; payload ringan; retry dengan *exponential backoff* |
-| R-07 | *Scope creep* ke SFA / Performance | Tinggi | Sedang | Non-goals tertulis di PRD; setiap permintaan baru masuk backlog, bukan sprint berjalan |
-| R-08 | Data pribadi bocor (UU PDP) | Kritis | Rendah | Enkripsi at-rest, field masking, audit akses, scan penetrasi sebelum go-live |
-| R-09 | Ketergantungan pada satu developer untuk rule engine | Tinggi | Sedang | Dokumentasi + *pair programming* + cakupan tes ≥ 80% pada modul rule & payroll |
-| R-10 | Hosting belum diputuskan (OQ-13) | Sedang | Sedang | Kontainerisasi sejak awal; hindari layanan spesifik vendor |
+| #    | Risiko                                                | Dampak | Peluang | Mitigasi                                                                                                |
+| ---- | ----------------------------------------------------- | ------ | ------- | ------------------------------------------------------------------------------------------------------- |
+| R-01 | **Data master tidak lengkap (OQ-03)**                 | Kritis | Tinggi  | Jadikan gerbang Sprint 3. Jangan mulai coding modul yang bergantung padanya. Tugaskan PIC Comben khusus |
+| R-02 | Konflik aturan lembur SPV (OQ-01) tidak terselesaikan | Tinggi | Sedang  | Seed `NONE`; UI konfigurasi memungkinkan koreksi cepat tanpa deploy                                     |
+| R-03 | Karyawan tanpa smartphone / literasi rendah           | Tinggi | Tinggi  | Fitur proxy attendance; pelatihan cabang; kartu panduan bergambar; pendamping (_champion_) per cabang   |
+| R-04 | Penolakan Comben terhadap angka sistem                | Kritis | Sedang  | `calculation_trace` wajib; parallel run; libatkan Comben sebagai penguji sejak Sprint 7                 |
+| R-05 | Penyalahgunaan fake GPS                               | Sedang | Tinggi  | Deteksi + tandai; foto swafoto; laporan anomali mingguan; sanksi kebijakan HR (bukan teknis)            |
+| R-06 | Sinyal buruk di cabang terpencil                      | Tinggi | Tinggi  | Offline-first wajib; payload ringan; retry dengan _exponential backoff_                                 |
+| R-07 | _Scope creep_ ke SFA / Performance                    | Tinggi | Sedang  | Non-goals tertulis di PRD; setiap permintaan baru masuk backlog, bukan sprint berjalan                  |
+| R-08 | Data pribadi bocor (UU PDP)                           | Kritis | Rendah  | Enkripsi at-rest, field masking, audit akses, scan penetrasi sebelum go-live                            |
+| R-09 | Ketergantungan pada satu developer untuk rule engine  | Tinggi | Sedang  | Dokumentasi + _pair programming_ + cakupan tes ≥ 80% pada modul rule & payroll                          |
+| R-10 | Hosting belum diputuskan (OQ-13)                      | Sedang | Sedang  | Kontainerisasi sejak awal; hindari layanan spesifik vendor                                              |
 
 ---
 
@@ -1456,37 +1479,37 @@ gates:
 
 > Delapan aturan berikut adalah **kriteria code review**. Pelanggaran = **blocker**, bukan bahan diskusi.
 
-| # | Aturan |
-|---|---|
-| **1** | **Dilarang** menuliskan angka kebijakan sebagai literal di kode. `173`, `25`, `12`, `150000`, `2`, `7`, `30` **wajib** berasal dari `system_parameters` atau tabel aturan. |
-| **2** | **Dilarang** memeriksa nama/kode grup di logic (`if (user.group === 'COMBEN')`). Gunakan pemeriksaan permission. |
-| **3** | **Setiap** endpoint wajib punya dekorator permission. Tanpa itu → ditolak *deny-by-default* dan CI gagal. |
-| **4** | **Setiap** pembacaan parameter wajib menyertakan tanggal acuan (`asOf`). Tidak ada pembacaan "nilai saat ini" untuk perhitungan historis. |
-| **5** | **Setiap** perhitungan finansial wajib menghasilkan `calculation_trace`. Perhitungan tanpa jejak tidak boleh di-*merge*. |
-| **6** | **Dilarang** menghapus data transaksional secara fisik. Gunakan *soft delete* atau pembalikan ledger. `audit_logs` bersifat *append-only*. |
-| **7** | Filter data scope wajib berada di lapisan repository/query. Menyembunyikan data di frontend **bukan** kontrol keamanan. |
-| **8** | Menu, label, dan teks notifikasi berasal dari database. **Dilarang** ada array menu statis atau string notifikasi di kode frontend. |
-| **9** | **Dilarang** menyimpan berkas biner di database. Tidak ada `BYTEA`, tidak ada base64 di kolom teks, tidak ada blob di SQLite mobile. |
-| **10** | **Dilarang** menuliskan format tanggal di komponen. Web lewat `lib/format.ts`, Flutter lewat `AppFormatter`. Penyimpanan tetap ISO/`DATE`. |
+| #      | Aturan                                                                                                                                                                           |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1**  | **Dilarang** menuliskan angka kebijakan sebagai literal di kode. `173`, `25`, `12`, `150000`, `2`, `7`, `30` **wajib** berasal dari `system_parameters` atau tabel aturan.       |
+| **2**  | **Dilarang** memeriksa nama/kode grup di logic (`if (user.group === 'COMBEN')`). Gunakan pemeriksaan permission.                                                                 |
+| **3**  | **Setiap** endpoint wajib punya dekorator permission. Tanpa itu → ditolak _deny-by-default_ dan CI gagal.                                                                        |
+| **4**  | **Setiap** pembacaan parameter wajib menyertakan tanggal acuan (`asOf`). Tidak ada pembacaan "nilai saat ini" untuk perhitungan historis.                                        |
+| **5**  | **Setiap** perhitungan finansial wajib menghasilkan `calculation_trace`. Perhitungan tanpa jejak tidak boleh di-_merge_.                                                         |
+| **6**  | **Dilarang** menghapus data transaksional secara fisik. Gunakan _soft delete_ atau pembalikan ledger. `audit_logs` bersifat _append-only_.                                       |
+| **7**  | Filter data scope wajib berada di lapisan repository/query. Menyembunyikan data di frontend **bukan** kontrol keamanan.                                                          |
+| **8**  | Menu, label, dan teks notifikasi berasal dari database. **Dilarang** ada array menu statis atau string notifikasi di kode frontend.                                              |
+| **9**  | **Dilarang** menyimpan berkas biner di database. Tidak ada `BYTEA`, tidak ada base64 di kolom teks, tidak ada blob di SQLite mobile.                                             |
+| **10** | **Dilarang** menuliskan format tanggal di komponen. Web lewat `lib/format.ts`, Flutter lewat `AppFormatter`. Penyimpanan tetap ISO/`DATE`.                                       |
 | **11** | **Dilarang** menandai modul selesai tanpa unit test, integration test, dan uji scope. Gerbang CI menegakkannya; menonaktifkan gerbang memerlukan persetujuan Tech Lead tertulis. |
-| **12** | **Dilarang** mengisi angka kebijakan yang belum ada dokumennya dengan nilai tebakan. Kosongkan dan blokir transaksinya (SD-05). |
+| **12** | **Dilarang** mengisi angka kebijakan yang belum ada dokumennya dengan nilai tebakan. Kosongkan dan blokir transaksinya (SD-05).                                                  |
 
 ---
 
 ## 14. Ketergantungan & Prasyarat
 
-| # | Prasyarat | PIC | Dibutuhkan Sebelum |
-|---|---|---|---|
-| D-01 | Keputusan hosting & lingkungan (OQ-13) | IT + Manajemen | Sprint 0 |
-| D-02 | Keputusan ruang lingkup entitas: LMN saja atau + LMI + Pabrik (OQ-18) | Manajemen | Sprint 0 |
-| D-03 | Data master karyawan lengkap (OQ-03) | Comben | Sprint 3 |
-| D-04 | Definisi jadwal kerja & shift per cabang (OQ-11) | Comben | Sprint 4 |
-| D-05 | Keputusan basis siklus cuti (OQ-02) | HCGA Manager | Sprint 7 |
-| D-06 | Keputusan lembur SPV hari biasa (OQ-01) | Comben + HCGA | Sprint 8 |
-| D-07 | Akun Firebase (FCM) | IT | Sprint 5 |
-| D-08 | Akun Google Play Console (jika distribusi publik) | IT | Sprint 8 |
-| D-09 | Sertifikat SSL & domain | IT | Sprint 0 |
-| D-10 | Penunjukan *champion* per cabang untuk pelatihan | HCGA | Sebelum rollout |
+| #    | Prasyarat                                                             | PIC            | Dibutuhkan Sebelum |
+| ---- | --------------------------------------------------------------------- | -------------- | ------------------ |
+| D-01 | Keputusan hosting & lingkungan (OQ-13)                                | IT + Manajemen | Sprint 0           |
+| D-02 | Keputusan ruang lingkup entitas: LMN saja atau + LMI + Pabrik (OQ-18) | Manajemen      | Sprint 0           |
+| D-03 | Data master karyawan lengkap (OQ-03)                                  | Comben         | Sprint 3           |
+| D-04 | Definisi jadwal kerja & shift per cabang (OQ-11)                      | Comben         | Sprint 4           |
+| D-05 | Keputusan basis siklus cuti (OQ-02)                                   | HCGA Manager   | Sprint 7           |
+| D-06 | Keputusan lembur SPV hari biasa (OQ-01)                               | Comben + HCGA  | Sprint 8           |
+| D-07 | Akun Firebase (FCM)                                                   | IT             | Sprint 5           |
+| D-08 | Akun Google Play Console (jika distribusi publik)                     | IT             | Sprint 8           |
+| D-09 | Sertifikat SSL & domain                                               | IT             | Sprint 0           |
+| D-10 | Penunjukan _champion_ per cabang untuk pelatihan                      | HCGA           | Sebelum rollout    |
 
 ---
 
@@ -1553,32 +1576,32 @@ report.overtime.view            report.payroll.view
 audit.log.read                  audit.log.export
 ```
 
-> **Aturan:** Setiap modul baru menambahkan permission-nya lewat *seed migration* miliknya sendiri. Daftar ini tumbuh lewat data, bukan lewat perubahan kode aplikasi.
+> **Aturan:** Setiap modul baru menambahkan permission-nya lewat _seed migration_ miliknya sendiri. Daftar ini tumbuh lewat data, bukan lewat perubahan kode aplikasi.
 
 ---
 
 ## Lampiran B — Ringkasan Modul & PIC
 
-| Modul | Kode | Rilis | Kompleksitas | Ketergantungan | PIC | Status |
-|---|---|---|---|---|---|---|
-| Identity & Akses | M0 | MVP | Tinggi | — | *TBD* | Belum mulai |
-| Master Data & Referensi | M1B | MVP | Sedang | M0 | *TBD* | **Belum mulai — tidak terblokir** |
-| Employee Master & Org | M1 | MVP | Sedang | M0, M1B | *TBD* | Terblokir (OQ-03) |
-| Absensi & Jadwal | M2 | MVP | **Sangat Tinggi** | M0, M1 | *TBD* | Terblokir (OQ-11) |
-| Roster Management | M2B | MVP | Sedang | M1B | *TBD* | Terblokir (OQ-19) |
-| Cuti & Izin | M3 | MVP | Tinggi | M0, M1, M7, M2B | *TBD* | Terblokir (OQ-02) |
-| Lembur | M4 | MVP | Sedang | M2, M7 | *TBD* | Terblokir (OQ-01) |
-| ESS & e-Payslip | M5 | MVP | Sedang | M0, M1 | *TBD* | Belum mulai |
-| Payroll Feeder | M6 | MVP | **Sangat Tinggi** | M2, M3, M4 | *TBD* | Belum mulai |
-| Notifikasi & Workflow | M7 | MVP | Tinggi | M0 | *TBD* | Belum mulai |
-| Konfigurasi Sistem | M8 | MVP | Sedang | M0 | *TBD* | Belum mulai |
-| Pengaturan Umum, Format & Laporan | M8B | MVP | Sedang | M0 | *TBD* | **Belum mulai — tidak terblokir** |
-| Audit & Laporan | M9 | MVP | Rendah | Semua | *TBD* | Belum mulai |
-| Payroll Engine | V1 | v2 | **Sangat Tinggi** | M6 | *TBD* | — |
-| Pinjaman Karyawan | V2 | v2 | Sedang | M7, V1 | *TBD* | Terblokir (OQ-04) |
-| Perjalanan Dinas | V3 | v2 | Tinggi | M7, V1 | *TBD* | Terblokir (OQ-05) |
-| Pembiayaan SIM | V4 | v2 | Rendah | M7 | *TBD* | Terblokir (OQ-06) |
+| Modul                             | Kode | Rilis | Kompleksitas      | Ketergantungan  | PIC   | Status                            |
+| --------------------------------- | ---- | ----- | ----------------- | --------------- | ----- | --------------------------------- |
+| Identity & Akses                  | M0   | MVP   | Tinggi            | —               | _TBD_ | Belum mulai                       |
+| Master Data & Referensi           | M1B  | MVP   | Sedang            | M0              | _TBD_ | **Belum mulai — tidak terblokir** |
+| Employee Master & Org             | M1   | MVP   | Sedang            | M0, M1B         | _TBD_ | Terblokir (OQ-03)                 |
+| Absensi & Jadwal                  | M2   | MVP   | **Sangat Tinggi** | M0, M1          | _TBD_ | Terblokir (OQ-11)                 |
+| Roster Management                 | M2B  | MVP   | Sedang            | M1B             | _TBD_ | Terblokir (OQ-19)                 |
+| Cuti & Izin                       | M3   | MVP   | Tinggi            | M0, M1, M7, M2B | _TBD_ | Terblokir (OQ-02)                 |
+| Lembur                            | M4   | MVP   | Sedang            | M2, M7          | _TBD_ | Terblokir (OQ-01)                 |
+| ESS & e-Payslip                   | M5   | MVP   | Sedang            | M0, M1          | _TBD_ | Belum mulai                       |
+| Payroll Feeder                    | M6   | MVP   | **Sangat Tinggi** | M2, M3, M4      | _TBD_ | Belum mulai                       |
+| Notifikasi & Workflow             | M7   | MVP   | Tinggi            | M0              | _TBD_ | Belum mulai                       |
+| Konfigurasi Sistem                | M8   | MVP   | Sedang            | M0              | _TBD_ | Belum mulai                       |
+| Pengaturan Umum, Format & Laporan | M8B  | MVP   | Sedang            | M0              | _TBD_ | **Belum mulai — tidak terblokir** |
+| Audit & Laporan                   | M9   | MVP   | Rendah            | Semua           | _TBD_ | Belum mulai                       |
+| Payroll Engine                    | V1   | v2    | **Sangat Tinggi** | M6              | _TBD_ | —                                 |
+| Pinjaman Karyawan                 | V2   | v2    | Sedang            | M7, V1          | _TBD_ | Terblokir (OQ-04)                 |
+| Perjalanan Dinas                  | V3   | v2    | Tinggi            | M7, V1          | _TBD_ | Terblokir (OQ-05)                 |
+| Pembiayaan SIM                    | V4   | v2    | Rendah            | M7              | _TBD_ | Terblokir (OQ-06)                 |
 
 ---
 
-*Dokumen ini adalah blueprint teknis. Setiap perubahan pada Business Rule Registry (Seksi 4) wajib melalui persetujuan Product Owner dan menaikkan versi dokumen.*
+_Dokumen ini adalah blueprint teknis. Setiap perubahan pada Business Rule Registry (Seksi 4) wajib melalui persetujuan Product Owner dan menaikkan versi dokumen._

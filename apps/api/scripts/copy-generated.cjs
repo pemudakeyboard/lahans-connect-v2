@@ -17,5 +17,8 @@ function copyDir(src, dest) {
   }
 }
 
-copyDir(path.join(__dirname, '..', 'src', 'generated', 'prisma'), path.join(__dirname, '..', 'dist', 'generated', 'prisma'));
+copyDir(
+  path.join(__dirname, '..', 'src', 'generated', 'prisma'),
+  path.join(__dirname, '..', 'dist', 'generated', 'prisma'),
+);
 console.log('✔ copied generated prisma client into dist/');

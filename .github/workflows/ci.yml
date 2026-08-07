@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-gates:
+    name: Quality gates (BRD §13)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm --filter @lahans/api db:generate
+
+      - name: Lint (BRD §13 #1, #2)
+        run: pnpm -r lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Unit tests
+        run: pnpm -r test
+
+      - name: Build API
+        run: pnpm --filter @lahans/api build
+
+      - name: Build web
+        run: pnpm --filter @lahans/web build
+
+      - name: API DI boot check
+        run: |
+          cd apps/api
+          node -e "
+            require('ts-node/register');
+            const { NestFactory } = require('@nestjs/core');
+            const { AppModule } = require('./src/app.module');
+            NestFactory.create(AppModule)
+              .then((app) => { console.log('DI_RESOLUTION_OK'); return app.close(); })
+              .catch((e) => { console.error('DI_RESOLUTION_FAIL', e.message); process.exit(1); });
+          "
+
+  # Playwright E2E is scaffolded but gated on a running DB; keep it optional
+  # so CI stays green pre-DB. Enable once the DB pivot + seed are wired.
+  e2e:
+    name: E2E (gated)
+    runs-on: ubuntu-latest
+    needs: [quality-gates]
+    if: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @lahans/api db:generate
+      - run: pnpm --filter @lahans/web lint
+      - run: pnpm --filter @lahans/web build

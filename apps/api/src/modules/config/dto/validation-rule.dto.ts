@@ -23,7 +23,9 @@ export class UpsertValidationRuleDto {
   @IsString()
   field_name!: string;
 
-  @ApiProperty({ enum: ['REQUIRED', 'REGEX', 'RANGE', 'UNIQUE', 'LENGTH', 'CROSS_FIELD', 'LOOKUP'] })
+  @ApiProperty({
+    enum: ['REQUIRED', 'REGEX', 'RANGE', 'UNIQUE', 'LENGTH', 'CROSS_FIELD', 'LOOKUP'],
+  })
   @IsIn(['REQUIRED', 'REGEX', 'RANGE', 'UNIQUE', 'LENGTH', 'CROSS_FIELD', 'LOOKUP'])
   rule_type!: string;
 

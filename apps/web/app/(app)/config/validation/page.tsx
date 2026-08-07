@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import {
   Table,
@@ -37,7 +38,15 @@ import {
 } from '@/lib/lahans-api';
 import { ApiError } from '@/lib/api';
 
-const RULE_TYPES = ['REQUIRED', 'REGEX', 'RANGE', 'LENGTH', 'UNIQUE', 'CROSS_FIELD', 'LOOKUP'] as const;
+const RULE_TYPES = [
+  'REQUIRED',
+  'REGEX',
+  'RANGE',
+  'LENGTH',
+  'UNIQUE',
+  'CROSS_FIELD',
+  'LOOKUP',
+] as const;
 const SEVERITIES = ['ERROR', 'WARNING', 'INFO'] as const;
 const APPLIES_ON = ['CREATE', 'UPDATE', 'IMPORT', 'ALL'] as const;
 
@@ -86,7 +95,7 @@ export default function ValidationPage() {
     void load();
   }, [load]);
 
-  async function onSave(e: FormEvent) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -134,14 +143,14 @@ export default function ValidationPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Rule Validasi</h1>
-          <p className="text-sm text-muted-foreground">M8B — validasi data (FR-M8B-004..006)</p>
+          <p className="text-muted-foreground text-sm">M8B — validasi data (FR-M8B-004..006)</p>
         </div>
         <Button onClick={() => setOpen(true)}>
           <Plus className="h-4 w-4" /> Tambah Rule
         </Button>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-destructive text-sm">{error}</p>}
 
       <div className="rounded-md border">
         <Table>
@@ -158,13 +167,13 @@ export default function ValidationPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-muted-foreground h-24 text-center">
                   Memuat…
                 </TableCell>
               </TableRow>
             ) : rules.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-muted-foreground h-24 text-center">
                   Belum ada rule.
                 </TableCell>
               </TableRow>
@@ -178,12 +187,20 @@ export default function ValidationPage() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={r.severity === 'ERROR' ? 'destructive' : r.severity === 'WARNING' ? 'secondary' : 'outline'}
+                      variant={
+                        r.severity === 'ERROR'
+                          ? 'destructive'
+                          : r.severity === 'WARNING'
+                            ? 'secondary'
+                            : 'outline'
+                      }
                     >
                       {r.severity}
                     </Badge>
                   </TableCell>
-                  <TableCell className="max-w-[280px] truncate text-sm">{r.error_message}</TableCell>
+                  <TableCell className="max-w-[280px] truncate text-sm">
+                    {r.error_message}
+                  </TableCell>
                   <TableCell>
                     <Button variant="ghost" size="icon" onClick={() => onDelete(r.id)}>
                       <Trash2 className="h-4 w-4" />
@@ -229,7 +246,10 @@ export default function ValidationPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>Tipe Rule</Label>
-                  <Select value={form.rule_type} onValueChange={(v) => setForm({ ...form, rule_type: v })}>
+                  <Select
+                    value={form.rule_type}
+                    onValueChange={(v) => setForm({ ...form, rule_type: v })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -244,7 +264,10 @@ export default function ValidationPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Severity</Label>
-                  <Select value={form.severity} onValueChange={(v) => setForm({ ...form, severity: v })}>
+                  <Select
+                    value={form.severity}
+                    onValueChange={(v) => setForm({ ...form, severity: v })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -280,7 +303,10 @@ export default function ValidationPage() {
               </div>
               <div className="space-y-2">
                 <Label>Berlaku Saat</Label>
-                <Select value={form.applies_on} onValueChange={(v) => setForm({ ...form, applies_on: v })}>
+                <Select
+                  value={form.applies_on}
+                  onValueChange={(v) => setForm({ ...form, applies_on: v })}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

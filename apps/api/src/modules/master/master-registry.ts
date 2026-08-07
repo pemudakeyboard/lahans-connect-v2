@@ -39,16 +39,40 @@ export const MASTER_REGISTRY: Record<string, MasterEntityConfig> = {
     searchable: ['nik', 'full_name', 'email'],
     label: 'Karyawan',
   },
-  'reference-data': { delegate: 'reference_data', searchable: ['category', 'code', 'label'], label: 'Data Referensi' },
+  'reference-data': {
+    delegate: 'reference_data',
+    searchable: ['category', 'code', 'label'],
+    label: 'Data Referensi',
+  },
   'leave-types': { delegate: 'leave_types', searchable: ['code', 'name'], label: 'Jenis Cuti' },
   holidays: { delegate: 'holidays', searchable: ['name'], label: 'Hari Libur' },
   'work-schedules': { delegate: 'work_schedules', searchable: ['name'], label: 'Jadwal Kerja' },
-  'payroll-components': { delegate: 'payroll_components', searchable: ['code', 'name'], label: 'Komponen Gaji' },
-  'bpjs-profiles': { delegate: 'bpjs_rate_profiles', searchable: ['code', 'name'], label: 'Profil BPJS' },
-  'tax-ter-categories': { delegate: 'tax_ter_categories', searchable: ['code', 'name'], label: 'Kategori TER' },
+  'payroll-components': {
+    delegate: 'payroll_components',
+    searchable: ['code', 'name'],
+    label: 'Komponen Gaji',
+  },
+  'bpjs-profiles': {
+    delegate: 'bpjs_rate_profiles',
+    searchable: ['code', 'name'],
+    label: 'Profil BPJS',
+  },
+  'tax-ter-categories': {
+    delegate: 'tax_ter_categories',
+    searchable: ['code', 'name'],
+    label: 'Kategori TER',
+  },
   'loan-types': { delegate: 'loan_types', searchable: ['code', 'name'], label: 'Jenis Pinjaman' },
-  'report-definitions': { delegate: 'report_definitions', searchable: ['report_code', 'name'], label: 'Definisi Laporan' },
-  'upload-policies': { delegate: 'upload_policies', searchable: ['entity_name', 'field_name'], label: 'Kebijakan Upload' },
+  'report-definitions': {
+    delegate: 'report_definitions',
+    searchable: ['report_code', 'name'],
+    label: 'Definisi Laporan',
+  },
+  'upload-policies': {
+    delegate: 'upload_policies',
+    searchable: ['entity_name', 'field_name'],
+    label: 'Kebijakan Upload',
+  },
 };
 
 /** Route key -> permission resource prefix (used to build `master.<entity>.read`). */

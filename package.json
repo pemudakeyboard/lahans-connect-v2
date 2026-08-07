@@ -18,7 +18,8 @@
     "db:migrate": "pnpm --filter @lahans/api db:migrate",
     "db:seed": "pnpm --filter @lahans/api db:seed",
     "db:studio": "pnpm --filter @lahans/api db:studio",
-    "gates": "pnpm -r gates"
+    "gates": "bash scripts/gates.sh",
+    "gates:check": "pnpm -r gates"
   },
   "devDependencies": {
     "prettier": "^3.3.3",

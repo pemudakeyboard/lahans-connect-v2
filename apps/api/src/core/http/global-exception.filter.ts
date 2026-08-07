@@ -35,7 +35,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = body;
       } else if (typeof body === 'object' && body !== null) {
         const obj = body as { message?: string | string[]; error?: string };
-        message = Array.isArray(obj.message) ? obj.message.join('; ') : (obj.message ?? obj.error ?? message);
+        message = Array.isArray(obj.message)
+          ? obj.message.join('; ')
+          : (obj.message ?? obj.error ?? message);
         code = obj.error ?? `HTTP_${status}`;
       }
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
@@ -54,7 +56,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     if (status >= 500) {
-      this.logger.error(`[${code}] ${message}`, exception instanceof Error ? exception.stack : undefined);
+      this.logger.error(
+        `[${code}] ${message}`,
+        exception instanceof Error ? exception.stack : undefined,
+      );
     }
 
     response.status(status).json({
@@ -62,9 +67,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     });
   }
 
-  private mapPrismaError(
-    err: Prisma.PrismaClientKnownRequestError,
-  ): { status: number; code: string; message: string; details?: unknown } {
+  private mapPrismaError(err: Prisma.PrismaClientKnownRequestError): {
+    status: number;
+    code: string;
+    message: string;
+    details?: unknown;
+  } {
     // https://www.prisma.io/docs/orm/reference/error-reference
     switch (err.code) {
       case 'P2002':

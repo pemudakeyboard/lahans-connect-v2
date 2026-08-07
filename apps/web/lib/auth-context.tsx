@@ -47,7 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user) return false;
       // master.* wildcard: master.read grants generic gate; entity-level codes checked exactly
       if (user.permissions.includes(code)) return true;
-      if (code === 'master.read' && user.permissions.some((p) => p.startsWith('master.'))) return true;
+      if (code === 'master.read' && user.permissions.some((p) => p.startsWith('master.')))
+        return true;
       return false;
     },
     [user],

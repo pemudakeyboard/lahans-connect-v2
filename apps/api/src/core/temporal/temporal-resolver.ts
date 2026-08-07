@@ -50,7 +50,11 @@ export class TemporalResolver {
    * List all rows for an entity, optionally filtered by scope and validity.
    * `asOf` is required — there is no "current value only" read for temporal rows.
    */
-  async list<T>(model: TemporalModel, asOf: Date, where: Record<string, unknown> = {}): Promise<T[]> {
+  async list<T>(
+    model: TemporalModel,
+    asOf: Date,
+    where: Record<string, unknown> = {},
+  ): Promise<T[]> {
     if (!asOf) {
       throw new Error(`TemporalResolver.list(${model}): asOf wajib.`);
     }

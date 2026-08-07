@@ -97,7 +97,9 @@ export async function api<T = unknown>(
     let message = `Permintaan gagal (${res.status}).`;
     let details: unknown;
     try {
-      const body = (await res.json()) as { error?: { code?: string; message?: string; details?: unknown } };
+      const body = (await res.json()) as {
+        error?: { code?: string; message?: string; details?: unknown };
+      };
       if (body?.error) {
         code = body.error.code ?? code;
         message = body.error.message ?? message;

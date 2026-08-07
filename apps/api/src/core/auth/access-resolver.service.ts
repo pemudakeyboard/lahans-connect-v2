@@ -41,10 +41,7 @@ export class AccessResolver {
     }
 
     // Union of group permissions
-    const granted = new Map<
-      string,
-      { dataScope: string; maskedFields: string[] }
-    >();
+    const granted = new Map<string, { dataScope: string; maskedFields: string[] }>();
     for (const membership of user.group_memberships) {
       if (!membership.group.is_active) continue;
       for (const gp of membership.group.permissions) {

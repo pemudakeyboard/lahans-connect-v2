@@ -34,7 +34,12 @@ export class ParameterService {
     key: string,
     asOf: Date,
     scope?: ParamScope,
-  ): Promise<{ value: string; dataType: ParamDataType; effectiveFrom: Date; effectiveTo: Date | null } | null> {
+  ): Promise<{
+    value: string;
+    dataType: ParamDataType;
+    effectiveFrom: Date;
+    effectiveTo: Date | null;
+  } | null> {
     if (!asOf) {
       throw new Error(
         `ParameterService.resolve('${key}'): asOf wajib. Pembacaan parameter tanpa tanggal acuan adalah cacat blocker (BRD 5.3).`,

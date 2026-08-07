@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import {
   Table,
@@ -64,7 +65,7 @@ export default function FormatsPage() {
     void load();
   }, [load]);
 
-  async function onSave(e: FormEvent) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -101,7 +102,7 @@ export default function FormatsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Format</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             M8B — tanggal, mata uang, dan angka (FR-M8B-001..003)
           </p>
         </div>
@@ -110,7 +111,7 @@ export default function FormatsPage() {
         </Button>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-destructive text-sm">{error}</p>}
 
       <div className="rounded-md border">
         <Table>
@@ -126,13 +127,13 @@ export default function FormatsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={5} className="text-muted-foreground h-24 text-center">
                   Memuat…
                 </TableCell>
               </TableRow>
             ) : formats.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={5} className="text-muted-foreground h-24 text-center">
                   Belum ada format.
                 </TableCell>
               </TableRow>
@@ -192,7 +193,9 @@ export default function FormatsPage() {
                   <Label>Tipe Data</Label>
                   <Select
                     value={form.data_type}
-                    onValueChange={(v) => setForm({ ...form, data_type: v as FormatSetting['data_type'] })}
+                    onValueChange={(v) =>
+                      setForm({ ...form, data_type: v as FormatSetting['data_type'] })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -208,7 +211,9 @@ export default function FormatsPage() {
                   <Label>Berlaku</Label>
                   <Select
                     value={form.applies_to}
-                    onValueChange={(v) => setForm({ ...form, applies_to: v as FormatSetting['applies_to'] })}
+                    onValueChange={(v) =>
+                      setForm({ ...form, applies_to: v as FormatSetting['applies_to'] })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />

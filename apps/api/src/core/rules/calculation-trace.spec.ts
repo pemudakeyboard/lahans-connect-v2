@@ -18,7 +18,11 @@ describe('CalculationTraceBuilder', () => {
     expect(trace.ruleId).toBe('rule-1');
     expect(trace.paramVersion).toBe('2026-01-01');
     expect(trace.inputs).toEqual({ jamLembur: '3', multiplier: '2' });
-    expect(trace.steps[0]).toEqual({ label: 'jam_lembur × multiplier', expression: '3.0 × 2', value: '6' });
+    expect(trace.steps[0]).toEqual({
+      label: 'jam_lembur × multiplier',
+      expression: '3.0 × 2',
+      value: '6',
+    });
     expect(trace.result).toBe('6');
     expect(trace.computedAt).toBe('2026-08-01T00:00:00.000Z');
   });

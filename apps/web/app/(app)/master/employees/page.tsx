@@ -23,7 +23,11 @@ const columns: Column<EmployeeRow>[] = [
     key: 'employment_status',
     header: 'Status',
     render: (r) =>
-      r.employment_status ? <Badge variant="outline">{r.employment_status}</Badge> : <span className="text-muted-foreground">—</span>,
+      r.employment_status ? (
+        <Badge variant="outline">{r.employment_status}</Badge>
+      ) : (
+        <span className="text-muted-foreground">—</span>
+      ),
   },
   { key: 'join_date', header: 'Mulai Kerja' },
 ];

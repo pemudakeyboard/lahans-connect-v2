@@ -1,7 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
@@ -62,7 +69,7 @@ export function DataTable<T extends { id: string }>({
           )}
           {onAsOfChange && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">As of</span>
+              <span className="text-muted-foreground text-sm">As of</span>
               <Input
                 type="date"
                 value={asOf ?? ''}
@@ -89,12 +96,15 @@ export function DataTable<T extends { id: string }>({
             {loading ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  <Loader2 className="mx-auto h-5 w-5 animate-spin text-muted-foreground" />
+                  <Loader2 className="text-muted-foreground mx-auto h-5 w-5 animate-spin" />
                 </TableCell>
               </TableRow>
             ) : rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-muted-foreground h-24 text-center"
+                >
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -103,7 +113,9 @@ export function DataTable<T extends { id: string }>({
                 <TableRow key={row.id}>
                   {columns.map((c) => (
                     <TableCell key={c.key} className={c.className}>
-                      {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '—')}
+                      {c.render
+                        ? c.render(row)
+                        : String((row as Record<string, unknown>)[c.key] ?? '—')}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -114,12 +126,17 @@ export function DataTable<T extends { id: string }>({
       </div>
 
       {onPageChange && (
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-between text-sm">
           <span>
             {total} data · halaman {page}/{totalPages}
           </span>
           <div className="flex gap-1">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => onPageChange(page - 1)}
+            >
               <ChevronLeft className="h-4 w-4" /> Sebelum
             </Button>
             <Button

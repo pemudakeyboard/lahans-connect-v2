@@ -10,7 +10,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Selamat datang, {user?.loginNik ?? 'pengguna'} — {user?.email ?? ''}
         </p>
       </div>

@@ -30,7 +30,11 @@ describe('ParameterService', () => {
           const key = where.param_key as string;
           const and = (where.AND ?? []) as Record<string, unknown>[];
           const validity = and[0] as { effective_from: { lte: Date }; OR: unknown[] };
-          const scopeMatch = and[1] as { OR?: unknown[]; scope_type?: unknown; scope_ref_id?: unknown };
+          const scopeMatch = and[1] as {
+            OR?: unknown[];
+            scope_type?: unknown;
+            scope_ref_id?: unknown;
+          };
           const asOf = validity.effective_from.lte;
           const scopePairs = (scopeMatch.OR ?? [{ scope_type: null, scope_ref_id: null }]) as {
             scope_type?: string | null;
@@ -42,7 +46,9 @@ describe('ParameterService', () => {
             if (r.effective_to && r.effective_to < asOf) return false;
             // scope match: either the exact scope pair or the global fallback
             const ok = scopePairs.some(
-              (s) => r.scope_type === (s.scope_type ?? null) && r.scope_ref_id === (s.scope_ref_id ?? null),
+              (s) =>
+                r.scope_type === (s.scope_type ?? null) &&
+                r.scope_ref_id === (s.scope_ref_id ?? null),
             );
             return ok;
           });

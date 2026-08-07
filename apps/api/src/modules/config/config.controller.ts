@@ -78,7 +78,10 @@ export class ConfigController {
   @Put('number-sequences/:sequenceCode')
   @RequirePermission('config.sequence.write')
   @ApiOperation({ summary: 'Upsert sequence' })
-  upsertNumberSequence(@Param('sequenceCode') sequenceCode: string, @Body() dto: UpsertNumberSequenceDto) {
+  upsertNumberSequence(
+    @Param('sequenceCode') sequenceCode: string,
+    @Body() dto: UpsertNumberSequenceDto,
+  ) {
     return this.config.upsertNumberSequence({ ...dto, sequence_code: sequenceCode });
   }
 

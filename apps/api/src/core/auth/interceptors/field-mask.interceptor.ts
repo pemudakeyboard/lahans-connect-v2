@@ -1,9 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import { CurrentUser } from '../decorators/current-user.decorator';
 
@@ -27,9 +22,7 @@ export class FieldMaskInterceptor implements NestInterceptor {
     const masked = user?.maskedFields ?? [];
     if (masked.length === 0) return next.handle();
 
-    return next.handle().pipe(
-      map((data) => this.maskDeep(data, new Set(masked))),
-    );
+    return next.handle().pipe(map((data) => this.maskDeep(data, new Set(masked))));
   }
 
   private maskDeep(value: unknown, masked: Set<string>, depth = 0): unknown {

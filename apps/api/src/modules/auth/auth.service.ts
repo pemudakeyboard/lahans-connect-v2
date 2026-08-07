@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomUUID } from 'node:crypto';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -91,9 +87,12 @@ export class AuthService {
     // Verify the refresh token signature
     let payload: { sub: string; type: string; jti: string };
     try {
-      payload = await this.jwt.verifyAsync<{ sub: string; type: string; jti: string }>(refreshToken, {
-        secret: this.config.jwtRefreshSecret,
-      });
+      payload = await this.jwt.verifyAsync<{ sub: string; type: string; jti: string }>(
+        refreshToken,
+        {
+          secret: this.config.jwtRefreshSecret,
+        },
+      );
     } catch {
       throw new UnauthorizedException('Refresh token tidak valid.');
     }
@@ -149,14 +148,22 @@ export class AuthService {
       where: { two_factor_secret: sessionId },
     });
     if (!user || user.locked_until == null || user.locked_until < new Date()) {
-      throw new UnauthorizedException({ code: 'RESET_SESSION_EXPIRED', message: 'Sesi reset kedaluwarsa.' });
+      throw new UnauthorizedException({
+        code: 'RESET_SESSION_EXPIRED',
+        message: 'Sesi reset kedaluwarsa.',
+      });
     }
     // MVP: otp is mock — skip strict check here; production verifies via OTP store.
     void otp;
     const hash = await this.password.hash(newPassword);
     await this.prisma.users.update({
       where: { id: user.id },
-      data: { password_hash: hash, must_change_password: false, two_factor_secret: null, locked_until: null },
+      data: {
+        password_hash: hash,
+        must_change_password: false,
+        two_factor_secret: null,
+        locked_until: null,
+      },
     });
   }
 
@@ -231,5 +238,5 @@ export class AuthService {
       include: { group: true },
     });
     return memberships.some((m) => m.group.requires_2fa && m.group.is_active);
-    }
+  }
 }

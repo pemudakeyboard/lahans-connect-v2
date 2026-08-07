@@ -33,9 +33,12 @@ export class ConfigService {
   }
 
   async deleteFormat(formatKey: string) {
-    const existing = await this.prisma.format_settings.findUnique({ where: { format_key: formatKey } });
+    const existing = await this.prisma.format_settings.findUnique({
+      where: { format_key: formatKey },
+    });
     if (!existing) throw new NotFoundException(`Format ${formatKey} tidak ditemukan.`);
-    if (!existing.is_editable) throw new ConflictException(`Format ${formatKey} bersifat read-only.`);
+    if (!existing.is_editable)
+      throw new ConflictException(`Format ${formatKey} bersifat read-only.`);
     await this.prisma.format_settings.delete({ where: { format_key: formatKey } });
     return { ok: true };
   }

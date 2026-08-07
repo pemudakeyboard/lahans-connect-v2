@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import {
   Table,
@@ -82,7 +83,7 @@ export default function SequencesPage() {
     void load();
   }, [load]);
 
-  async function onSave(e: FormEvent) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -119,7 +120,7 @@ export default function SequencesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Nomor Urut</h1>
-          <p className="text-sm text-muted-foreground">M8B — sequence number (FR-M8B-007..010)</p>
+          <p className="text-muted-foreground text-sm">M8B — sequence number (FR-M8B-007..010)</p>
         </div>
         {canWrite && (
           <Button onClick={() => setOpen(true)}>
@@ -128,9 +129,9 @@ export default function SequencesPage() {
         )}
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-destructive text-sm">{error}</p>}
       {reserved && (
-        <p className="rounded-md border bg-muted/40 px-3 py-2 text-sm">
+        <p className="bg-muted/40 rounded-md border px-3 py-2 text-sm">
           Nomor berikutnya untuk <code className="font-mono">{reserved.code}</code>:{' '}
           <strong className="font-mono">{reserved.number}</strong>
         </p>
@@ -151,13 +152,13 @@ export default function SequencesPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-muted-foreground h-24 text-center">
                   Memuat…
                 </TableCell>
               </TableRow>
             ) : sequences.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-muted-foreground h-24 text-center">
                   Belum ada sequence.
                 </TableCell>
               </TableRow>
@@ -173,7 +174,12 @@ export default function SequencesPage() {
                   <TableCell className="font-mono text-xs">{s.current_value}</TableCell>
                   <TableCell>
                     {canWrite && (
-                      <Button variant="ghost" size="icon" onClick={() => onReserve(s.sequence_code)} title="Reserve nomor">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onReserve(s.sequence_code)}
+                        title="Reserve nomor"
+                      >
                         <RefreshCw className="h-4 w-4" />
                       </Button>
                     )}
@@ -190,7 +196,9 @@ export default function SequencesPage() {
           <form onSubmit={onSave}>
             <DialogHeader>
               <DialogTitle>Tambah Sequence</DialogTitle>
-              <DialogDescription>Pola mendukung token {'{YYYY}, {MM}, {DD}, {SEQ}'}.</DialogDescription>
+              <DialogDescription>
+                Pola mendukung token {'{YYYY}, {MM}, {DD}, {SEQ}'}.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">

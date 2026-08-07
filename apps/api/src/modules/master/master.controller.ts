@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../core/auth/decorators/current-user.decorator';
 import { RequirePermission } from '../../core/auth/decorators/require-permission.decorator';
@@ -22,7 +32,11 @@ import { permissionResource } from './master-registry';
 export class MasterController {
   constructor(private readonly master: MasterService) {}
 
-  private assertPermission(user: { permissions: string[] }, resource: string, action: 'read' | 'write') {
+  private assertPermission(
+    user: { permissions: string[] },
+    resource: string,
+    action: 'read' | 'write',
+  ) {
     const code = `master.${resource}.${action}`;
     if (!user.permissions.includes(code)) {
       throw new ForbiddenException({ code: 'FORBIDDEN', message: `Anda tidak memiliki ${code}.` });

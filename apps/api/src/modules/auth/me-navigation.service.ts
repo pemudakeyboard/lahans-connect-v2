@@ -20,7 +20,10 @@ export class MeNavigationService {
     private readonly access: AccessResolver,
   ) {}
 
-  async forUser(userId: string, platform: string): Promise<{
+  async forUser(
+    userId: string,
+    platform: string,
+  ): Promise<{
     platform: string;
     menus: NavMenu[];
     cache_ttl_seconds: number;

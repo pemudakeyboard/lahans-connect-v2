@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Plus, Trash2, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -101,7 +102,7 @@ export function MasterCrud<T extends { id: string }>({
     setOpen(true);
   }
 
-  async function onSave(e: FormEvent) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -162,7 +163,7 @@ export function MasterCrud<T extends { id: string }>({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-          <p className="text-sm text-muted-foreground">M1B — master data</p>
+          <p className="text-muted-foreground text-sm">M1B — master data</p>
         </div>
         {canWrite && (
           <Button onClick={openCreate}>
@@ -171,7 +172,7 @@ export function MasterCrud<T extends { id: string }>({
         )}
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-destructive text-sm">{error}</p>}
 
       <DataTable<T>
         columns={[...columns, actionCol]}
@@ -203,7 +204,14 @@ export function MasterCrud<T extends { id: string }>({
             </DialogHeader>
             <div className="grid grid-cols-2 gap-3 py-4">
               {fields.map((f) => (
-                <div key={f.name} className={f.name === 'legal_name' || f.name === 'full_name' ? 'col-span-2 space-y-2' : 'space-y-2'}>
+                <div
+                  key={f.name}
+                  className={
+                    f.name === 'legal_name' || f.name === 'full_name'
+                      ? 'col-span-2 space-y-2'
+                      : 'space-y-2'
+                  }
+                >
                   <Label htmlFor={`field-${f.name}`}>{f.label}</Label>
                   <Input
                     id={`field-${f.name}`}

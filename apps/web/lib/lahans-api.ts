@@ -12,7 +12,11 @@ export interface LoginResponse {
   expiresIn: number;
 }
 
-export async function loginRequest(identifier: string, password: string, otp?: string): Promise<LoginResponse> {
+export async function loginRequest(
+  identifier: string,
+  password: string,
+  otp?: string,
+): Promise<LoginResponse> {
   return api<LoginResponse>('/api/auth/login', {
     method: 'POST',
     auth: false,
@@ -51,7 +55,10 @@ export async function listFormats(): Promise<FormatSetting[]> {
   return api<FormatSetting[]>('/api/config/formats');
 }
 
-export async function upsertFormat(formatKey: string, body: Partial<FormatSetting>): Promise<FormatSetting> {
+export async function upsertFormat(
+  formatKey: string,
+  body: Partial<FormatSetting>,
+): Promise<FormatSetting> {
   return api<FormatSetting>(`/api/config/formats/${encodeURIComponent(formatKey)}`, {
     method: 'PUT',
     body: JSON.stringify(body),
@@ -96,13 +103,25 @@ export async function listValidationRules(params?: {
 }
 
 export async function createValidationRule(
-  body: Omit<ValidationRule, 'id' | 'is_active' | 'sort_order'> & { is_active?: boolean; sort_order?: number },
+  body: Omit<ValidationRule, 'id' | 'is_active' | 'sort_order'> & {
+    is_active?: boolean;
+    sort_order?: number;
+  },
 ): Promise<ValidationRule> {
-  return api<ValidationRule>('/api/config/validation-rules', { method: 'POST', body: JSON.stringify(body) });
+  return api<ValidationRule>('/api/config/validation-rules', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
 }
 
-export async function updateValidationRule(id: string, body: Partial<ValidationRule>): Promise<ValidationRule> {
-  return api<ValidationRule>(`/api/config/validation-rules/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export async function updateValidationRule(
+  id: string,
+  body: Partial<ValidationRule>,
+): Promise<ValidationRule> {
+  return api<ValidationRule>(`/api/config/validation-rules/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
 }
 
 export async function deleteValidationRule(id: string): Promise<void> {
@@ -135,7 +154,9 @@ export async function upsertNumberSequence(
   });
 }
 
-export async function reserveNextNumber(sequenceCode: string): Promise<{ nextNumber: string; sequenceCode: string }> {
+export async function reserveNextNumber(
+  sequenceCode: string,
+): Promise<{ nextNumber: string; sequenceCode: string }> {
   return api<{ nextNumber: string; sequenceCode: string }>(
     `/api/config/number-sequences/${encodeURIComponent(sequenceCode)}/reserve`,
     { method: 'POST' },
@@ -159,11 +180,17 @@ export async function masterList<T = Record<string, unknown>>(
   return api<ListResponse<T>>(`/api/master/${entity}${qs ? `?${qs}` : ''}`);
 }
 
-export async function masterGet<T = Record<string, unknown>>(entity: string, id: string): Promise<T> {
+export async function masterGet<T = Record<string, unknown>>(
+  entity: string,
+  id: string,
+): Promise<T> {
   return api<T>(`/api/master/${entity}/${id}`);
 }
 
-export async function masterCreate<T = Record<string, unknown>>(entity: string, body: Record<string, unknown>): Promise<T> {
+export async function masterCreate<T = Record<string, unknown>>(
+  entity: string,
+  body: Record<string, unknown>,
+): Promise<T> {
   return api<T>(`/api/master/${entity}`, { method: 'POST', body: JSON.stringify(body) });
 }
 

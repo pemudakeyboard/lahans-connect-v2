@@ -56,55 +56,131 @@ const PERMISSIONS = [
   'leave.request.write',
 ];
 
-const REFERENCE_DATA_SEED: { category: string; code: string; label: string; sort_order: number }[] = [
-  { category: 'EMPLOYMENT_STATUS', code: 'AKTIF', label: 'Aktif', sort_order: 1 },
-  { category: 'EMPLOYMENT_STATUS', code: 'CUTI', label: 'Cuti', sort_order: 2 },
-  { category: 'EMPLOYMENT_STATUS', code: 'RESIGN', label: 'Resign', sort_order: 3 },
-  { category: 'CONTRACT_TYPE', code: 'PERMANENT', label: 'Karyawan Tetap', sort_order: 1 },
-  { category: 'CONTRACT_TYPE', code: 'CONTRACT', label: 'Kontrak', sort_order: 2 },
-  { category: 'CONTRACT_TYPE', code: 'PROBATION', label: 'Percobaan', sort_order: 3 },
-  { category: 'DOCUMENT_TYPE', code: 'KTP', label: 'Kartu Tanda Penduduk', sort_order: 1 },
-  { category: 'DOCUMENT_TYPE', code: 'NPWP', label: 'NPWP', sort_order: 2 },
-  { category: 'DOCUMENT_TYPE', code: 'KK', label: 'Kartu Keluarga', sort_order: 3 },
-  { category: 'MARITAL_STATUS', code: 'LAJANG', label: 'Lajang', sort_order: 1 },
-  { category: 'MARITAL_STATUS', code: 'MENIKAH', label: 'Menikah', sort_order: 2 },
-  { category: 'MARITAL_STATUS', code: 'CERAI', label: 'Cerai', sort_order: 3 },
-];
+const REFERENCE_DATA_SEED: { category: string; code: string; label: string; sort_order: number }[] =
+  [
+    { category: 'EMPLOYMENT_STATUS', code: 'AKTIF', label: 'Aktif', sort_order: 1 },
+    { category: 'EMPLOYMENT_STATUS', code: 'CUTI', label: 'Cuti', sort_order: 2 },
+    { category: 'EMPLOYMENT_STATUS', code: 'RESIGN', label: 'Resign', sort_order: 3 },
+    { category: 'CONTRACT_TYPE', code: 'PERMANENT', label: 'Karyawan Tetap', sort_order: 1 },
+    { category: 'CONTRACT_TYPE', code: 'CONTRACT', label: 'Kontrak', sort_order: 2 },
+    { category: 'CONTRACT_TYPE', code: 'PROBATION', label: 'Percobaan', sort_order: 3 },
+    { category: 'DOCUMENT_TYPE', code: 'KTP', label: 'Kartu Tanda Penduduk', sort_order: 1 },
+    { category: 'DOCUMENT_TYPE', code: 'NPWP', label: 'NPWP', sort_order: 2 },
+    { category: 'DOCUMENT_TYPE', code: 'KK', label: 'Kartu Keluarga', sort_order: 3 },
+    { category: 'MARITAL_STATUS', code: 'LAJANG', label: 'Lajang', sort_order: 1 },
+    { category: 'MARITAL_STATUS', code: 'MENIKAH', label: 'Menikah', sort_order: 2 },
+    { category: 'MARITAL_STATUS', code: 'CERAI', label: 'Cerai', sort_order: 3 },
+  ];
 
 // system_parameters — every policy number the BRD names, effective-dated.
 const SYSTEM_PARAMETERS = [
   // Payroll divisors (BRD §5.3.1)
-  { param_key: 'PAYROLL.ABSENCE_DIVISOR', param_value: '173', data_type: 'NUMBER', effective_from: ASOF },
-  { param_key: 'PAYROLL.ABSENCE_MINUTES_DIVISOR', param_value: '25', data_type: 'NUMBER', effective_from: ASOF },
+  {
+    param_key: 'PAYROLL.ABSENCE_DIVISOR',
+    param_value: '173',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  {
+    param_key: 'PAYROLL.ABSENCE_MINUTES_DIVISOR',
+    param_value: '25',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
   // Leave (BRD §5.3.1)
   { param_key: 'LEAVE.ANNUAL_DAYS', param_value: '12', data_type: 'NUMBER', effective_from: ASOF },
   // Overtime (BRD §5.3.1)
   { param_key: 'OVERTIME.SLA_DAYS', param_value: '2', data_type: 'NUMBER', effective_from: ASOF },
   // Attendance / geofence (BRD §6.4)
-  { param_key: 'ATTENDANCE.GEOFENCE_RADIUS_M', param_value: '150', data_type: 'NUMBER', effective_from: ASOF },
+  {
+    param_key: 'ATTENDANCE.GEOFENCE_RADIUS_M',
+    param_value: '150',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
   // Loan (v2 shell, referenced by M8B)
-  { param_key: 'LOAN.MAX_AMOUNT', param_value: '150000', data_type: 'NUMBER', effective_from: ASOF },
-  { param_key: 'LOAN.MAX_TENOR_MONTHS', param_value: '12', data_type: 'NUMBER', effective_from: ASOF },
+  {
+    param_key: 'LOAN.MAX_AMOUNT',
+    param_value: '150000',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  {
+    param_key: 'LOAN.MAX_TENOR_MONTHS',
+    param_value: '12',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
   // Leave max carryover
-  { param_key: 'LEAVE.MAX_CARRYOVER_DAYS', param_value: '7', data_type: 'NUMBER', effective_from: ASOF },
+  {
+    param_key: 'LEAVE.MAX_CARRYOVER_DAYS',
+    param_value: '7',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
   // Security (BRD 7.4)
-  { param_key: 'SECURITY.LOCKOUT_MAX_ATTEMPTS', param_value: '5', data_type: 'NUMBER', effective_from: ASOF },
-  { param_key: 'SECURITY.LOCKOUT_DURATION_MIN', param_value: '15', data_type: 'NUMBER', effective_from: ASOF },
+  {
+    param_key: 'SECURITY.LOCKOUT_MAX_ATTEMPTS',
+    param_value: '5',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  {
+    param_key: 'SECURITY.LOCKOUT_DURATION_MIN',
+    param_value: '15',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
   // Format defaults (M8B)
-  { param_key: 'FORMAT.DATE', param_value: 'DD/MM/YYYY', data_type: 'STRING', effective_from: ASOF },
+  {
+    param_key: 'FORMAT.DATE',
+    param_value: 'DD/MM/YYYY',
+    data_type: 'STRING',
+    effective_from: ASOF,
+  },
 ];
 
 const FORMAT_SETTINGS = [
-  { format_key: 'date.display', format_value: 'DD/MM/YYYY', data_type: 'STRING', applies_to: 'BOTH' },
-  { format_key: 'date.display_separated', format_value: 'DD MM YYYY', data_type: 'STRING', applies_to: 'EXPORT' },
+  {
+    format_key: 'date.display',
+    format_value: 'DD/MM/YYYY',
+    data_type: 'STRING',
+    applies_to: 'BOTH',
+  },
+  {
+    format_key: 'date.display_separated',
+    format_value: 'DD MM YYYY',
+    data_type: 'STRING',
+    applies_to: 'EXPORT',
+  },
   { format_key: 'currency.symbol', format_value: 'Rp', data_type: 'STRING', applies_to: 'BOTH' },
-  { format_key: 'currency.decimal_separator', format_value: ',', data_type: 'STRING', applies_to: 'BOTH' },
-  { format_key: 'number.thousand_separator', format_value: '.', data_type: 'STRING', applies_to: 'BOTH' },
+  {
+    format_key: 'currency.decimal_separator',
+    format_value: ',',
+    data_type: 'STRING',
+    applies_to: 'BOTH',
+  },
+  {
+    format_key: 'number.thousand_separator',
+    format_value: '.',
+    data_type: 'STRING',
+    applies_to: 'BOTH',
+  },
 ];
 
 const NUMBER_SEQUENCES = [
-  { sequence_code: 'EMPLOYEE_NIK', pattern: 'EMP-{YYYY}-{SEQ}', reset_period: 'YEARLY', padding_length: 4 },
-  { sequence_code: 'DOC_LEAVE', pattern: 'C/YYYY/{SEQ}', reset_period: 'YEARLY', padding_length: 4 },
+  {
+    sequence_code: 'EMPLOYEE_NIK',
+    pattern: 'EMP-{YYYY}-{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
+  {
+    sequence_code: 'DOC_LEAVE',
+    pattern: 'C/YYYY/{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
   { sequence_code: 'DOC_IZIN', pattern: 'I/YYYY/{SEQ}', reset_period: 'YEARLY', padding_length: 4 },
 ];
 
@@ -167,16 +243,29 @@ async function main() {
   // ---------- Group permissions (SUPER_ADMIN gets everything; others get shells) ----------
   for (const [code, id] of permissionIds) {
     await prisma.group_permissions.upsert({
-      where: { group_id_permission_id: { group_id: groupIds.get('SUPER_ADMIN')!, permission_id: id } },
+      where: {
+        group_id_permission_id: { group_id: groupIds.get('SUPER_ADMIN')!, permission_id: id },
+      },
       create: { group_id: groupIds.get('SUPER_ADMIN')!, permission_id: id, data_scope: 'ALL' },
       update: {},
     });
   }
   // HCGA_MANAGER: identity + master + config
-  for (const code of PERMISSIONS.filter((c) => c.startsWith('identity.') || c.startsWith('master.') || c.startsWith('config.'))) {
+  for (const code of PERMISSIONS.filter(
+    (c) => c.startsWith('identity.') || c.startsWith('master.') || c.startsWith('config.'),
+  )) {
     await prisma.group_permissions.upsert({
-      where: { group_id_permission_id: { group_id: groupIds.get('HCGA_MANAGER')!, permission_id: permissionIds.get(code)! } },
-      create: { group_id: groupIds.get('HCGA_MANAGER')!, permission_id: permissionIds.get(code)!, data_scope: 'DIVISION' },
+      where: {
+        group_id_permission_id: {
+          group_id: groupIds.get('HCGA_MANAGER')!,
+          permission_id: permissionIds.get(code)!,
+        },
+      },
+      create: {
+        group_id: groupIds.get('HCGA_MANAGER')!,
+        permission_id: permissionIds.get(code)!,
+        data_scope: 'DIVISION',
+      },
       update: {},
     });
   }
@@ -194,12 +283,22 @@ async function main() {
   // ---------- Master data: company, branches, divisions, job grades ----------
   const company = await prisma.companies.upsert({
     where: { code: 'LMN' },
-    create: { code: 'LMN', legal_name: 'PT Lahan Mekar Niaga', tax_id: '00.000.000.0-000.000', timezone: 'Asia/Jakarta' },
+    create: {
+      code: 'LMN',
+      legal_name: 'PT Lahan Mekar Niaga',
+      tax_id: '00.000.000.0-000.000',
+      timezone: 'Asia/Jakarta',
+    },
     update: {},
   });
   const branch = await prisma.branches.upsert({
     where: { code: 'PBR' },
-    create: { company_id: company.id, code: 'PBR', name: 'Pabrik Rancaekek', geofence_radius_m: 150 },
+    create: {
+      company_id: company.id,
+      code: 'PBR',
+      name: 'Pabrik Rancaekek',
+      geofence_radius_m: 150,
+    },
     update: {},
   });
   const division = await prisma.divisions.upsert({
@@ -224,7 +323,12 @@ async function main() {
   });
   const position = await prisma.job_positions.upsert({
     where: { code: 'HCGA-MGR' },
-    create: { department_id: department.id, job_grade_id: gradeManager.id, code: 'HCGA-MGR', name: 'HC & GA Manager' },
+    create: {
+      department_id: department.id,
+      job_grade_id: gradeManager.id,
+      code: 'HCGA-MGR',
+      name: 'HC & GA Manager',
+    },
     update: {},
   });
   console.log('✔ master data org');
@@ -322,19 +426,81 @@ async function main() {
 
   // ---------- menus (M0 navigation) ----------
   const menusSeed = [
-    { code: 'DASHBOARD', label: 'Dashboard', icon: 'LayoutDashboard', route: '/dashboard', platform: 'BOTH', sort_order: 1, permission_code: null },
-    { code: 'MASTER', label: 'Master Data', icon: 'Database', platform: 'BOTH', sort_order: 10, permission_code: 'master.read' },
-    { code: 'MASTER.EMPLOYEES', label: 'Karyawan', route: '/master/employees', parent_code: 'MASTER', platform: 'BOTH', sort_order: 11, permission_code: 'master.employees.read' },
-    { code: 'MASTER.COMPANIES', label: 'Perusahaan', route: '/master/companies', parent_code: 'MASTER', platform: 'BOTH', sort_order: 12, permission_code: 'master.companies.read' },
-    { code: 'CONFIG', label: 'Pengaturan', icon: 'Settings', platform: 'BOTH', sort_order: 20, permission_code: 'config.format.read' },
-    { code: 'CONFIG.FORMATS', label: 'Format', route: '/config/formats', parent_code: 'CONFIG', platform: 'BOTH', sort_order: 21, permission_code: 'config.format.read' },
-    { code: 'CONFIG.VALIDATION', label: 'Validasi', route: '/config/validation', parent_code: 'CONFIG', platform: 'BOTH', sort_order: 22, permission_code: 'config.validation.read' },
-    { code: 'CONFIG.SEQUENCES', label: 'Nomor Urut', route: '/config/sequences', parent_code: 'CONFIG', platform: 'BOTH', sort_order: 23, permission_code: 'config.sequence.read' },
+    {
+      code: 'DASHBOARD',
+      label: 'Dashboard',
+      icon: 'LayoutDashboard',
+      route: '/dashboard',
+      platform: 'BOTH',
+      sort_order: 1,
+      permission_code: null,
+    },
+    {
+      code: 'MASTER',
+      label: 'Master Data',
+      icon: 'Database',
+      platform: 'BOTH',
+      sort_order: 10,
+      permission_code: 'master.read',
+    },
+    {
+      code: 'MASTER.EMPLOYEES',
+      label: 'Karyawan',
+      route: '/master/employees',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 11,
+      permission_code: 'master.employees.read',
+    },
+    {
+      code: 'MASTER.COMPANIES',
+      label: 'Perusahaan',
+      route: '/master/companies',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 12,
+      permission_code: 'master.companies.read',
+    },
+    {
+      code: 'CONFIG',
+      label: 'Pengaturan',
+      icon: 'Settings',
+      platform: 'BOTH',
+      sort_order: 20,
+      permission_code: 'config.format.read',
+    },
+    {
+      code: 'CONFIG.FORMATS',
+      label: 'Format',
+      route: '/config/formats',
+      parent_code: 'CONFIG',
+      platform: 'BOTH',
+      sort_order: 21,
+      permission_code: 'config.format.read',
+    },
+    {
+      code: 'CONFIG.VALIDATION',
+      label: 'Validasi',
+      route: '/config/validation',
+      parent_code: 'CONFIG',
+      platform: 'BOTH',
+      sort_order: 22,
+      permission_code: 'config.validation.read',
+    },
+    {
+      code: 'CONFIG.SEQUENCES',
+      label: 'Nomor Urut',
+      route: '/config/sequences',
+      parent_code: 'CONFIG',
+      platform: 'BOTH',
+      sort_order: 23,
+      permission_code: 'config.sequence.read',
+    },
   ];
   const menuIdByCode = new Map<string, string>();
   for (const m of menusSeed) {
-    const permission = m.permission_code ? permissionIds.get(m.permission_code) ?? null : null;
-    const parent = m.parent_code ? menuIdByCode.get(m.parent_code) ?? null : null;
+    const permission = m.permission_code ? (permissionIds.get(m.permission_code) ?? null) : null;
+    const parent = m.parent_code ? (menuIdByCode.get(m.parent_code) ?? null) : null;
     const row = await prisma.menus.upsert({
       where: { code: m.code },
       create: {
