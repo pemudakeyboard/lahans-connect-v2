@@ -1,0 +1,1515 @@
+* Sorot pada kolom header untuk mengetahui format pengisian data yang benar untuk upload data pegawai
+* Data dengan tanda (*) wajib diisi (Maksimal 300 data)
+
+                 NIK*                           NAMA*         TANGGAL MASUK*                           AREA KERJA*           STATUS KONTRAK*
+
+20250055               Aan Agustian                    2025-04-07                                      PT LMN - Wangon       Kontrak
+20230567               Abdullah Hasan                  2023-08-15                                      PT LMN - Probolinggo  Kontrak
+20260007               Acep Hendra                     2026-01-19                                      PT LMN - Purwakarta   Kontrak
+20230612               Ach. Firdaus                    2023-11-23                                      PT LMN - Banyuwangi   Kontrak
+20000173               Ade Nurjaman                    2000-03-27                                      PT LMN - Garut        Kontrak
+20240682               Adie Wirahadie                  2024-03-07                                      PT LMN - Garut        Kontrak
+20230499               Adnan Subur                     2023-05-12                                      PT LMN - Sukabumi     Kontrak
+20250132               Agus Geri Gustiana              2025-08-13                                      PT LMN - Subang       Kontrak
+20230471               Agus Hermansyah                 2023-06-03                                      PT LMN - Banyuwangi   Kontrak
+20250095               Agus Saeful                     2025-06-02                                      PT LMN - Bandung      Kontrak
+20200164               Ahmad Hambali                   2020-10-12                                      PT LMN - Garut        Kontrak
+20180223               Ahmad Sobandi                   2018-08-10                                      PT LMN - Bandung      Kontrak
+20240766               Ai Rokayah                      2024-12-23                                      PT LMN - Bandung      Kontrak
+20150206               Akin                            2015-08-18                                      PT LMN - Bandung      Kontrak
+20250144               Alfu Wijayanti                  2025-09-02                                      PT LMN - Jember       Kontrak
+20250105               Ali Tarmidi                     2025-06-23                                      PT. LMN - Cirebon     Kontrak
+20230465               Anang Indra Gunawan             2023-06-02                                      PT LMN - Jember       Kontrak
+20220357               Andri Supriadi                  2022-05-18                                      PT LMN - Bandung      Kontrak
+20240658               Anung Kurniawan                 2024-04-29                                      PT LMN - Bandung      Kontrak
+20240718               Arianto                         2024-01-10                                      PT. LMN - Cirebon     Kontrak
+20250103               Arjun Dwi Saputra               2025-06-12                                      PT LMN - Wangon       Kontrak
+20250061               Asep                            2025-04-14                                      PT LMN - Bandung      Kontrak
+20250040               Asep Awaludin M Nur             2025-03-06                                      PT LMN - Purwakarta   Kontrak
+20260063               Asep Heri                       2026-05-22                                      PT LMN - Bandung      Kontrak
+20210271               Asep Kusnadi                    2021-04-08                                      PT LMN - Subang       Kontrak
+20240661               Asep Rizal                      2024-05-06                                      PT LMN - Garut        Kontrak
+20250202               Asep Saepuloh                   2025-12-22                                      PT LMN - Tasikmalaya  Kontrak
+20260003  Asep Suparman         2026-01-08  PT LMN - Bandung      Kontrak
+20180224  Aso Warso             2018-07-12  PT LMN - Bandung      Kontrak
+20250133  Atan Sukmandar        2025-08-13  PT LMN - Subang       Kontrak
+20230446  Bagas Kurniawan       2023-01-13  PT LMN - Sidoarjo     Kontrak
+20240636  Barkah Effendi        2024-02-12  PT LMN - Sukabumi     Kontrak
+20240721  Budi Dermawan         2024-10-02  PT LMN - Garut        Kontrak
+20190221  Cahyat                2019-10-22  PT LMN - Bandung      Kontrak
+20170218  Candra Irawan         2017-07-07  PT LMN - Bandung      Kontrak
+20250039  Candy Miranda         2025-03-03  PT LMN - Bogor        Kontrak
+20260043  Catur Saputri         2026-04-13  PT LMN - Solo         Kontrak
+20250136  Christina Novita      2025-08-19  PT LMN - Wangon       Kontrak
+20230449  Chusnul Sulistiono    2023-01-20  PT LMN - Jombang      Kontrak
+20260041  Cristi Yulia          2026-04-09  PT LMN - Bandung      Kontrak
+19980198  Cucu Yudi             1998-07-01  PT LMN - Bandung      Kontrak
+20250151  Dadan Nugraha         2025-09-15  PT LMN - Bandung      Kontrak
+20170216  Dadang Rusmana        2017-02-13  PT LMN - Bandung      Kontrak
+20240702  Danu Mujiarto         2024-09-03  PT LMN - Tegal        Kontrak
+20260023  Darussalam            2026-02-20  PT LMN - Garut        Kontrak
+20200231  Daun Hermanto         2020-09-01  PT LMN - Wangon       Kontrak
+20250088  Debi Hendrilawati     2025-05-22  PT LMN - Jombang      Kontrak
+20200179  Dede Deri             2020-06-01  PT LMN - Garut        Kontrak
+20250119  Dede Hudaya           2025-07-22  PT LMN - Tasikmalaya  Kontrak
+20240736  Dede Kurniasih        2024-10-28  PT. LMN - Cirebon     Kontrak
+20250184  Dede Kusnandar        2025-11-11  PT LMN - Bandung      Kontrak
+20230498  Dede Suhendar         2023-05-12  PT LMN - Sukabumi     Kontrak
+20220346  Dede Supriadi         2022-03-27  PT LMN - Purwakarta   Kontrak
+20230600  Dendi Permana         2023-10-04  PT LMN - Bandung      Kontrak
+20250116  Dendy Nurdiansyah     2025-07-14  PT LMN - Garut        Kontrak
+20250080  Dendy Zuendy          2025-05-03  PT LMN - Tasikmalaya  Kontrak
+20250096  Deni Romansyah        2025-06-02  PT LMN - Bandung      Kontrak
+20260074  Deny Koesmawan        2026-06-15  PT. LMN - Cirebon     Kontrak
+20250192  Deri Kurnia Nugraha   2025-11-29  PT LMN - Garut        Kontrak
+20250042  Deva Akbar Maulana    2025-03-07  PT LMN - Wangon       Kontrak
+20250190  Dewi Ayu Meilisyah    2025-11-26  PT LMN - Jember       Kontrak
+20260073  Dewi Suryanti         2026-06-15  PT LMN - Solo         Kontrak
+20250122  Dian Fitriani         2025-07-28  PT LMN - Bandung      Kontrak
+20250094  Dian Slamet Setyawan  2025-05-31  PT LMN - Semarang     Kontrak
+20100208  Diki Andriana         2010-07-26  PT LMN - Bandung      Kontrak
+20240701  Diki Wahyudin         2024-08-29  PT LMN - Bogor        Kontrak
+20260059  Dinda Dewi Maharani   2026-05-09  PT LMN - Bandung      Kontrak
+20250005  Dini Setiani          2025-01-03  PT LMN - Bandung      Kontrak
+20130204  Dodhie Setiawan       2013-01-23  PT LMN - Bandung      Kontrak
+20260042  Dwi Cahyaningsih             2026-04-13  PT LMN - Solo         Kontrak
+20260072  Dwi Setyaningsih             2026-06-10  PT LMN - Solo         Kontrak
+20240698  Dwiqi Rezaldy Cahya Santoso  2024-08-26  PT LMN - Tegal        Kontrak
+20250181  Edi Mulyono                  2025-11-06  PT LMN - Tegal        Kontrak
+20210264  Edi Sutikno                  2021-10-07  PT LMN - Wangon       Kontrak
+20200235  Edi Sutrisno                 2020-09-01  PT LMN - Wangon       Kontrak
+20230548  Eduard Febry Sanjaya         2023-07-27  PT LMN - Banyuwangi   Kontrak
+20250156  Edy Sulaeman                 2025-09-22  PT LMN - Garut        Kontrak
+20260030  Eko Prasetyo Lesmito         2026-03-25  PT LMN - Wonosobo     Kontrak
+20250089  Eli Indi Astutik             2025-05-22  PT LMN - Jombang      Kontrak
+19980181  Ende Taryana                 1998-01-01  PT LMN - Garut        Kontrak
+20260082  Eneng Santi Saripah          2026-07-22  PT LMN - Purwakarta   Kontrak
+20050174  Engkan Rusmana               2005-01-01  PT LMN - Garut        Kontrak
+20250102  Erawati                      2025-06-12  PT LMN - Sidoarjo     Kontrak
+20260019  Eris Rismana                 2026-02-09  PT LMN - Tasikmalaya  Kontrak
+20260044  Faria Ummi Kulsum            2026-04-13  PT LMN - Wangon       Kontrak
+20260077  Farisi Ardani                2026-06-29  PT LMN - Wonosobo     Kontrak
+20230448  Filtra Budiono               2023-01-20  PT LMN - Jombang      Kontrak
+20250021  Gita Rosita                  2025-02-17  PT LMN - Bandung      Kontrak
+20230467  Godod Bayu Ardi              2023-02-20  PT LMN - Sidoarjo     Kontrak
+20260062  Halimatus Sadiyah            2026-05-12  PT LMN - Probolinggo  Kontrak
+20240693  Hanhan Suhendi               2024-08-01  PT LMN - Sukabumi     Kontrak
+20260045  Hari Prayoga                 2026-04-15  PT LMN - Tasikmalaya  Kontrak
+20260046  Haris Budiman                2026-04-20  PT LMN - Bogor        Kontrak
+20200163  Hendrik                      2020-10-05  PT LMN - Garut        Kontrak
+20210284  Hilmi Firmansyah             2024-05-16  PT LMN - Garut        Kontrak
+20230522  Holis Nurholis               2023-06-03  PT LMN - Bandung      Kontrak
+20250066  Ilham Bachtiar               2025-04-26  PT LMN - Wangon       Kontrak
+20250057  Imam Taopik                  2025-04-11  PT LMN - Bogor        Kontrak
+20230586  Irman Hidayat                2023-10-02  PT LMN - Garut        Kontrak
+20250205  Isep Rohmadi                 2025-12-27  PT LMN - Garut        Kontrak
+20180214  Iwa Setiawan                 2018-01-02  PT LMN - Bandung      Kontrak
+20250013  Jajang Faryana               2025-01-13  PT LMN - Bandung      Kontrak
+20230472  Johan Arifin                 2023-03-06  PT LMN - Banyuwangi   Kontrak
+20250062  Kartana                      2025-04-14  PT LMN - Bandung      Kontrak
+20140210  Krisna Saputra               2014-08-18  PT LMN - Bandung      Kontrak
+20250191  Kriswanto                    2025-11-29  PT. LMN - Cirebon     Kontrak
+20020199  Kusada                       2002-09-09  PT LMN - Bandung      Kontrak
+20260012  Lailatul Nurfitri Fajrina    2026-01-26  PT LMN - Malang       Kontrak
+20000200  Mahyadin                     2000-11-01  PT LMN - Bandung      Kontrak
+20260037  Maman Sumantri               2026-04-01  PT LMN - Probolinggo  Kontrak
+19990196  Mansyur                      1999-08-01  PT LMN - Subang       Kontrak
+20250121  Miman                        2025-07-23  PT LMN - Bandung      Kontrak
+20240659  Mira Kusumawati              2024-05-30  PT LMN - Sukabumi     Kontrak
+20260013  Mira Yasa Natapradja         2026-02-02  PT LMN - Bandung      Kontrak
+20250046  Moch Deni Muldani            2025-03-10  PT LMN - Tasikmalaya  Kontrak
+20230561  Moch Reza Zulfikar           2023-08-07  PT LMN - Malang       Kontrak
+20210170  Moch. Ganjar Ilmani          2021-03-08  PT LMN - Garut        Kontrak
+20250164  Mochammad Diki Mutaqin       2025-10-06  PT LMN - Garut        Kontrak
+20230462  Mohammad Faisol Aziz Fanani  2023-02-06  PT LMN - Jember       Kontrak
+20260066  Muhamad Farhan               2026-06-02  PT. LMN - Cirebon     Kontrak
+20160213  Muhamad Yogi                 2016-06-25  PT LMN - Bandung      Kontrak
+20160150  Mumuh                        2016-01-01  PT LMN - Purwakarta   Kontrak
+20250172  Mustika Sari                 2025-10-20  PT LMN - Wangon       Kontrak
+20050180  Nandang                      2005-01-01  PT LMN - Garut        Kontrak
+20260021  Nanong Kristanto             2026-02-10  PT LMN - Probolinggo  Kontrak
+20240713  Nasikin                      2024-09-19  PT LMN - Semarang     Kontrak
+20260070  Neng Tik Tik Nurlatifah      2026-06-08  PT LMN - Garut        Kontrak
+20260005  Nina Komalasari              2026-01-19  PT LMN - Subang       Kontrak
+20220372  Novri Alvarizi               2022-09-03  PT LMN - Wangon       Kontrak
+20250109  Nur Afifah Fauziah           2025-06-27  PT LMN - Garut        Kontrak
+20230516  Nur Sahid                    2023-06-01  PT LMN - Wonosobo     Kontrak
+20130211  Nurdin                       2013-01-21  PT LMN - Bandung      Kontrak
+20100183  Nurul Hasihin                2010-11-01  PT LMN - Garut        Kontrak
+20260069  Nurul Utami                  2026-06-08  PT LMN - Garut        Kontrak
+20260006  Oktaviany Tanjung            2026-01-16  PT LMN - Bogor        Kontrak
+20130207  Peri Perdiansyah             2013-03-19  PT LMN - Bandung      Kontrak
+20250125  Pitra Marwan                 2025-08-06  PT LMN - Bandung      Kontrak
+20240685  Putri Hartati Wijaksani      2024-07-16  PT LMN - Bandung      Kontrak
+20240706  Putro Prihadi                2024-09-09  PT LMN - Semarang     Kontrak
+20250196  Rafika Pusporini             2025-12-10  PT LMN - Wangon       Kontrak
+20250098  Raisya Arifah Dwi Wahyuni    2025-06-05  PT LMN - Tasikmalaya  Kontrak
+20260071  Ratna Dwi Janis              2026-06-09  PT LMN - Probolinggo  Kontrak
+20260051  Raudya Tuzahra Ramandani     2026-05-04  PT LMN - Tasikmalaya  Kontrak
+20260026  Resmi Aryanti                2026-03-05  PT LMN - Wonosobo     Kontrak
+20260064  RESNA SULISTIAWATY           2026-05-22  PT LMN - Garut        Kontrak
+20200167  Rian Ernawan                 2020-11-07  PT LMN - Garut        Kontrak
+20250012  Ricat Batubara               2025-01-13  PT LMN - Bandung      Kontrak
+20190177  Ridwan Arif                  1970-01-01  PT LMN - Garut        Kontrak
+20210302  Ridwan Nugraha               2021-12-13  PT LMN - Garut        Kontrak
+20250166  Ririn Agustin                2025-10-07  PT LMN - Malang       Kontrak
+20260034  Riska Nopa Nopianti          2026-03-31  PT LMN - Bandung      Kontrak
+20130243  Ristoyo                      2013-01-01  PT LMN - Wonosobo     Kontrak
+20240743  Rizki Aditya Firmansyah      2024-11-11  PT LMN - Tasikmalaya  Kontrak
+20250083  Rizky Hariyanto            2025-05-12  PT LMN - Wangon       Kontrak
+20250003  Robby Dwi Prasetyo         2025-01-02  PT LMN - Jember       Kontrak
+20250048  Ruddy Heryadi              2025-03-22  PT LMN - Bandung      Kontrak
+20160148  Rudiana                    2016-01-01  PT LMN - Purwakarta   Kontrak
+20260033  Salam Pajar Mantira P      2026-03-30  PT LMN - Garut        Kontrak
+20250199  Sandi Mulyadi              2025-12-15  PT LMN - Tasikmalaya  Kontrak
+20160152  Sansan Herdiansyah         2016-01-01  PT LMN - Garut        Kontrak
+20240742  Sansan Wirasandi           2024-11-11  PT LMN - Tasikmalaya  Kontrak
+19970175  Saryanto                   1997-01-01  PT LMN - Garut        Kontrak
+20240726  Shintya Berlianita         2024-10-09  PT LMN - Bandung      Kontrak
+20260025  Sigih Wahyani              2026-03-02  PT LMN - Semarang     Kontrak
+20160241  Slamet                     2016-01-01  PT LMN - Wonosobo     Kontrak
+20000233  Soimin                     2000-01-01  PT LMN - Wangon       Kontrak
+20200168  Solahudin                  2020-12-16  PT LMN - Garut        Kontrak
+20250002  Sona Sukmayasa             2025-01-02  PT LMN - Garut        Kontrak
+20190219  Sopian Kusmayana           2019-06-21  PT LMN - Bandung      Kontrak
+20250047  Suhana                     2025-03-14  PT LMN - Bogor        Kontrak
+20220356  Suhendar                   2022-05-18  PT LMN - Bandung      Kontrak
+20240645  Sujiarto                   2024-04-01  PT LMN - Subang       Kontrak
+20210228  Sukarno                    2022-01-25  PT LMN - Bandung      Kontrak
+20170178  Sukmadin                   2017-06-01  PT LMN - Garut        Kontrak
+20200225  Supriadi                   2020-06-08  PT LMN - Bandung      Kontrak
+20180240  Suryatin                   2018-05-19  PT LMN - Wonosobo     Kontrak
+20260002  Syarah Dwi Novyanti        2026-01-06  PT LMN - Sukabumi     Kontrak
+20230490  Taofiq Hidayat             2023-04-28  PT LMN - Wonosobo     Kontrak
+20020205  Tata Sasmita               2002-12-30  PT LMN - Bandung      Kontrak
+20230556  Tatang Gumelar             2023-08-03  PT LMN - Bandung      Kontrak
+20260078  Tia Ambarwati              2026-07-02  PT. LMN - Cirebon     Kontrak
+20260038  Titin Chuzaemah            2026-04-01  PT LMN - Wonosobo     Kontrak
+20110209  Tohanudin                  2011-12-24  PT LMN - Subang       Kontrak
+20230514  Tri Aris Rusdiaman         2023-05-30  PT LMN - Bandung      Kontrak
+20260067  Tri Handayani              2026-06-02  PT LMN - Solo         Kontrak
+20220345  Uce Ade Wira               2022-03-18  PT LMN - Purwakarta   Kontrak
+20230617  Ujang Muhidin              2023-12-18  PT LMN - Bandung      Kontrak
+20260040  Ulfah Habibah Al Nurzanah  2026-04-09  PT LMN - Bandung      Kontrak
+20240728  Virda Febilla              2024-10-15  PT LMN - Sidoarjo     Kontrak
+20260017  Wahyuni                    2026-02-09  PT LMN - Semarang     Kontrak
+20260028  Wanda Akbar Saputra        2026-03-09  PT LMN - Garut        Kontrak
+20200222  Wandi Permana              2020-09-07  PT LMN - Bandung      Kontrak
+20070239  Watini                     2007-01-01  PT LMN - Wonosobo     Kontrak
+20180251  Wawan Darmawan             2018-08-04  PT LMN - Tasikmalaya  Kontrak
+20100202  Wawan Kurniawan            2010-02-15  PT LMN - Bandung      Kontrak
+20260015  Wawan Ridwan           2026-02-04  PT LMN - Bandung      Kontrak
+20260024  Wijayanti              2026-02-27  PT LMN - Wonosobo     Kontrak
+20200238  Yadi                   2020-09-01  PT LMN - Wangon       Kontrak
+20110185  Yayan Nurjaman         2011-11-01  PT LMN - Purwakarta   Kontrak
+20240759  Yoggi Isfarulloh       2024-12-16  PT. LMN - Cirebon     Kontrak
+20260052  Yonatan                2026-05-04  PT LMN - Tegal        Kontrak
+20250203  Yopi Dana Wirya        2025-12-22  PT LMN - Garut        Kontrak
+20230549  Yudi Purwanto          2023-07-31  PT LMN - Garut        Kontrak
+20250054  Yunita Setiana Wijaya  2025-04-07  PT LMN - Tasikmalaya  Kontrak
+          JABATAN*                  GAJI  GAJI POKOK*         NO. IDENTITAS            TEMPAT LAHIR
+Delivery Man                   GOLONGAN*
+Driver              Non Staff                          3301082007980001      Banyumas
+Salesman            Non Staff                          3574011803800002      Bandung
+SP-GT               Non Staff                          3214051203930006      Purwakarta
+Salesman            Non Staff                          3510130712880004      Banyuwangi
+Salesman            Non Staff                          3205010107840211      Garut
+Driver              Non Staff                          3205052102920003      Garut
+Canvas Motoris      Non Staff                          3272031808850901      Sukabumi
+Sales Exclusive     Non Staff                          3213032308830007      Subang
+Canvas Motoris      Non Staff                          3510140508820001      Banyuwangi
+Helper              Non Staff                          3204103008740004      Bandung
+Helper              Non Staff                          320501060100002       Garut
+SP-GT               Non Staff                          3203261104940001      Bandung
+Driver              Non Staff                          3273075410820001      Bandung
+SP-GT               Non Staff                          3204150302830017      Bandung
+Driver              Non Staff                          3509216910870001      Jember
+Sales Exclusive     Non Staff                          3274010101830002      Cirebon
+Driver              Non Staff                          3509212003730001      Jember
+Driver              Non Staff                          3207090707970001      Ciamis
+Salesman            Non Staff                          3204100408800003      Bogor
+Helper Delivery     Non Staff                          3274010510870008      Kota Cirebon
+Helper Gudang       Non Staff                          3302022206050002      Banyumas
+Driver              Non Staff                          3203031406790003      Cianjur
+Driver Operasional  Non Staff                          3213272803820001      SUBANG
+Driver              Non Staff                          3203061806750001      Cianjur
+Helper              Non Staff                          32130303712740004     Subang
+Delivery Man        Non Staff                          3205011904990008      Garut
+                    Non Staff                          3278031105880007      TASIKMALAYA
+Delivery Man           Non Staff  3217020303810003   BANDUNG
+Helper                 Non Staff  3277010103770048   Bandung
+Helper                 Non Staff  3213140311920001   Subang
+Driver                 Non Staff  3515030206970001   Sidoarjo
+Salesman               Non Staff  3272051508820001   Sukabumi
+Task Force             Non Staff  3275082009830023   Garut
+Helper Gudang          Non Staff  3211061807950004   Sumedang
+Salesman               Non Staff  3204151204000002   Bandung
+Sales Exclusive        Non Staff  3276034602900008   Jakarta
+SP-GT                  Non Staff  3372016301810002   SURAKARTA
+SP-GT                  Non Staff  3302195311850001   Banyumas
+Driver                 Non Staff  3518131003810002   Nganjuk
+SP-MT                  Non Staff  3273076207990003   Bandung
+Salesman               Non Staff  3211061810780002   Sumedang
+Driver                 Non Staff  3277020212900008   BANDUNG
+Helper                 Non Staff  3217061504840019   Bandung
+Salesman               Non Staff  3376021901890004   Tegal
+Driver Distributor     Non Staff  3205012104951009   Garut
+Delivery Man           Non Staff  3302021003690002   Banyumas
+SP-GT                  Non Staff  3576026006930002   MOJOKERTO
+Driver                 Non Staff  3205010708910006   Garut
+Sales TO               Non Staff  3278081807850013   Tasikmalaya
+Salesman               Non Staff  3174056512770014   Jakarta
+Helper Gudang          Non Staff  3204290504880003   BANDUNG
+Salesman               Non Staff  3272042606870003   Sukabumi
+Salesman               Non Staff  3205051104920002   Garut
+Driver                 Non Staff  320151512010004    Bandung
+Delivery Man           Non Staff  3205071011840003   Garut
+Driver                 Non Staff  32780323128800002  Tasikmalaya
+Canvas Motoris         Non Staff  3273030708860011   Bandung
+Salesman               Non Staff  3274052812790005   CIREBON
+Driver                 Non Staff  3205062411890003   Garut
+Helper Delivery        Non Staff  3302242112050001   Banyumas
+SP-GT                  Non Staff  3509195305900004   Jember
+SP-GT                  Non Staff  337055210840008    SURAKARTA
+Key Account Executive  Non Staff  3273144112990006   Kampar
+Driver                 Non Staff  3322131207940001   Semarang
+Salesman               Non Staff  3204160712880004   Bandung
+Salesman               Non Staff  3201172007000004   Bogor
+SP-MT                  Non Staff  3204106007920005   Bandung
+SP-GT                  Non Staff  3243166301900003   Bandung
+Salesman               Non Staff  32063124860005     Tasikmalaya
+SP-GT               Non Staff  3313146205860004  KARANGANYAR
+Sales Exclusive     Non Staff  3309125505940001  Boyolali
+Driver              Non Staff  3376021205970003  Tegal
+Driver              Non Staff  3376032702760004  TEGAL
+Delivery Man        Non Staff  3303022406730002  Purbalingga
+Delivery Man        Non Staff  3303020704700004  Purbalingga
+ASPR Indirect       Non Staff  3510160202790008  Banyuwangi
+Driver Distributor  Non Staff  3205221611830001  BANDUNG
+Delivery Man        Non Staff  3307062002860001  WONOSOBO
+SP-GT               Non Staff  3516186804790003  MOJOKERTO
+Salesman            Non Staff  3205062708820001  Garut
+SP-GT               Non Staff  3214046709820004  Purwakarta
+Driver              Non Staff  3205052909630002  Tasikmalaya
+SP-GT               Non Staff  3515136210920002  Surabaya
+Salesman            Non Staff  3278091112850009  TASIKMALAYA
+Sales TO            Non Staff  3302025002960002  Banyumas
+Delivery Man        Non Staff  3307071304970006  Wonosobo
+ASPR Indirect       Non Staff  3517080409880001  Jombang
+Horeca Executive    Non Staff  3273176812940001  Bandung
+Sales Exclusive     Non Staff  3509190401780002  Surabaya
+SP-GT               Non Staff  3513175603910002  PROBOLINGGO
+Driver              Non Staff  3202321701920003  Sukabumi
+Sales Executive     Non Staff  3278011104870013  TASIKMALAYA
+Driver              Non Staff  3173070402840007  JAKARTA
+Salesman            Non Staff  3205010203000006  Garut
+Helper              Non Staff  3205121506980001  Garut
+Driver              Non Staff  3277010410890003  Bandung
+Sales TO            Non Staff  3302040311000002  Banyumas
+Driver              Non Staff  3278011001950010  Tasikmalaya
+Salesman            Non Staff  3205011208820006  Garut
+Driver              Non Staff  3205012504890088  BANDUNG
+Salesman            Non Staff  3217101805830011  Bandung
+Salesman            Non Staff  3204101110880008  Bandung
+Driver              Non Staff  3507221210800005  Pasuruan
+Helper Gudang       Non Staff  3212151806700001  Indramayu
+Helper              Non Staff  3204160312830003  Bandung
+Driver              Non Staff  3274010511920001  CIREBON
+Salesman            Non Staff  3211060202810006  Sumedang
+SP-GT               Non Staff  3573046503920002  MALANG
+Driver              Non Staff  3273150711840002  Bandung
+Sales Exclusive     Non Staff  3574012903860002  PROBOLINGGO
+Salesman            Non Staff  3213141608660001  Subang
+Helper           Non Staff            3205242109830001  Garut
+                                      3272024505820061  Sukabumi
+SP-GT            Non Staff            3273234903840004  Bandung
+                                      3206222210900002  Tasikmalaya
+SP-GT            Non Staff            3507132207960002  Malang
+                                      3205011710990004  Garut
+Task Force       Non Staff            3205151506950001  Garut
+                                      3509040510950003  Jember
+Sales Exclusive  Non Staff            3209123009790003  CIREBON
+                                      3273152807980008  Bandung
+Salesman         Non Staff            3205010107950042  Garut
+                                      3302274103990001  Banyumas
+Food Service RepresentativeNon Staff  3205191605870004  Garut
+                                      3574012310740001  JEMBER
+Driver           Non Staff            3324131509710001  Kendal
+                                      3205065111980006  Garut
+Salesman         Non Staff            3213035610800002  Karawang
+                                      3302010511020002  Banyumas
+Helper           Non Staff            3205024506880011  GARUT
+                                      3307092812070482  Wonosobo
+Helper           Non Staff            3278052404850011  Tasikmalaya
+                                      320506907870003   Garut
+SP-GT            Non Staff            3205025704930009  Garut
+                                      3201136310970008  BOGOR
+Salesman         Non Staff            3205141011920002  Garut
+                                      3277013105870007  Bandung
+ASPR Indirect    Non Staff            3277015410960003  Cimahi
+                                      3374152201680002  Kendal
+Driver           Non Staff            3302265111930002  Purwokerto
+                                      3206166512060002  Tasikmalaya
+SP-GT            Non Staff            3513045801910002  Probolinggo
+                                                        TASIKMALAYA
+SP-GT            Non Staff            3307064101010006  WONOSOBO
+                                      3205044407900004  GARUT
+Sales TO         Non Staff            3205012605980002  Garut
+                                      1212061609850003  Bandung
+SP-GT            Non Staff            3205010201940005  Garut
+                                      3205042804990001  Garut
+Sales TO         Non Staff            3507135608870003  MALANG
+                                      3204175911050002  Bandung
+Helper           Non Staff            3307061903700003  Wonosobo
+                                      3207062207940002  Ciamis
+Helper           Non Staff
+
+SP-MT            Non Staff
+
+SP-MT            Non Staff
+
+Salesman         Non Staff
+
+Driver           Non Staff
+
+SP-GT            Non Staff
+
+Salesman         Non Staff
+
+SP-MT            Non Staff
+
+SP-GT            Non Staff
+
+SP-GT            Non Staff
+
+SP-GT            Non Staff
+
+SP-GT            Non Staff
+
+SP-GT            Non Staff
+
+Salesman         Non Staff
+
+Salesman         Non Staff
+
+Driver           Non Staff
+
+Helper           Non Staff
+
+SP-GT            Non Staff
+
+SP-MT            Non Staff
+
+Helper Delivery  Non Staff
+
+Driver           Non Staff
+Helper Delivery        Non Staff  3302021706980002   Banyumas
+ASPR Indirect          Non Staff  3509212304890005   Jember
+Driver                 Non Staff  3204163108870001   Bandung
+Driver                 Non Staff  3205014107930015   Garut
+SP-GT                  Non Staff  3205052710890003   BANDUNG
+Helper Delivery        Non Staff  3278042103810009   TASIKMALAYA
+Helper                 Non Staff  32050125059960004  Garut
+Salesman               Non Staff  3278082610950005   Tasikmalaya
+Salesman               Non Staff  3205011703770000   Jawa Tengah
+Horeca Executive       Non Staff  3273064507960004   Bandung
+Salesman               Non Staff  3322121204920001   SEMARANG
+Driver                 Non Staff  3307123005890006   Wonosobo
+Sales TO               Non Staff  3303021905710002   Purbalingga
+Salesman               Non Staff  320504301200001    Garut
+Salesman               Non Staff  3205171808920007   Garut
+Salesman               Non Staff  3213141806930001   Subang
+SP-GT                  Non Staff  3276074606880003   Depok
+Helper                 Non Staff  3217140406980006   Bandung
+Salesman               Non Staff  3214031807750002   Solo
+Driver                 Non Staff  3204150211000010   Bandung
+Salesman               Non Staff  3205014701690006   Garut
+Helper                 Non Staff  3211061503880004   Sumedang
+Salesman               Non Staff  3307081010790002   Wonosobo
+SP-MT                  Non Staff  3203016611980008   Cianjur
+Driver                 Non Staff  330709280303003    Wonosobo
+Helper Gudang          Non Staff  3217101011730012   Bandung
+Driver                 Non Staff  321710203860009    Bandung
+Salesman               Non Staff  3274024809920001   Cirebon
+Sales TO               Non Staff  3307045706800004   WONOSOBO
+Helper                 Non Staff  3213142105910001   Subang
+Salesman               Non Staff  3204112310800004   Kebumen
+SP-MT                  Non Staff  3311105204930003   Sukoharjo
+Driver                 Non Staff  3205050804780001   Garut
+Driver                 Non Staff  3273151105820000   Bandung
+Key Account Executive  Non Staff  3273166702930004   Bandung
+SP-GT                  Non Staff  3515156102000003   Sidoarjo
+SP-GT                  Non Staff  3374136706790006   SEMARANG
+Helper Delivery        Non Staff  32051117069400001  GARUT
+Helper Gudang          Non Staff  3273150302030001   Bandung
+Salesman               Non Staff  3307094609720006   Wonosobo
+Canvas Motoris         Non Staff  3278081905950006   Tasikmalaya
+Salesman               Non Staff  3204091512740011   Indramayu
+Driver           Non Staff  3273150610840001  Bandung
+SP-GT            Non Staff  3307045208930006  WONOSOBO
+Helper Gudang    Non Staff  3302021905710002  Banyumas
+Salesman         Non Staff  3205051908860001  Garut
+Driver           Non Staff  3328023012920001  Tegal
+Salesman         Non Staff  3376012505840003  TEGAL
+Sales Executive  Non Staff  3205121801940003  BANDUNG
+Delivery Man     Non Staff  3205291504980001  Garut
+SP-MT            Non Staff  3278094106010001  Tasikmalaya
+                                DOWNLOAD DATA PEGAWAI
+
+         TANGGAL LAHIR  ALAMAT  NO. HP                                                                                      REKAN/KELUARGA
+                                                                                                                NAMA
+1998-07-20
+1970-01-01              Grumbul Pecikalan RT 04 RW 06 Desa Wangon, K0e8c9.5W37a8n2g3o2n0,4K8ab. Banyumas Kec. WANGON, Kel. WANGON KABUPATEN BANYUMAS JAWA TENGAH
+1993-03-12
+1988-12-07              Jl. Prof Dr Hamka 35, rt02/rw03, Kel Kademanga0n8, 9K5o0ta4.1P1r1o0b3o1linggo \\\\r\\\\n KeISc.TKRAI DEMANGAN, Kel. KADEMANGAN KOTA PROBOLINGGO JAWA
+1984-07-01
+1992-02-21              Kp. Cibodas RT 005/ RW 002, Des. Cibodas, Kec. Sukatani, Kab. Purwakarta Kec. SUISKTARTI ANI, Kel. CIBODAS KABUPATEN PURWAKARTA JAWA BARAT 4
+1985-08-18
+1983-08-23              Lingk. Krajan rt.003 rw.001 Kalipuro - Banyuwan0g8i\5r\7n32K4e5c.8K9A70LIPURO, Kel. KALIPUISRTORIKABUPATEN BANYUWANGI JAWA TIMUR 68455
+1982-08-05
+1974-08-30              Kp. Cipeuteuy RT.01/RW.026 Margawati, Garut0K8o5t2a2, K3a5b7.0G71a6rut Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 44113
+2000-06-01
+1997-11-04              GarutJl Raya Kamojang KP SukamajuRT.003/RW.0080913,3K7e1l.4S8u3k4ak3arya, Kec.Samarang                 Kec. SAMARANG, Kel. SUKAKARYA KABUPATE
+1982-10-14
+1983-02-02              Jln Pelda Suryanta RT 03 RW 012, Desa Nanggele0n8g7,7K7e2c2.1C1it0a9m7iang, Kota SukabumISiT\R\\I\r\\\\n Kec. CITAMIANG, Kel. NANGGELENG KOTA SUKABUMI
+1987-10-29
+1983-01-01              Jl. Situ Saeur RT 30 / RW 09, Kel. Sukamelang, Ke0c8.1S3u2b4a1n5g3, 1K7a9b. Subang Kec. SUBIASNTRGI, Kel. SUKAMELANG KABUPATEN SUBANG JAWA BARAT 41211
+1973-03-20
+1997-07-07              Dsn. Kampung Tengah, RT.02/RW.01, Desa Suko0ja8t2i,2K3e4c5.1B4li6m4b0ingsari, Kab.BanyuwISaTnRgI i\r\n Kec. BLIMBINGSARI, Kel. SUKOJATI KABUPATEN BANYUW
+1980-08-04
+1987-10-05              Kp. Cibolerang RT 05 RW 01, Desa Rahayu, Kec. M08a5r2g2a1a9si7h4, 4K0a0b. Bandung Kec. MAISRTGRAI ASIH, Kel. RAHAYU KABUPATEN BANDUNG JAWA BARAT 4021
+2005-06-22
+1979-06-14              Kp. Cipeuteuy, RT. 01/RW.026, Margawati, Garu0t8K1o9t0a3, K6a8b7.0G28arut\\r\\n\\r\\n Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARA
+1982-03-28
+1975-06-18              Kp. Gunungdalung, RT.027/RW.010, Ds. Mekarla0k8s9a5n3a3, C4i8k3a9d4u4, 3Kab. Cianjur \r\n\rS\AnUKDeAc.RCAIKADU, Kel. MEKARLAKSANA KABUPATEN CIANJUR JAWA
+1974-07-12
+1999-04-19              Jl. Mentor Gg. Haji Hambali 3 No. 6, Sukaraja, Ke0c8a2m1a1t6a2n3C3i8ce1n9do, Kota Bandung A\\N\\ArK\\\\n Kec. CICENDO, Kel. SUKARAJA KOTA BANDUNG JAWA BA
+1988-05-11
+                        Kp. Mekar Mukti, RT.003/RW.011, Tribaktimulya0,8P2a1n1g8a2le0n6g8a5n3, Kab. Bandung KeIcS.TPRAINGALENGAN, Kel. TRIBAKTIMULYA KABUPATEN BANDUNG JAW
+
+                        Jl.Karimata Gg.Marron 162 Lingk Krajan Barat RT0.080527/5R5W27.030541,0Kel.Sumbersari KecA.NSuAmK bersari, Kab.Jember, Jawa Timur
+
+                        Jl. Suratno Gg. Kiyuda No.3 RT.01/03 Kel. Kebon0b8a5ru62K4e0c0. 6K7e8ja3ksan, Cirebon Kec. KEJAKSAN, Kel. KEBONBARU KOTA CIREBON JAWA BARAT 45121
+
+                        Jl. Moch Seruji No.20 RT 002 RW 010, Desa Duku0h82D3e3m0p9o8k7,9K1e3c. Wuluhan, Kab. JeSAmUbDerA\Rr\An Kec. WULUHAN, Kel. DUKUH DEMPOK KABUPATEN JEM
+
+                        Ds. Hayawang, RT.03,RW.13, Winduraja, Kawali,0K8a2b3.1C2i2am77is3\3r2\n\r\n Kec. KAWALI,SKTeRlI. WINDURAJA KABUPATEN CIAMIS JAWA BARAT 46253
+
+                        Kp. Cisalak, RT.03/RW.02, Tanjungwangi, Cihamp0e8l2a1s2, K1a0b3.7B9a1n8dung Barat\r\n KecIS.TCRIHI AMPELAS, Kel. TANJUNGWANGI KABUPATEN BANDUNG BARA
+
+                        Jl. Cangkring 1 Gg Cengkir no 83 RT 02 RW 05, D0e8sa95K8e0ja6k7s8a8n5, 8K4ec. Kejaksan, Kota Cirebon Kec. KEJAKSAN, Kel. KEJAKSAN KOTA CIREBON JAWA BARA
+
+                        Ranjingan RT 05 RW 10, Klapagading Kulon, Kec0. 8W5a8n7g8o9n2.8K3a3b4. Banyumas Kec. WBAANPGAOKN, Kel. KLAPAGADING KULON KABUPATEN BANYUMAS JAWA
+
+                        BBK Tasikmalaya RT 06 RW 13, Kel. Margahayu T0e8n3g1a6h4,8M58a1rg4a8hayu Kab. BandungI\SrT\RnI Kec. MARGAHAYU, Kel. MARGAHAYU TENGAH KABUPATEN BA
+
+                        Kp Rawalele RT.11/ RW.02 Kec. DAWUAN, Kel. R0A85W8A6L1E3L1E8K2A33BUPATEN SUBANG IJSATWRIA BARAT 41271
+
+                        Kp. Cibenjot RT.002/RW006, Kel. Jatisari, Kec. Bo0j8o9n5g6p1ic9u3n9g3,7K2a2b. Cianjur Kec. BOIJSOTNRGI PICUNG, Kel. JATISARI KABUPATEN CIANJUR JAWA BARAT 432
+                        Blok Sukamanah, RT.054, RW.015, Cigadung, Kab0.8S5u2b2a4n8g1\0r5\n60Kec. SUBANG, Kel. CAINGAAKDUNG KABUPATEN SUBANG JAWA BARAT 41213
+                        Kp Jangkurang, RT.004/RW.017, Sukamantri, Ga0ru8t9K7o8t5a3\7\r4\8\1n Kec. GARUT KOTA, Kel. SUKAMANTRI KABUPATEN GARUT JAWA BARAT 44152
+                        Nyantong RT 003/RW 007, Des. Cikalang, Kec. Ta0w82a3n2g,0K6o1t7a8.7T8asikmalaya Kec. TAIWSTARNI G, Kel. CIKALANG KOTA TASIKMALAYA JAWA BARAT 46111
+1981-07-03  Kp.Sukawangi RT 02/ RW 02, Des. Cihideung, Ke0c.8P2a3r1o6n7g8p5o7n5g3, Kab. Bandung BarIaStTKReIc. PARONGPONG, Kel. CIHIDEUNG KABUPATEN BANDUNG BAR
+1977-03-01
+1992-11-03  Jl.. Kebon Kopi Gg. Paraji no.101, RT.02/RW.05, C0i8b9e5r3e2u5m9,0C6i3m1a1hi Selatan, Kota CIiSmTaRhIi\\\\r\\\\n Kec. CIMAHI SELATAN, Kel. CIBEUREUM KOTA CIMA
+1997-06-02
+1982-09-15  Jl. Cikaramas, RT 01/RW 03, Desa Cikawung, Kec0. 8T2a2n1ju7n0g3s5ia3n4g8, Kab. Subang Kec. ITSATNRIJUNGSIANG, Kel. CIKAWUNG KABUPATEN SUBANG JAWA BARA
+1983-09-20
+1995-07-18  Kandangan, RT.07/RW.04, Kel. Kandangan, Kec. 0K8re8m10b3u6n3g5,6K5a5b0. Sidoarjo\\\\r\\\\InSTKReIc. KREMBUNG, Kel. KANDANGAN KABUPATEN SIDOARJO JAWA
+2000-04-12
+1990-02-06  Jl. Tipar Gede RT 05 RW 03, Desa Tipar, Kec. Cita0m8i5a8n6g3, 9K6o6ta61S5ukabumi\r\n Kec. CISTTARMI IANG, Kel. TIPAR KOTA SUKABUMI JAWA BARAT 43141
+1981-01-23
+1985-11-13  Perum Buana Residence Blok F no 5 RT 03 RW 210,8D77e7sa89M6a9r6g6a9wati, Kec. Garut Kota, Kab. Garut Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GA
+1981-03-10
+1999-07-22  Ds. Sukamulya, RT.09/RW.03, Paseh Kidul, Paseh0,8K1a5b6.3S8u7m62ed80ang\\\\r\\\\n Kec. PIASTSREIH, Kel. PASEH KIDUL KABUPATEN SUMEDANG JAWA BARAT 45
+1978-11-18
+1990-12-02  Kp. Ciburuy, RT.02/RW.02, Desa. Sukamaju, Kec.0C8i1m2a2u4n0g2,0K4a9b3. Bandung\\r\\n KeIcS.TCRIIMAUNG, Kel. SUKAMAJU KABUPATEN BANDUNG JAWA BARAT
+1984-04-15
+1989-01-19  Jl. Kerinci Blok HE No.7 RT 001/ RW 019, Bojong0G8e8d1e0,2K4o4t8a2B3o3g8or Kec. BOJONG GSEUDAEM, KI el. BOJONG GEDE KABUPATEN BOGOR JAWA BARAT 16922
+1995-04-21
+1969-03-10  Sogaten, RT 001/RW015, Ds. Pajang, Kec. Lawey0a8n5, 7K2o8ta7.3S7u9r0a9karta         ANAK
+1993-06-20
+1991-07-08  Jln. Pramuka RT 07/RW 02, Desa Sokaraja Kidul,0K8e1c3. 1So5k0a0r1a1ja1,2Kab. Banyumas\r\nSAKUecD.ASROAKARAJA, Kel. SOKARAJA KIDUL KABUPATEN BANYUMAS JA
+1985-07-18
+1977-12-25  Jln Barito No.63, RT.007/RW.006, Nganjuk, Man0g8u9n5d3ik4a2r2an5,5K7a5b2.Nganjuk Kec. NGIASNTRJUI K, Kel. MANGUN DIKARAN KABUPATEN NGANJUK JAWA TIMU
+1988-04-04
+1987-06-27  Jl. Babakan Caringin RT 004/ RW 0004, Ds. Sukag0a8l8ih9,7K1e6c7. 4S7u2ka0jadi, Kota BandungSAKeUcD. ASURAKAJADI, Kel. SUKAGALIH KOTA BANDUNG JAWA BARAT 40
+1992-11-04
+2001-01-15  Ds. Karangnangka, RT.03/RW.04, Desa Karanghe0u8l1e2u2t,4K5e9l0.6S4it5uraja, Kab. SumedaInSgT\R\Ir\\n Kec. SITURAJA, Kel. KARANGHEULEUT KABUPATEN SUMED
+1984-11-10
+1988-12-23  Blok Sukamaju RT.001/RW.006 Kel.Melong, Kec.0C8im31a6h9i 8S7e0la8t0a0n Kota Cimahi, JawaISBTaRrIat
+1986-08-07
+1979-12-28  Ds. Karangnangka, RT.01/RW.03, Desa . Karangh0e8u3le8u6t7,0K2e7c9. 4S6ituraja, Kab. SumedIaSnTgR\I\r\\n Kec. SITURAJA, Kel. KARANGHEULEUT KABUPATEN SUME
+1989-11-24
+2005-12-21  Jl. Pancasila no. 18 RT 01 RW 03, Desa Panggung0,8K1e6c4. 8T9e9ga4l3T6imur Kota Tegal KecI.STTERGI AL TIMUR, Kel. PANGGUNG KOTA TEGAL JAWA TENGAH 5212
+1990-05-13
+1984-10-12  Kp. Cipeuteuy RT 003/ RW 026, Ds. Margawati, Kec. Garut Kota, Kab. Garut Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 4
+1999-12-12
+1994-07-12  Wangon, RT.02/RW.10, Wangon, Kab. Banyuma0s\8r2\1n1K9e1c0. 5W4A21N4GON, Kel. WANGON KABUPATEN BANYUMAS JAWA TENGAH 53176
+1988-07-12
+2000-04-23  Jln Tropodo 772, RT 03 RW 01, Kel. Meri, Kec. K0ra8n8g1g0a2n7,5K7o5t9a4M2 ojokerto Kec. KRASUNAGMGAI N, Kel. MERI KOTA MOJOKERTO JAWA TIMUR 61315
+1992-07-20
+1990-01-23  Kp. Cipeuteuy, RT. 06/RW.04, Margawati, Garut0K8o2t1a2, K2a8b0.3G34a2rut\\r\\n Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 4411
+1986-04-24
+            Cibeuti Pabrik RT 04 RW 05, Desa Cibeuti, Kec. K0a8w9a5lu1,0K4o4t7a3T3a5sikmalaya Kec. KAWISTARLUI , Kel. CIBEUTI KOTA TASIKMALAYA JAWA BARAT 46182
+
+            Kp. Pabuaran no. 35 RT 01 RW 06, Desa Pabuara0n8,5K2e1c8. 2B1o5jo8n6g6Gede Kec. BOJONG GEDE, Kel. PABUARAN KABUPATEN BOGOR JAWA BARAT 16920
+
+            Kp. Lengkong RT 06/ RW 08, Des. Ciheulang, Kec. Ciparay, Kab. Bandung               SAUDARA
+
+            Kp. Balandongan RT 05 RW 11, Desa Buniwangi,0K8e5c6. 6S6u0ra2d4e1,6Kab. Sukabumi\\\\r\I\S\T\RnI Kec. SURADE, Kel. BUNIWANGI KABUPATEN SUKABUMI JAWA
+
+            Kp. Urug RT.01/RW.05, Sukaraja, Kec. Banyuresm08i,9K5a0b1.5G1a5r1u5t\9\\\r\\\\n Kec. BANYISUTREI SMI, Kel. SUKARAJA KABUPATEN GARUT JAWA BARAT 44191
+
+            KP Mekar Bakti RT 04 RW 02, Desa Margamekar0, 8K3e1c.1P6a5n8g1a0l7e8ngan, Kab. BandungISBTaRrIat\\r\\n Kec. PANGALENGAN, Kel. MARGAMEKAR KABUPATEN
+
+            Kp. Cimanggah RT 01/ RW 02, Desa Cintakarya, K0e8c1.3S1a3m5a5r2a9n9g5, Kab. Garut Kec. SAMARANG, Kel. CINTAKARYA KABUPATEN GARUT JAWA BARAT 441
+
+            Lingk. Sumanding Wetan RT 02 RW 05, Desa Me0k8a5r1sa6r1i,5K2e9c0.2B8anjar, Kota Banjar KAeDcI.KBANJAR, Kel. MEKARSARI KOTA BANJAR JAWA BARAT 46317
+
+            Jl. Soekarno Hatta GG Hasa II, RT 02 RW 07, Kec.0B8a1b3a3k9a4n5C8i1p7a9ray, Kota Bandung IKSeTcR.IBABAKAN CIPARAY, Kel. BABAKAN CIPARAY KOTA BANDUNG J
+
+            Jl. Tentara Pelajar No 17/107, RT 002/RW 001, Ds. Pekirinngan, Kec. Kesambi, Kota.\r\nCirebon Kec. KESAMBI, Kel. PEKIRINGAN KOTA CIREBON JAW
+
+            Jl. Warung Petey, Babakan Wetan RT 003/ RW 003, Des. Sukakarya, Kec. Banyuresmi\r\n Kec. BANYURESMI, Kel. SUKAKARYA KABUPATEN GARUT JA
+
+            Jl. Pembina RT 02 W 06 Desa Karang Pucung, Pu0rw87o7k6er9t1o8S6e4l8a3tan, Kab. BanyumasS\Ar\UnDKAeRcA. PURWOKERTO SELATAN, Kel. KARANGPUCUNG KABUPAT
+
+            Perum Tegal Besar Permai II X/12 Lingk. Karanga0n8y2a3r,3R6T37080861/9RW016, Des. Tegal BIBeUsar Kec. KALIWATES, Kel. TEGAL BESAR KABUPATEN JEMBER JAW
+
+            Tirtoyoso RT 003/ RW 013, Ds. Manahan, Kec. Ba0n8j5a6rs0a3r4i,7K1o5t0a3. Surakarta  SUAMI
+
+            Jl. Neglasari Utara RT 01 RW 04, Ds. Sukapada, K0e8c7. 7C7ib0e8u4n2y4in1g5 Kidul, Kota BanduBngAPKAeKc. CIBEUNYING KIDUL, Kel. SUKAPADA KOTA BANDUNG JAWA
+
+            Dusun Krajan RT 01 RW 03, Desa Munding, Kec.0B8e3rg8a7s0,7K4a8b0.0S1emarang Kec. BERGISATSR, IKel. MUNDING KABUPATEN SEMARANG JAWA TENGAH 50552
+
+            Kp. Cipurut, RT.01/RW.05, Baros, Arjasari, Kab. B0a8n3d8u9n0g8\0\0r\1\0n0Kec. ARJASARI, KelI.SBTARRI OS KABUPATEN BANDUNG JAWA BARAT 40379
+
+            KP. Cibening Tiga RT 04 RW 07 Desa Cibening Ke0c8. 5P8a1m0i6ja4h2a8n1K4ab. Bogor\\r\\n KeScA. PUADMARIJAAHAN, Kel. CIBENING KABUPATEN BOGOR JAWA BARAT 16
+
+            Kp Babakan Sadang RT.002/RW.017, Kel.Banjara0n8W82e0t0a0n4, 6K9e8c.7B7anjaran, Kab.BandIBuUng, Jawa Barat Kec. BANJARAN, Kel. BANJARAN WETAN KABUPAT
+
+            Jl. Kebon Kangkung XI RT 05 RW 08 Kiaracondon0g8K9o5t0a6B0a6n6d7u9n7g Kec. KIARACOND0O0N0G00, 0Kel. KEBON KANGKUNG KOTA BANDUNG JAWA BARAT 40284
+
+            Kp. Cikatubang, RT.04/RW.02, Kel. Sukagalih, Ke0c8.5S8u6k1a1ra0t1u3,6K3ab. Tasikmalaya\\r\I\SnTRKIec. SUKARATU, Kel. SUKAGALIH KABUPATEN TASIKMALAYA JA
+1986-05-22  Perum Puri Kahuripan I Blok D.6, Ds. Jati, Kec. Ja0te8n7,8K0a1b0.4K1a9r8a8nganyar  SUAMI
+1994-05-15
+1997-05-12  Nanasan, RT 001/RW 003, Des. Malangjiwan, Ke0c8. C19o3lo5m52a2d7u5, K3ab. Karanganyar K0ec0.0C0OLOMADU, Kel. MALANGJIWAN KABUPATEN KARANGANYAR J
+1976-02-27
+1973-06-24  Jl. Kartini Blk. P.A No 18 RT 06 RW 02, Desa Man0g8k7u7ku77su2m01a4n4,4Kec. Tegal Timur KoIStaTRTIegal\r\n Kec. TEGAL TIMUR, Kel. MANGKUKUSUMAN KOTA TEG
+1970-04-07
+1979-02-02  Jl. Sriguntung GG. Gaok No. 17 Rt 004/ Rw 006, Des. Randugunting, Kec. Tegal\r\nASNeAlaKtan Kec. TEGAL SELATAN, Kel. RANDUGUNTING KOTA TEGAL JA
+1982-11-16
+1986-02-20  Jl. Kecombron, RT. 01/RW.04, Bukateja, Kab. Pur0b8a5li8n4g2g2a7\r7\7n7K3ec. BUKATEJA, Kel.ABNUAKKATEJA KABUPATEN PURBALINGGA JAWA TENGAH 53382
+1979-04-28
+1982-08-27  Majasari, RT. 04/RW.04, Bukateja, Kab. Purbalin0gg8a5\2r9\n57K2e5c5. 9B4UKATEJA, Kel. MAJASARI KABUPATEN PURBALINGGA JAWA TENGAH 53382
+1982-09-27
+1963-09-29  Jalan Ciliwung Gg. Cindemas no 7 RT 03 RW 02, D08e5sa60P0a9n5d7e5re8j4o, Kec. BanyuwangiI,SKTRabI . Banyuwangi\r\n Kec. BANYUWANGI, Kel. PANDEREJO KABUP
+1992-10-22
+1985-11-12  KP. SUKATAMBAH RT 01 RW 04 Kec. CIKAJANG, Kel. CIBODAS KABUPATEN GARUT JAWA BARAT 44171
+1996-02-10
+1997-04-13  Klurahan RT 003/ RW 001, Des. Kadipaten, Kec. Solomerto, Kab. Wonosobo Kec. SELOMERTO, Kel. KADIPATEN KABUPATEN WONOSOBO JAWA TENG
+1988-09-04
+1994-12-28  Dsn Balongcangkring RT 01 RW 03, Kel. Jumenen0g8,5K5e3c6.7M2o02jo8a1nyar, Kota MojokerStAoUKDeAcR. MA OJOANYAR, Kel. GAYAMAN KABUPATEN MOJOKERTO JA
+1978-01-04
+1991-03-16  Kp. Maleer, RT.01/RW.014, Sukasenang, Banyur0e8sm53i,5K1a0b7.0G8a8r3ut Kec. BANYURESMI, Kel. SUKASENANG KABUPATEN GARUT JAWA BARAT 44191
+1992-06-25
+1987-04-11  Kp. Cipami RT 003/RW 001, Des. Citeko, Kec. Ple0re8d1,2K1a8b6.2P0u5r7w5akarta\r\n Kec. PLERED, Kel. CITEKO KABUPATEN PURWAKARTA JAWA BARAT 41162
+1984-02-04
+2000-02-03  Kp. Mekar Sari, RT.01/RW.06, Jayaraga, Tarogong Kidul, Kab. Garut Kec. TAROGONG KIDUL, Kel. JAYARAGA KABUPATEN GARUT JAWA BARAT 44122
+1998-06-15
+1989-10-04  Griya Candi Pratama Blok A6 No.03, RT 29 RW 070,8D96u7ru6n4g8b6e2d1u9g, Candi, Kab. SidoSaUrjoAMKeIc. CANDI, Kel. DURUNGBANJAR KABUPATEN SIDOARJO JAW
+2000-11-03
+1995-01-10  Sukahurip RT 006/ RW 007, Des. Kahuripan, Kec.0T8a8w21a8n6g0, 2K6o8ta5. Tasikmalaya Kec. ITSATWRIANG, Kel. KAHURIPAN KOTA TASIKMALAYA JAWA BARAT 4611
+1982-08-12
+1989-04-25  Windunegara RT 001/RW 004, Ds. Windunegara, Kec. Wangon, Ds. Banyumas Kec. WANGON, Kel. WINDUNEGARA KABUPATEN BANYUMAS JAWA T
+1983-05-18
+1988-10-11  Perboto RT.008/RW.003, Kel.Perboto, Kec.Kalika0j8ar56K4a1b9.W49o7n6o8sobo, Jawa Tengah Kec. KALIKAJAR, Kel. PERBOTO KABUPATEN WONOSOBO JAWA TEN
+1980-10-12
+1970-06-18  Dusun Jasem, RT. 01/RW.05, Kel. Watugaluh, Ke0c8. 5D8iw52e2k,0K0a4b3.2Jombang, Jawa TimISuTrRKIec. DIWEK, Kel. WATUGALUH KABUPATEN JOMBANG JAWA TI
+1983-03-12
+1992-11-05  Kp. Sandang Pangan Kel.Mekarwangi, Kec.Bojon0g8lo9a5K4i2d2u3l7K0o2t0a1Bandung, Jawa Ba0r0at0\0\0\\0r\\\\n Kec. BOJONGLOA KIDUL, Kel. MEKAR WANGI KOTA BA
+1981-02-02
+1992-03-25  Perum Graha Citra Mas Blok L 20, Tegal Besar,Ka0li8w7a7t5e7s7J7e5m6b7e3r\r\n Kec. KALIWATISETSR, IKel. TEGAL BESAR KABUPATEN JEMBER JAWA TIMUR 68132
+1984-11-07
+1986-03-29  Jl. Flamboyan No7A, RT 003/RW 003, Ds.Pilang, 0K8e9c.6K1a0d5e4m67a3n2gan, Kota ProbolingSgAoUKDeAcR. KAADEMANGAN, Kel. PILANG KOTA PROBOLINGGO JAWA TI
+1966-08-16
+            Jl. Kopeng RT 04 RW 03, Desa Karamat, Kec. Gun0u8n5g7P9u58yu6h4,2K1o2ta Sukabumi\\\\r\\IS\\TnRIKec. GUNUNG PUYUH, Kel. KARANG TENGAH KOTA SUKABUMI
+
+            Kulon Pasap RT 002/RW 011, Ds. Cilembang, Kec0.8C5ih3i5d2e3u0n4g4,1K4ota Tasikmalaya KeIcS.TCRIIHIDEUNG, Kel. CILEMBANG KOTA TASIKMALAYA JAWA BARAT
+
+            Jl Gardu No.50 RT.011/RW.002, Kel.Srengsengsa0w8a1h3,8K0e7c6.8Ja3g7a6karsa, Jakarta SelatIaSnT,RDI KI Jakarta Kec. JAGAKARSA, Kel. SRENGSENG SAWAH KOTA JA
+
+            Kp. Pendeuy, RT.01/RW.018, Margawati, Garut K0o8t9a5,3K8a0b2.4G9a3r8u3t\\r\\n Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 44113
+
+            Kp Loji, RT.003/RW.008, Keresek, Cibatu, Garut K0e8c9.5C3I9B6A8T6U0,6K4e0l. CIBATU KABUPATEN GARUT JAWA BARAT 44185
+
+            Jl. Citepus 2, RT 09/RW 06, Kel. Pajajaran, Kec. C0ic8e8n2d0o0,0K1o1t4a4B4a2ndung\\r\\n Kec. ICSITCREINDO, Kel. PAJAJARAN KOTA BANDUNG JAWA BARAT 40713
+
+            Tambaknegara RT 07 RW 02 Desa Tambaknegara0,8K5e7c9.9R5a4w9a2l0o1, Kab. Banyumas\r\BnAKPeAcK. RAWALO, Kel. TAMBAKNEGARA KABUPATEN BANYUMAS JA
+
+            Jl. Bantar RT 01/ RW 02 Kec. CIHIDEUNG, Kel. AR0G8A2S2A1R09I K0O12T6A2TASIKMALAYA JAWISATRBIARAT 46122
+
+            Kp. Pangampaan RT.05/RW.06, Kel. Pakuwon, Ke0c8.5G2a2r4u0t8K1o7t1a0, Kab. Garut\\r\\n Kec. GARUT KOTA, Kel. PAKUWON KABUPATEN GARUT JAWA BARAT
+
+            Kp Cisauk RT.002/RW.005, Kel.Sukamaju, Kec.Cib0u8n57gb1u5l8a3n4g4K0a9b.Bogor, Jawa Barat Kec. GARUT KOTA, Kel. CIWALEN KABUPATEN GARUT JAWA BARA
+
+            Kp. Cisalak, RT.03/RW.02, Tanjungwangi, Cihamp0e8l3a8s2, K2a9b6.2B9a7n0dung Barat\\r\\n KIeScT.RCI IHAMPELAS, Kel. TANJUNGWANGI KABUPATEN BANDUNG BA
+
+            Jl. Cigondewah Hilir RT 02 RW 03, Margaasih Kab0.8B9a6n6d4u0n1g70K0e6c. MARGAASIH, Kel.ISRTARHI AYU KABUPATEN BANDUNG JAWA BARAT 40218
+
+            Jl. Letjen S. Parman, Gg. Melati No.4, RT.003/RW0.8070712, 0K6e4l.4S9u9m0berrejo, Kel. BanyuISwTaRnIgi, Kab. Banyuwangi\\\\r\\\\n Kec. BANYUWANGI, Kel. SUMBE
+
+            Jl. Cigondewah Hilir RT 02 RW 03, Cigondewah H0il8ir3,1M14a9rg2a8a0s2ih7, Kabupaten BanduInSTgRKI ec. MARGAASIH, Kel. CIGONDEWAH HILIR KABUPATEN BANDU
+
+            Kp. Kadumanis, RT.03/RW.01, Baros, Arjasari, Ka0b8.1B3a2n1d1u2n1g8\8\r3\\n081321121883\IS\rT\R\In Kec. ARJASARI, Kel. BAROS KABUPATEN BANDUNG JAWA BAR
+
+            Blok Grogol RT 003/ RW 003, Des. Grogol, Kec. Gunung Jati, Kab. Cirebon Kec. GUNUNGJATI, Kel. GROGOL KABUPATEN CIREBON JAWA BARAT 45151
+
+            Ds. Karangnangka, RT.01/RW.03, Karangheuleut0, 8S2it1u1ra5j6a4, 9K9a8b5. Sumedang\\r\\n KIeScT.RSIITURAJA, Kel. KARANGHEULEUT KABUPATEN SUMEDANG JAW
+
+            Jl. Candi VI A RT 001/ RW 008, Des. Karang Besu0ki8,5D7e3s9. 7S3u6k8u8n0, Kota. Malang SUAMI
+
+            Batu Rengat, RT.03/RW.13, Cigondewah Kaler, B0a8n9d5u3n4g3K3u9l5o7n7,4Kota Bandung\\r\I\SnTKReI c. BANDUNG KULON, Kel. CIGONDEWAH KALER KOTA BANDU
+
+            Blok Kolor, Rt 003/ Rw 006, Ds. Kademangan, Ke0c8. 5K2a3d2e8m2a2n5g3a7n, Kota ProbolinggoISKTeRcI. KADEMANGAN, Kel. KADEMANGAN KOTA PROBOLINGGO JAW
+
+            Kp. Pasir Wangi, RT.018/RW.04, Sindanglaya, Ta0n8ju1n1g2s0ia5n2g2,1K0a0b. Subang Kec. TANISJUTRNIGSIANG, Kel. SINDANGLAYA KABUPATEN SUBANG JAWA BARA
+1983-09-21  Kp. Cibentar RT 01 RW 09, Desa Cikadut, Kec. Cimenyan, Kab. Bandung Kec. CIMEINSTYRAIN, Kel. CIKADUT KABUPATEN BANDUNG JAWA BARAT 40399
+1982-05-05  Jl.RA Kosasih Gg.limus Kp.Cijangkar Kaler Rt.01/00285K7e9l.8C7is0a3ru0a77Kec.Cikole\\\\r\\\\nSUKAecM. ICIKOLE, Kel. CISARUA KOTA SUKABUMI JAWA BARAT 43111
+1984-03-09  Jl. Saturnus Ujung II No. 8 RT 007/ RW 014, Des.0M88a1n0ja2h2le1g3a9,4K1e2c. Rancasari, KotaSBAaUnDdAuRnAg Kec. RANCASARI, Kel. MANJAHLEGA KOTA BANDUNG JAW
+1990-10-22  Babakan Anyar RT.002/RW.018, Desa Sukamana0h8,1K3e2c2. 3C4ip9e9d2e4s, Tasikmalaya Kec.0C0I0P0E0DES, Kel. SUKAMANAH KOTA TASIKMALAYA JAWA BARAT 461
+1996-07-22  DSN Dadapan RT 05 RW 02, Desa Boyolangu, Ke0c.8B5o7y9o5l5a2n8g1u6K5ab. Tulungagung KeIScT.RBIOYOLANGU, Kel. BOYOLANGU KABUPATEN TULUNGAGUNG JA
+1999-10-17  Kp. Sawah Lega, RT.05/RW.01, Ngamplang Sari, 0C8ila2w12u6, 9K4a5b1. 4G8arut\\r\\n Kec. CILAWU, Kel. SUKAMAJU KABUPATEN GARUT JAWA BARAT 444151
+1995-06-15  Kp. Pasantren RT 01/ RW 04 Kec. SUKAWENING, Kel. MARIPARI KABUPATEN GARUT JAWA BARAT 44184
+1995-05-10  Dusun Krajan RT 02 RW 06, Desa Purwoasri, Kec0a8m5a7t4a5n6G2u2m53u9kmas, Kabupaten JeISmTRbIer\\\\r\\\\n Kec. GUMUK MAS, Kel. GUMUKMAS KABUPATEN J
+1979-09-30  Lobunta Jl. Neptunus II No.07 RT 003/RW007, De0s8.7B8a2n6j4a2rw22a3n0gunan, Kec. Mundu, Kab. Cirebon Kec. MUNDU, Kel. BANJARWANGUNAN KABUPATEN
+1998-07-28  Jl. Cigondewah Kaler, RT.02/RW.03, Cigondewah08K2al1e1r7, 4B3a1n5d7u8ng Kulon, Kota BandSuAnUgD\A\Rr\A\n Kec. BANDUNG KULON, Kel. CIGONDEWAH KALER KOTA
+1995-01-07  Kp. Burujul RT.01 RW.23, Desa Margawati, Kecam08a3t8a3n0G7a0r8u8t4K9ota, Kabupaten GarISuTt\R\I\\r\\\\n Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GAR
+1999-03-01  Jln. Bobosan RT 005/RW 001, Desa Bobosan, Kec. Purwokerto Utara, Kab. BanyumSaUsAKMeIc. PURWOKERTO UTARA, Kel. BOBOSAN KABUPATEN BANYU
+1987-05-16  Kp Cikorek, RT.002/RW.001, Karyamekar, Cilawu0K83ec8.9C3I1L6A3W9U11, Kel. KARYAMEKAR KABUPATEN GARUT JAWA BARAT 44181
+1974-10-23  Jl. Merbabu III No. 150, RT 007/RW 003, Des. Tri0w8u2n1g31Lo6r5,4K0e4c3. Kademangan, KotaISPTrRoIbolinggo Kec. KADEMANGAN, Kel. TRIWUNG LOR KOTA PROBO
+1971-09-15  Mangunharjo RT 01 RW 04, Desa Mangunharjo,0K8e9c5. 3Tu60gu9,3K7o2t0a9Semarang Kec. TUISGTURI, Kel. MANGUNHARJO KOTA SEMARANG JAWA TENGAH 50272
+1998-06-11  Kp Cibeureum RT.001/RW.006, Kel.Sukaratu, Ke0c.8B9a5n1y5u1r9es3m85i,4Kab.Garut Kec. BAN+6Y2UR8E9S5M-3I3,1K1e-l6. 6SU63K5ARATU KABUPATEN GARUT JAWA BARAT 4419
+1980-10-16  Kmp. Sidodadi RT 032/RW 011, Des. Pasirkareum0b8i5,2K8e3c2. 7S8u5b4a1ng, Kab. Subang KecA.NSAUKBANG, Kel. PASIRKAREUMBI KABUPATEN SUBANG JAWA BARA
+2002-11-05  Parungkamal, RT.02/RW.06, Lumbir, Kab. Banyu0m8a5s8\7r\0n7K6e5c7.3L5UMBIR, Kel. PARUNSGAUKADMARAAL KABUPATEN BANYUMAS JAWA TENGAH 53181
+1988-05-05  Kp. Maleer RT 01 RW 16, Desa Sukasenang, Kec.0B8a2n1y2u6r3e2sm07i,0K0ab. Garut \r\n Kec. BANYURESMI, Kel. SUKASENANG KABUPATEN GARUT JAWA BARA
+2002-11-09  Kp. Langen Sari RT 06/ RW 01 Kel. Langensari, Ke0c8.5K1e7ji4w1a3n7,5K1a9b. Wonosobo\\r\\n Kec. WONOSOBO, Kel. KEJIWAN KABUPATEN WONOSOBO JAWA T
+1985-04-24  Ds. Karangnangka, RT.01/RW.03, Karangheuleut0, 8S2it3u0ra3j8a1, 6K8a2b. Sumedang\\r\\n KIeScT.RSIITURAJA, Kel. KARANGHEULEUT KABUPATEN SUMEDANG JAW
+1987-09-07  Kp. Kaum, RT.01/RW.06, Garut, Sukasenang, Ban0y8u9r5e3s9m3i1\r7\5n5K9e9c. BANYURESMI, Kel. SUKASENANG KABUPATEN GARUT JAWA BARAT 44191
+1993-04-17  Perum Cempaka Indah Blok 7, Jalan Patimura 1 N0o87.6861K0e1l9.L0e8b6a3kjaya, Kec.Karangpawitan, Kab.Garut Kec. KARANGPAWITAN, Kel. LEBAKJAYA KABUPA
+1997-10-23  Jl. Mekar I No.37A, RT 003/ RW 010, Des. Kemiri0M88u8k0a8, 0K8e3c.9B0e7ji, Kota. Depok KecS.UBAEMJI,IKel. KEMIRIMUKA KOTA DEPOK JAWA BARAT 16423
+1992-11-10  Kp. Babakan Palah, RT.04/RW.01, Desa Citeras, K0e8c9.6M84a4la2n4g8b6o2g, Kab. Garut\\r\\nISKTeRc.I MALANGBONG, Kel. CITERAS KABUPATEN GARUT JAWA BARA
+1987-05-31  Jl. Mentor GG BP Hasan No. 18, Cidamar RT 03/R0W820172,1K9e8l6. 1S3u5karaja, Kec. CicendoIS, TKRoIta Bandung Kec. CICENDO, Kel. SUKARAJA KOTA BANDUNG JAW
+1996-10-14  Hujung Kulon RT 10 RW 05, Desa Utama, Kec. Ci0m8a9h5i3S5e2la9t8a8n6K0o0ta Cimahi\\\\r\\\\IBnUKec. CIMAHI SELATAN, Kel. UTAMA KOTA CIMAHI JAWA BARAT 4
+1968-01-22  Kp. Dondog RT 04 RW 06, Desa Wonosari, Kec. N0g8a7li8y1a5n7, 6K2o9ta01Semarang\\\\r\\\\nISKTeRcI. NGALIYAN, Kel. WONOSARI KOTA SEMARANG JAWA TENGAH
+1993-11-11  Jl. Wakafiah No. 1606 RT 002/RW 010, Des. Purwokerto Wetan, Kec. Purwokerto STUimAuMr,I Kab. Banyumas Kec. PURWOKERTO TIMUR, Kel. PURWOKER
+2006-12-25  Kp. Pojok RT 15 RW 03, Desa Cilolohan, Kec. Tan0ju8n3g8j4a3ya0,4K0a4b8.9Tasikmalaya\r\n Kec. TANJUNGJAYA, Kel. CILOLOHAN KABUPATEN TASIKMALAYA JAW
+1991-01-18  Dusun Krajan RT.001/RW.001, Kel.Legundi, Kec.B0a8n1t6a1r5a6n6K4a2b2.5Probolinggo, Jawa Timur Kec. BANTARAN, Kel. LEGUNDI KABUPATEN PROBOLINGGO J
+1999-12-22  Kalangsari II RT 002/RW 002, Des. Sukamanah, Kec. Cipedes, Kota Tasikmalaya Kec. CIPEDES, Kel. SUKAMANAH KOTA TASIKMALAYA JAWA BARAT 46
+2001-01-01  Karangwuni RT 004/ RW 003, Ds. Kadipaten, Kec. Selomerto, Kab. Wonosobo Kec. SELOMERTO, Kel. KADIPATEN KABUPATEN WONOSOBO JAWA TEN
+1990-07-04  Komp PT. Pos No.22, RT 001/RW 012, Ds. Rancabango, Kec. Tarogong Kaler, Kab. Garut Kec. TAROGONG KALER, Kel. RANCABANGO KABUPATEN GAR
+1998-05-26  Kp. Cipeuteuy, RT. 03/RW.026, Margawati, Garu0t8K3o8t1a8, K5a9b7.2G80arut\\r\\n Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 441
+1985-09-16  Margahayu Tengah RT 07 RW 13, Margahayu Ka0b8. 2B1a2n9d8u5n0g2K3e0c. MARGAHAYU, KeISl.TMRIARGAHAYU TENGAH KABUPATEN BANDUNG JAWA BARAT 402
+2019-12-01  Kp. Cipeuteuy, RT. 02/RW.026, Margawati, Garu0t8K1o2t2a2, K4a1b1.7G23arut Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 44119
+1999-04-28  Kp. Pasir Malang, RT.02/RW.02, Tanjungkamunin0g8,8T9a7r1o8g1o2n5g4K5aler, Kab. Garut\r\n Kec. TAROGONG KALER, Kel. TANJUNGKAMUNING KABUPATEN G
+1987-08-16  Jl. Sumber Wuni, RT 08/ RW 02 Kec. KEPANJEN, 0K8e5l.1D5I0LE6M307K9A7BUPATEN MALANGSUAMI
+2005-11-19  Kp. Ciburuy Girang, RT 002/ RW 002, Ds. Sukama0j8u3, 8K6e3c.1C6i4m9a3u5ng, Kab. Bandung KBeAcP.ACKIMAUNG, Kel. SUKAMAJU KABUPATEN BANDUNG JAWA BAR
+1970-03-19  Ngampel Wetan, RT. 04/RW.06, Desa Wonorejo, Kec. Solomerto, Kab. Wonosobo\r\n\r\n Kec. SELOMERTO, Kel. WONOREJO KABUPATEN WONOSO
+1994-07-22  Jl. Ampera Barat Babakan Cikiara RT 01 RW 10, D0e8s1a3P1a4n1g4l6a4y0u3ngan, Kec. Cipedes,ISKToRtaI Tasikmalaya Kec. CIPEDES, Kel. PANGLAYUNGAN KOTA TASIKM
+1998-06-17  Klapagading Kulon RT 05 / RW 10, Desa Klapagad0i8n8g9K8u0l8o0n3, 3K1e2c. Wangon, Kab. BaSnAyUumDAasRAKec. WANGON, Kel. KLAPAGADING KULON KABUPATEN BA
+1989-04-23  Jl. Karimata ll no. 164 Desa Sumbersari, Kec Sum0b8e1r3sa3r6i,3K5a5b23Je7mber\r\n Kec. SUMISBTERRISARI, Kel. SUMBERSARI KABUPATEN JEMBER JAWA TIMUR 68
+1987-08-31  Dusun Pasir Hantap RT 05 RW 04 Desa Genteng,0S8u1k2a2s4a3ri3, 8K3a4b5. Sumedang \\r\\n KSeAcU. DSUAKRASARI, Kel. SUKASARI KABUPATEN SUMEDANG JAWA BARA
+1993-07-01  Kp. Cipeuteuy, RT. 03/RW.026, Margawati, Garu0t8K2o1t1a7, K0o1t2a70G3arut Kec. GARUT KOISTTAR,IKel. MARGAWATI KABUPATEN GARUT JAWA BARAT 44119
+1989-10-27  Kp Sindang Galih RT.004/RW.013, Kel. Sukagalih, Kec. Tarogong Kidul Kab.Garut, Jawa Barat Kec. TAROGONG KIDUL, Kel. SUKAGALIH KABUPATEN GA
+1981-03-21  Jl. Jiwa Besar, Gg. Cempaka Ligar RT 04/RW 09, 0C8il9e5m2b4a3n8g3,0C5ih0ideung, TasikmalayISaTKReI c. CIHIDEUNG, Kel. CILEMBANG KOTA TASIKMALAYA JAWA BA
+1996-05-25  Kp. Jungkeuyang, RT.02/RW.014, Margawati, Ga0r8u3t 1K2o9ta5,1K3a6b9.3Garut\r\n Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 441
+1996-10-26  Kp. Cicarulang RT 15 RW 06, Desa Cikunten, Kec.0S8i9n6g6a3p1a3rn4a3,9K3abupaten TasikmalIaSyTaRIKec. SINGAPARNA, Kel. CIKUNTEN KABUPATEN TASIKMALAYA J
+1977-03-17  Kp. Cipeuteuy, RT.03/RW.04, Margawati, Garut K0o8t7a8,1K3a0b0.5G7a7r7ut Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 44113
+1996-07-05  Kp. Cibatu RT 02 RW 06, Desa Cilame, Kec. Ngam0p8r5a7h5,9K2a0b6.8B6a2ndung Barat\\\\r\\\0\0n0\0\\0\0r\\\\n\\\\r\\\\n Kec. NGAMPRAH, Kel. CILAME KABUPATEN B
+1992-04-12  Dsn Doplang I RT.006/RW.004, Kel.Pakis, Kec.Bringin Kab.Semarang, Jawa TengahI\S\TrR\\In Kec. BRINGIN, Kel. PAKIS KABUPATEN SEMARANG JAWA TEN
+1989-05-30  Gemblengan, RT. 08/RW.04, Gemblengan, Garun0g8,3K1a7b0.6W33o6n2o2sobo Kec. GARUNG, Kel. GEMBLENGAN KABUPATEN WONOSOBO JAWA TENGAH 5636
+1971-05-19  Jl. Pekiringan, RT. 02/RW.04, Bukateja, Kab. Purb0a8l9in5g1g7a6\2r\5n2K6e9c. BUKATEJA, Kel. BSAUUKADTAERJA KABUPATEN PURBALINGGA JAWA TENGAH 53382
+2000-12-30  Kp Pasir Malang, RT.02/RW.02, Tanjung Kamunin0g8,9T9a9r0o8g0o6n2g5Kaler \\r\\n\\r\\n Kec. TAROGONG KALER, Kel. TANJUNGKAMUNING KABUPATEN GARU
+1992-08-18  Kp Cibuyutan RT.002/RW.007, Desa Sukalaksana0,8B7a8n7y1u3r8es2m88i,7Garut Kec. BANYURESMI, Kel. SUKALAKSANA KABUPATEN GARUT JAWA BARAT 44191
+1993-06-18  Kp. Pasir Wangi, RT.018/RW.04, Sindanglaya, Ta0n8ju2n2g4s0ia8n7g2,9K9a7b. Subang\\r\\n KeIcS.TTRAINJUNGSIANG, Kel. SINDANGLAYA KABUPATEN SUBANG JAWA
+1988-06-06  Rawageni RT 02/RW 07 Desa Ratu Jaya Kecamat0a8n7C7i8p5a1yu7n48g2K4ota Depok Kec. CIPSAUYUAMNGI , Kel. RATUJAYA KOTA DEPOK JAWA BARAT 16442
+1998-10-26  Kp Dengkeng RT.003/RW.010 Kel.Buninagara, Ke0c8.3Si1n0d0a9n6g3k0e4rt0a, Kab.Bandung BaIrSaTt\R\I\\r\\\\n Kec. SINDANGKERTA, Kel. BUNINAGARA KABUPATEN B
+1975-07-18  Jl. Anyelir RT.069/RW.019, Karanganyar, Kec. Su0b8a1n2g3, K6a4b0u4p4a9t4en Subang Kec. SUBISATNRGI , Kel. KARANGANYAR KABUPATEN SUBANG JAWA BARAT 412
+2000-11-02  Kp. Ciruntah, RT.03/RW.04, Tribaktimulya, Panga0l8e8n2g9a7n4, 2K3a9b1. 2Bandung\\r\\n Kec.ISPTARNIGALENGAN, Kel. TRIBAKTIMULYA KABUPATEN BANDUNG JAW
+1989-07-01  Kp. Cipeuteuy, RT. 02/RW.026, Margawati, Garu0t8K2o1t2a8, K1a1b1.3G17arut\\r\\n Kec. GARUT KOTA, Kel. MARGAWATI KABUPATEN GARUT JAWA BARAT 441
+1988-03-15  Ds. Karangnangka, RT.01/RW.03, Karangheuleut0, 8S5it7u5ra9j1a8, 2K2a6b4. Sumedang \\\\r\\\S\AnU\\D\\ArR\\A\\n Kec. SITURAJA, Kel. KARANGHEULEUT KABUPATEN SU
+1979-10-11  Banjaran, RT.02/RW.02, Candiyasan, Kretek, Kab0.8W82o3n2o2s5o6b2o56K0ec4. KERTEK, Kel. CANDIYASAN KABUPATEN WONOSOBO JAWA TENGAH 56371
+1998-11-26  Kalibunder Regency Blok T.8, RT 005/ RW 001, D0e8s3. 1M0a1l2e3b0e0r,9K8ec. KarangTengah IKBeUc. KARANGTENGAH, Kel. MALEBER KABUPATEN CIANJUR JAWA B
+2003-03-28  Kp. Ponjen RT3/RW4, Desa Bomerto, Kec.Wonos0o8b2o1,3K3a1b5.1W59o0nosobo Kec. WONOSOBO, Kel. BOMERTO KABUPATEN WONOSOBO JAWA TENGAH 56
+1973-10-11  Kp. Cipanji, RT.05/RW.01, Cihampelas, Kab. Band0u8n3g13B9a7ra7t68K9e2c. CIHAMPELAS, KeIlS. TCRIHI AMPELAS KABUPATEN BANDUNG BARAT JAWA BARAT 40562
+1986-05-25  Jl.Reungas RT 03 RW 06, Desa Gempolsari, Kec. B08an9d7u76n0g6K3u0lo5n, Kab. Bandung\n KISeTcR. IBANDUNG KULON, Kel. GEMPOL SARI KOTA BANDUNG JAWA B
+1992-09-08  Jl. Ledeng Suket Duwur, RT 005/RW 010, Ds. Kal0ija8g5a6,2K4e6c1.0H7a8r8jamukti, Kota Cirebon Kec. HARJAMUKTI, Kel. KALIJAGA KOTA CIREBON JAWA BARAT 4
+1980-06-17  Njagalan, RT 007/ RW 008, Ds. Selomerto, Kec. Selomerto, Kab. Wonosobo Kec. SELOMERTO, Kel. SELOMERTO KABUPATEN WONOSOBO JAWA TENG
+1991-05-21  Kp. Pasir Wangi, RT.018/RW.04, Sindanglaya, Ta0n8ju9n9g1s1ia3n1g7,5K9ab. Subang Kec. TANISJUTRNIGSIANG, Kel. SINDANGLAYA KABUPATEN SUBANG JAWA BARA
+1980-10-23  kp.sindang panon rt03/019 Sindang Panon, Ban0ja8r2a1n1, 6K8a8b0, B76an6dung\r\n Kec. BANISJATRAI N, Kel. SINDANGPANON KABUPATEN BANDUNG JAWA BARAT
+1999-04-12  Sadakan Lor RT 001/RW 003, Des. Gumpang, Kec0.8K5a7r7t3as3u3r4a4,8K9ab. Sukoharjo SUAMI
+1978-08-04  Kp. Sindanggalih, RT.04/RW.013, Sukagalih, Taro0g8o2n1g1K4i5d0u1l,1K0a7b. Garut\\\\r\\\\n KISeTcR.ITAROGONG KIDUL, Kel. SUKAGALIH KABUPATEN GARUT JAWA
+1982-05-11  Blok Kasur RT 01 RW 05, Desa Cigondewah, Kec.0B8a1n2d2u1n6g69K3u5lo3n, Kota Bandung \\I\S\TrR\\I\\n\\\\r\\\\n Kec. BANDUNG KULON, Kel. CIGONDEWAH KALE
+1993-02-27  Jl. Binong Utara IX No. 187/127 B, RT 004/ RW 00829, 6D6s9. K0e6b5o50n8Kangkung, Kec. KiaIrBaUcondong, Kota Bandung Kec. KIARACONDONG, Kel. KEBON KANG
+2000-02-21  Dsn Ngemplak RT 21 RW 05, Desa Pagerwojo, Ke0c8.9B6u7d6u8r0a6n0,K9a1b. Sidoarjo\\\\r\\\\SnUKAeMc.I BUDURAN, Kel. PAGERWOJO KABUPATEN SIDOARJO JAWA T
+1979-06-27  Perum Green Orchad Kav.45 RT 009/RW 006, Des. Nolokerto, Kec. Kaliwungu, KabA.NKAeKdal Kec. KALIWUNGU, Kel. KALIWUNGU KABUPATEN SEMARAN
+1994-06-07  Kp. Pangsor RT 003/ RW 009, Ds. Cangkuang, Kec. Leles, Kab. Garut Kec. LELES, Kel. CANGKUANG KABUPATEN GARUT JAWA BARAT 44119
+2003-02-03  Jl. Cigondewah Kaler, RT.02/RW.03, Cigondewah08K3al8e5r6, 2B5a1n0d2u7ng Kulon, Kota BandISuTnRgI\\\\r\\\\n\\\\r\\\\n Kec. BANDUNG KULON, Kel. CIGONDEWAH
+1972-06-09  Melarsari, RT.01/RW.01 Desa Kejiwan, Kec. Won0o8s5o2b2o8K1a4b4.0W10onosobo\\r\\n Kec. WONOSOBO, Kel. KEJIWAN KABUPATEN WONOSOBO JAWA TENG
+1995-05-19  Cikurubuk RT.02/RW.01, Linggajaya, Mangkubum08i,2K2a9b5.1T5a3s8ik1m0alaya\r\n Kec. MAINSGTRKIUBUMI, Kel. LINGGAJAYA KOTA TASIKMALAYA JAWA BARAT 46
+1974-12-15  Kp. Sindangsari, RT.05/RW.014, Sangkanhurip, K0a8ta5p8a6n9g0,9K3a1b4.2Bandung Kec. KATAISPTARNI G, Kel. SANGKANHURIP KABUPATEN BANDUNG JAWA BARAT
+1984-10-06  Jl. Cijerah GG.Pasantren RT 006/ RW 008, Des. C0ib8u1n9t0u2,1K6e6c5. 4B0andung Kulon Kec. BISATNRIDUNG KULON, Kel. CIBUNTU KOTA BANDUNG JAWA BARAT 40
+1992-08-12  Limbangan RT 004/ RW 003, Ds. Kadipaten, Kec. Selomerto, Kab. Wonosobo Kec. SELOMERTO, Kel. KADIPATEN KABUPATEN WONOSOBO JAWA TEN
+1971-05-19  Klapagading Kulon, RT.05/RW.10, Klapagading K0u8lo9n7,8W18a7n1g5o5n, Kab. Banyumas\r\InSTKReIc. WANGON, Kel. KLAPAGADING KULON KABUPATEN BANYUM
+1986-08-19  Sindangraja RT. 06/RW.07, Sambongjaya, Mangk0u8b3u8m33i,7K8a0b9.5G4arut\\\\r\\\\n Kec.ISMTARINGKUBUMI, Kel. SAMBONGJAYA KOTA TASIKMALAYA JAWA BA
+1992-12-30  Jl. Sekhmagelung VI no 121 RT 05 RW 02, Desa K0e8ja5k7s9a7n5,0K1e6c6. 3Kejaksan, Kota Cirebon\n Kec. KEJAKSAN, Kel. KEJAKSAN KOTA CIREBON JAWA BARAT
+1984-05-25  Jl. Mujaher GG.III No.18, RT 003/RW 005, Ds.Tegalsari, Kec. Tegal Barat, Kota Tegal Kec. TEGAL BARAT, Kel. TEGALSARI KOTA TEGAL JAWA TENGAH 5
+1994-01-18  Kp. Cisalak Peuntas RT 002/ RW 004, Des. Sukali0la8h2,2K1e7c2. 3C7ib0a5t0u, Kab. Garut Kec. CIBATU, Kel. SUKALILAH KABUPATEN GARUT JAWA BARAT 44185
+1998-04-15  Kp Malayu Peuntas Rt 01/02, Desa Samarang, Ke0c8.9S8a3m5a6r5a5n3g3, Kab. Garut Kec. SAMARANG, Kel. SAMARANG KABUPATEN GARUT JAWA BARAT 44160
+2001-06-01  Jl Cimuncang RT 03 RW 05 Kel Sukamulya, Kec. B0u8n5g8u4r6s0a5ri0, 9K7o1ta Tasikmalaya KecI.SBTURINGURSARI, Kel. SUKAMULYA KOTA TASIKMALAYA JAWA BARA
+REKAN/KELUARGA            STATUS PTKP                             NPWP                         NO. REKENING           AGAMA
+                                                        NO
+                NO. HP  K0                                                   TANGGAL  4240832424             Islam
+                        K2             3574011803800002                 2019-01-21    2010689743             Islam
+08980462628             K2             3214051203930006                 2019-01-21    5365096811             Islam
+083870071896            K2             3510130712880004                 2019-01-21    1801176343             Islam
+081527007017                                                            2019-01-21    4461041773             Islam
+                        K2             3272031808850901                 2019-01-21    4461324813             Islam
+087763603606            K1             3213032308830007                 2019-01-21    1810494260             Islam
+081394526608            K2             3510140508820001                 2019-01-21    2230636284             Islam
+082234514640            K1             3204103008740004                 2019-01-21    1801509555             Islam
+082127699700            K2                                              2019-01-21    2810288658             Islam
+                                       3203261104940001                 2019-01-21    4461037881             Islam
+08984424862             TK0            3273075410820001                 2019-01-21    4461041978             Islam
+081220804874            K0             3204150302830017                 2019-01-21    2820467763             Islam
+081212696505            K2             3509216910870001                 2019-01-21    4461037890             Islam
+082145545599            TK0                                             2019-01-21    0243858582             Islam
+                        K0             3509212003730001                 2019-01-21    1342408961             Islam
+0812249139150           K1             3207090707970001                 2019-01-21    8910550072             Islam
+085285089097            K2             3204100408800003                 2019-01-21    4461037911             Islam
+082338706622            K3                                              2019-01-21    3791571365             Islam
+                                       3203031406790003                 2019-01-21    1342398795             Islam
+085697379462            TK0            3213272803820001                 2019-01-21    4240888187             Islam
+089630888103            K2             3203061806750001                 2019-01-21    3791634278             Islam
+08986492655             K1             32130303712740004                2019-01-21    0552451412             Islam
+085861409218            K2                                              2019-01-21    4311045258             Islam
+083841835234            K1             3278031105880007                 2019-01-21    4461041994             Islam
+                                                                        2019-01-21    4460695452             Islam
+081318351805            K3                                              2019-01-21    6235064972             Islam
+                                                                        2019-01-21
+083869405802   K2                                    3217020303810003   2019-01-21  1570837962  Islam
+                                                     3277010103770048   2019-01-21  4461042001  Islam
+0895325906311  K1                                    3213140311920001   2019-01-21  0552535934  Islam
+                                                     3515030206970001   2019-01-21  0183946487  Islam
+081321046558   K3                                    3272051508820001   2019-01-21  1810335188  Islam
+                                                                        2019-01-21  1482050934  Islam
+0881036356550  K1                                    3211061807950004   2019-01-21  4461037938  Islam
+                                                     3204151204000002   2019-01-21  4461037946  Islam
+085732925899   K0                                    3276034602900008   2019-01-21  1672615326  Islam
+                                                     3372016301810002   2019-01-21  3930437092  Islam
+085797932702   K2                                                       2019-01-21  3580353788  Kristen
+                                                     3518131003810002   2019-01-21  4461051671  Islam
+088220931320   K1                                    3273076207990003   2019-01-21  2820410346  Islam
+                                                     3211061810780002   2019-01-21  4461037962  Islam
+087820525355   K0                                    3277020212900008   2019-01-21  2820166135  Islam
+                                                     3217061504840019   2019-01-21  4461037971  Islam
+085868551639   K0                                                       2019-01-21  0472143105  Islam
+                                                     3576026006930002   2019-01-21              Islam
+087741951927   K0                                                       2019-01-21  4461037989  Islam
+                                                     3278081807850013   2019-01-21  0500722169  Islam
+082131061925   K2                                                       2019-01-21  4461037997  Islam
+                                                     3204290504880003   2019-01-21  0541502377  Islam
+08882208460    K0                                    3272042606870003   2019-01-21  4730720675  Islam
+                                                     3205051104920002   2019-01-21  3372106414  Islam
+085668774367   K3                                    320151512010004    2019-01-21  0380353024  Islam
+                                                                        2019-01-21  4461042036  Islam
+089521580614   K1                                    32780323128800002  2019-01-21  1570654540  Islam
+                                                     3273030708860011   2019-01-21  1483199612  Islam
+083897735101   K2                                                       2019-01-21  2091148694  Islam
+                                                     3509195305900004   2019-01-21  1570792489  Islam
+0811278124     K2                                    337055210840008    2019-01-21              Islam
+                                                     3273144112990006   2019-01-21  0463195541  Islam
+WATI KABUPATEN GARUT JAWA BARAT 44118K0              3322131207940001   2019-01-21  2000589619  Islam
+                                                     3204160712880004   2019-01-21  8175279918  Islam
+0881026921562  K0                                    3201172007000004   2019-01-21  7940195734  Islam
+                                                     3204106007920005   2019-01-21  3201140747  Islam
+085223033945   K2                                    3243166301900003   2019-01-21  4461038012  Islam
+                                                     32063124860005     2019-01-21  6565387191  Islam
+089677892828   TK0                                                      2019-01-21  3790673068  Islam
+                                                                        2019-01-21  7940208895  Islam
+085760371993   K1                                                       2019-01-21  4461038021  Islam
+                                                                        2019-01-21              Islam
+08555964053    K1
+
+083116581078   K2
+
+               K0
+
+089654445853   TK1
+
+081214285798   K3
+
+BI, Kel. PEKIRINGAN KOTA CIREBON JAWA BARKA1T 45131
+
+Kel. SUKAKARYA KABUPATEN GARUT JAWA BKA0RAT 44191
+
+085875123673   TK0
+
+085735133270   K0
+
+082226737576   K0
+
+0881012424661  TK0
+
+083172795118   K4
+
+083169831979   K1
+
+0895320268312  TK0
+
+081214814533   K0
+
+000000         K0
+
+082318566001   K2
+087801041988                      K0      3313146205860004  2019-01-21  8177066189  Islam
+                                          3309125505940001  2019-01-21  3271565231  Islam
+0000000000                        K0                        2019-01-21  3600276653  Islam
+                                          3510160202790008  2019-01-21              Islam
+082223619394                      K1                        2019-01-21  4461038039  Islam
+                                          3516186804790003  2019-01-21  4461042206  Islam
+087733962801                      K2                        2019-01-21  1801759756  Islam
+                                          3515136210920002  2019-01-21              Islam
+085385777155                      K1      3278091112850009  2019-01-21  6140430852  Islam
+                                                            2019-01-21  4461042257  Islam
+0895357418533                     TK0     3517080409880001  2019-01-21              Islam
+                                          3273176812940001  2019-01-21  4461038055  Islam
+082132493436                      K2      3509190401780002  2019-01-21  7265351166  Islam
+                                          3513175603910002  2019-01-21  0542224370  Islam
+                                  K0      3202321701920003  2019-01-21              Islam
+                                          3278011104870013  2019-01-21  4461051639  Islam
+EN KABUPATEN WONOSOBO JAWA TENGAH 5K3061  3173070402840007  2019-01-21  1570760340  Islam
+                                                            2019-01-21  5065456955  Islam
+082221994496                      K0      3277010410890003  2019-01-21  3681567681  Islam
+                                                            2019-01-21  1810467076  Islam
+                                  TK0     3278011001950010  2019-01-21  2091065462  Islam
+                                                            2019-01-21  8801015603  Islam
+KABUPATEN GARUT JAWA BARAT 44122          3217101805830011  2019-01-21  4461038080  Islam
+                                          3204101110880008  2019-01-21  4461038128  Islam
+085785080595                      K0      3507221210800005  2019-01-21  2090778091  Islam
+                                          3212151806700001  2019-01-21  0730064616  Islam
+08815763088                       K2      3204160312830003  2019-01-21  7006592898  Islam
+                                                            2019-01-21  4461190388  Islam
+085600106815                      K0      3211060202810006  2019-01-21  6820714863  Islam
+                                          3573046503920002  2019-01-21  4461038136  Islam
+                                  TK0     3273150711840002  2019-01-21  1570763675  Islam
+                                          3574012903860002  2019-01-21  1801705559  Islam
+08579226526                       K2      3213141608660001  2019-01-21  1570782645  Islam
+                                                            2019-01-21  4461038179  Islam
+000000                            K0                        2019-01-21              Islam
+                                                            2019-01-21  4461042346  Islam
+085690769806                                                2019-01-21  4400089197  Islam
+                                                            2019-01-21  4461038195  Islam
+085213957674                      K0                        2019-01-21  0391878543  Islam
+                                                            2019-01-21  4461042354  Islam
+085793469767                      K2                        2019-01-21              Islam
+                                                            2019-01-21              Islam
+081297743839                      K0
+
+085781466213                      K3
+
+088220928240                      K1
+
+089529470260                      TK0
+
+082217464464                      K2
+
+                                  K3
+
+082147865987                      K3
+
+082114965864                      K1
+
+08523330953                       K2
+
+08138728973                       K2
+
+08132121883                       K2
+
+ABUPATEN CIREBON JAWA BARAT 45151 K0
+
+085700681373                      K2
+
+081232741567                      K0
+
+089674529751                      K2
+
+085218390279                      K0
+
+085862281837                      K2
+085282609338     K0                        3205242109830001  2019-01-21  3372095846  Islam
+085692417170                                                 2019-01-21  3771334375  Islam
+08532040408      K0                        3272024505820061  2019-01-21  7750734094  Islam
+00000                                                        2019-01-21  3210625886  Islam
+081233838555     TK0                       3273234903840004  2019-01-21  1231005418  Islam
+                                                             2019-01-21  4461038217  Islam
+                 K0                        3206222210900002  2019-01-21              Islam
+                                                             2019-01-21  3330259531  Islam
+                 K2                        3507132207960002  2019-01-21              Islam
+                                                             2019-01-21  4461038233  Islam
+                 K2                                          2019-01-21  4461039817  Islam
+                                                             2019-01-21              Islam
+085708741570     K1                        3509040510950003  2019-01-21  4461038241  Islam
+                                                             2019-01-21  0391889367  Islam
+085720722435     K0                                          2019-01-21  8715737911  Islam
+083892031515                                                 2019-01-21  4460579568  Islam
+085728476963     TK0                       3273152807980008  2019-01-21  0552622918  Islam
+                                                             2019-01-21  4461038250  Islam
+                 K1                        3205010107950042  2019-01-21  1483185361  Islam
+                                                             2019-01-21  2390783968  Islam
+                 K0                                          2019-01-21  4461038268  Islam
+                                                             2019-01-21  1481841343  Islam
+085859254274     K2                        3574012310740001  2019-01-21              Islam
+                                           3324131509710001  2019-01-21  8692768492  Islam
+0895608842525    K2                                          2019-01-21  4461038284  Islam
+                                           3213035610800002  2019-01-21  1390707271  Islam
++62877-3526-326  TK0                                         2019-01-21  1394134735  Islam
+                                                             2019-01-21  8715737929  Islam
+083821966913     K0                                          2019-01-21              Islam
+                                                             2019-01-21  4461042389  Islam
+083852217789     TK0                                         2019-01-21  1570500836  Islam
+                                                             2019-01-21  4461038331  Islam
+                 TK0                                         2019-01-21  4461042397  Islam
+                                                             2019-01-21  1230649681  Islam
+085871722684     K2                        3278052404850011  2019-01-21  8103289708  Islam
+                                                             2019-01-21  4461042427  Islam
+085220546888     TK0                                         2019-01-21  1381497432  Islam
+                                                             2019-01-21              Islam
+0881012039145    K0                        3201136310970008  2019-01-21              Islam
+                                                             2019-01-21              Islam
+081220568286     K1                        3205141011920002  2019-01-21              Islam
+                                                             2019-01-21              Islam
+089615566208     K1                        3277013105870007
+
+08981295044      TK0                       3277015410960003
+
+08156967274      K3                        3374152201680002
+
+088215450309     K0
+
+                 K0
+
+                 TK0
+
+AH KOTA TASIKMALAYA JAWA BARAT 46131 K0
+
+TEN KABUPATEN WONOSOBO JAWA TENGAHK506361
+
+LER, Kel. RANCABANGO KABUPATEN GARUT JAKW0 A BARAT 44151
+
+089527139665     K0                        1212061609850003
+
+                 K1
+
+081247078247     K0                        3507135608870003
+
+08131607269      K0                        3204175911050002
+
+Kel. WONOREJO KABUPATEN WONOSOBO JAWA TENGAH 56361
+
+081395356136     K1                        3207062207940002
+08978187155               TK0                                2019-01-21  4240881743  Islam
+                                                             2019-01-21  0243134843  Islam
+081336355238              K2               3509212304890005  2019-01-21  2832661563  Islam
+                                                             2019-01-21  4460875515  Islam
+081574084373              TK1              3204163108870001  2019-01-21              Islam
+                                                             2019-01-21  2090206365  Islam
+089525518902              K1               3205014107930015  2019-01-21  4461038357  Islam
+                                                             2019-01-21  4461042516  Islam
+G KIDUL, Kel. SUKAGALIH KABUPATEN GARUT KJA1WA BARAT 44150   2019-01-21  4461042532  Islam
+                                                             2019-01-21  2780675121  Islam
+082317630974              K2               3278042103810009  2019-01-21  0131247507  Islam
+                                                             2019-01-21  4461038365  Islam
+081574857837              K0               3278082610950005  2019-01-21  4461038373  Islam
+                                                             2019-01-21  4461038381  Islam
+000000                                     3273064507960004  2019-01-21  1482959835  Islam
+085325538133                                                 2019-01-21  4461038390  Islam
+                          K0               3322121204920001  2019-01-21  6375042481  Islam
+                                                             2019-01-21  4461042591  Islam
+085712264179              TK0                                2019-01-21  055293439   Islam
+                                                             2019-01-21  4461038403  Islam
+085321245121              K2               3213141806930001  2019-01-21  4461042605  Islam
+                                           3276074606880003  2019-01-21  4461038411  Islam
+081380025544              K0               3217140406980006  2019-01-21  4461038420  Islam
+                                           3214031807750002  2019-01-21  1831395562  Islam
+083183463414              K1               3204150211000010  2019-01-21  2390777411  Islam
+                                                             2019-01-21  4461042613  Islam
+081236404494              K3               3211061503880004  2019-01-21  1570190888  Islam
+                                                             2019-01-21              Islam
+081293180360              K1               3203016611980008  2019-01-21  2390231680  Islam
+                                                             2019-01-21  4461044748  Islam
+085794100039              TK0              3217101011730012  2019-01-21  1570615200  Islam
+                                           321710203860009   2019-01-21  7738072534  Islam
+081312458125              K0                                 2019-01-21  4461038454  Islam
+                                           3213142105910001  2019-01-21  3791441232  Islam
+083150087168              K1               3204112310800004  2019-01-21  2801851225  Islam
+                                           3311105204930003  2019-01-21  6150755733  Islam
+08814075316               K3               3205050804780001  2019-01-21  0092429430  Islam
+                                           3273151105820000  2019-01-21  1482071427  Islam
+                          K0               3273166702930004  2019-01-21  4461042648  Islam
+                                           3515156102000003  2019-01-21  4461038471  Islam
+TO KABUPATEN WONOSOBO JAWA TENGAH 5K60361  3374136706790006  2019-01-21  4461038489  Islam
+                                                             2019-01-21  4461038497  Islam
+085862023430              K3               3273150302030001
+
+089617523070              K2               3278081905950006
+                                           3204091512740011
+085729688884              K0
+
+089541013566              K2
+
+085175319840              K2
+
+089512657858              K0
+
+081388348615              K0
+
+0881037536973             K2
+
+N GARUT JAWA BARAT 44119  K0
+
+081510932203              K0
+
+081927243987              K1
+
+085759211033              K1
+083137731404   K3                          3273150610840001  2019-01-21  7495306925  Islam
+                                           3205051908860001  2019-01-21              Islam
+EN KABUPATEN WONOSOBO JAWA TENGAH 5K60361                    2019-01-21  4461042656  Islam
+                                                             2019-01-21  4461042664  Islam
+0895410790030  K2                                            2019-01-21  1342554533  Islam
+                                                             2019-01-21              Kristen
+083184819464   K1                                            2019-01-21  5140606482  Islam
+                                                             2019-01-21  0542161823  Islam
+081546443294                                                 2019-01-21              Islam
+
+EGALSARI KOTA TEGAL JAWA TENGAH 52111K0
+
+               K1
+
+089662052568   K0
+     JENIS KELAMIN                     PERNIKAHAN                              NOMOR BPJS
+                                                         TANGGAL
+Pria                           STATUS                             KETENAGAKERJAAN          KESEHATAN
+Pria                Menikah                    9999-01-01
+Pria                Menikah                    9999-01-01         25076591699      0003511510391
+Pria                Menikah                    9999-01-01         000000000        000000000
+Pria                Menikah                    9999-01-01         25076591624      0001541204728
+Pria                Menikah                    9999-01-01
+Pria                Menikah                    9999-01-01         25076591632      0001786936768
+Pria                Menikah                    9999-01-01         26057103983      0001630948296
+Pria                Menikah                    9999-01-01         00000000000      0000000000
+Pria                Menikah                    9999-01-01         26057104072      0001593369066
+Pria                Menikah                    9999-01-01
+Pria                Menikah                    9999-01-01         00000000         00000000
+Wanita              Belum Menikah              9999-01-01         00000000         00000000
+Pria                Janda/duda                 9999-01-01         25174321411      0002354701195
+Wanita              Menikah                    9999-01-01         26076510838      0001371171464
+Pria                Menikah                    9999-01-01
+Pria                Menikah                    9999-01-01         25097642463      0002937700607
+Pria                Menikah                    9999-01-01         00000000         00000000
+Pria                Menikah                    9999-01-01         00000000         00000000
+Pria                Menikah                    9999-01-01
+Pria                Belum Menikah              9999-01-01         00000000         00000000
+Pria                Belum Menikah              9999-01-01         26041579066      0002907060849
+Pria                Menikah                    9999-01-01         00000000         00000000
+Pria                Menikah                    9999-01-01         0000000000       0000000000
+Pria                Menikah                    9999-01-01
+Pria                Menikah                    9999-01-01         00000000000      00000000000
+Pria                Menikah                    9999-01-01
+                    Menikah                    9999-01-01
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  23140483951  0002876765387
+Pria    Menikah        9999-01-01  26057103991  0001744899974
+Pria    Menikah        9999-01-01  25054828873  0002016313402
+Pria    Menikah        9999-01-01  25097642398  0003521373333
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  23140483886  0000464408403
+Pria    Menikah        9999-01-01  23140483928  0002523292143
+Wanita  Menikah        9999-01-01  26041579090  0001181483289
+Wanita  Menikah        9999-01-01  000000000    000000000
+Wanita  Janda/Duda     9999-01-01
+Pria    Menikah        9999-01-01  25054828790  0001151597349
+Wanita  Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  23140483852  0000463413892
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  23140483985  0003622946499
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  26057104007  0002156665072
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01  00000000000  00000000000
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000     00000000
+Wanita  Janda/duda     9999-01-01  25076591665  0001318396419
+Pria    Janda/duda     9999-01-01  24148765563  0000424533903
+Pria    Janda/duda     9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000000  00000000000
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Janda/duda     9999-01-01
+Pria    Menikah        9999-01-01  26076510911  0001721906032
+Pria    Menikah        9999-01-01  000000000    000000000
+Pria    Belum Menikah  9999-01-01  26057104148  0000505044595
+Pria    Belum Menikah  9999-01-01  26057103975  0001161072573
+Wanita  Menikah        9999-01-01  23140483977  0002635969408
+Wanita  Menikah        9999-01-01  25157688422  0000380919598
+Wanita  Belum Menikah  9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  23140483878  0003542375643
+Pria    Belum Menikah  9999-01-01
+Wanita  Janda/duda     9999-01-01
+Wanita  Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01  000000000    000000000
+Wanita  Menikah        9999-01-01  000000000    000000000
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  25076591715  0001656621696
+Pria    Menikah        9999-01-01
+Pria    Belum Menikah  9999-01-01  26057104189  0001838323989
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  26057104064  0001326389545
+Pria    Menikah        9999-01-01  00000000000  00000000000
+Wanita  Menikah        9999-01-01
+Pria    Menikah        9999-01-01  25076591616  0000727174001
+Wanita  Janda/Duda     9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  25076591673  0003762632362
+Wanita  Menikah        9999-01-01  00000000000  00000000000
+Pria    Menikah        9999-01-01  25157688364  0002104504119
+Wanita  Menikah        9999-01-01  00000000000  00000000000
+Pria    Belum Menikah  9999-01-01  0000000      0000000
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01
+Wanita  Janda/duda     9999-01-01  26057104155  0001653909974
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  23140483845  0003541906451
+Pria    Menikah        9999-01-01  26032316510  0000417809711
+Pria    Belum Menikah  9999-01-01  00000000000  0000000000
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  23140483969  0001518468759
+Pria    Belum Menikah  9999-01-01
+Pria    Menikah        9999-01-01  23140483902  0003542315253
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  00000000000  00000000000
+Pria    Menikah        9999-01-01  23140486285  0003554397459
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  26057104056  0000421421433
+Wanita  Menikah        9999-01-01  25097642471  0000501236087
+Wanita  Janda/duda     9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  00000000000  00000000000
+Pria    Menikah        9999-01-01  25076591681  0002060820865
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  25054828956  0002058250116
+Pria    Menikah        9999-01-01  23140483944  0002183333826
+Pria    Menikah        9999-01-01  23140486418  0002863529976
+Pria    Belum Menikah  9999-01-01
+Pria    Menikah        9999-01-01  00000000000  00000000000
+Wanita  Menikah        9999-01-01  25157688356  0000609308662
+Pria    Menikah        9999-01-01  0000000000   0000000000
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000     00000000
+Wanita  Menikah        9999-01-01
+Wanita  Menikah        9999-01-01  0000000      0000000
+Pria    Belum Menikah  9999-01-01  26041579108  0003953651872
+Wanita  Menikah        9999-01-01  26057104080  0001649798875
+Pria    Belum Menikah  9999-01-01  26057104114  0001834196859
+Pria    Menikah        9999-01-01  25157688414  0001903145657
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01  26032316536  0002781581872
+Wanita  Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  00000000     00000000
+Wanita  Janda/duda     9999-01-01  26018228945  0001542975759
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01
+Wanita  Belum Menikah  9999-01-01
+Wanita  Menikah        9999-01-01
+Wanita  Belum Menikah  9999-01-01
+Wanita  Belum Menikah  9999-01-01
+Wanita  Janda/Duda     9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Belum Menikah  9999-01-01
+Wanita  Menikah        9999-01-01
+Wanita  Janda/duda     9999-01-01
+Pria    Belum Menikah  9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Belum Menikah  9999-01-01  0000000      0000000
+Pria    Menikah        9999-01-01  26041579082  0000415142199
+Pria    Menikah        9999-01-01  000000000    0000420130361
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000000  00000000000
+Pria    Menikah        9999-01-01
+Pria    Belum Menikah  9999-01-01  26018229117  0000515242056
+Pria    Menikah        9999-01-01
+Pria    Janda/duda     9999-01-01  25174321429  0002181901612
+Wanita  Menikah        9999-01-01  0000000000   0000000000
+Pria    Belum Menikah  9999-01-01
+Pria    Menikah        9999-01-01  23140483894  0003141015456
+Pria    Belum Menikah  9999-01-01  26041579157  0001840533974
+Pria    Menikah        9999-01-01  26041579074  0002870034096
+Pria    Menikah        9999-01-01  0000000000   0000000000
+Pria    Menikah        9999-01-01  25054828741  0000410413498
+Wanita  Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  000000000    000000000
+Pria    Menikah        9999-01-01
+Pria    Belum Menikah  9999-01-01  23140483910  0000496628559
+Pria    Menikah        9999-01-01  00000000     00000000
+Wanita  Menikah        9999-01-01
+Pria    Belum Menikah  9999-01-01  23140486442  0003049446273
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  000000000    000000000
+Wanita  Menikah        9999-01-01  24148765514  0002793675429
+Wanita  Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  00000000     00000000
+Pria    Menikah        9999-01-01  25174321395  0000721928362
+Wanita  Menikah        9999-01-01  0000000000   0000000000
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000     00000000
+Wanita  Belum Menikah  9999-01-01
+Wanita  Menikah        9999-01-01  23140486392  0001777704592
+Wanita  Menikah        9999-01-01  23140483936  0003542378646
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01  00000000     00000000
+Wanita  Menikah        9999-01-01  23140486350  0000424532531
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Menikah        9999-01-01
+Pria    Belum Menikah  9999-01-01
+Pria    Belum Menikah  9999-01-01
+Pria    Menikah        9999-01-01
+Wanita  Menikah        9999-01-01
+      BOLEH CUTI           DIVISI           DEPARTEMEN
+
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Brand & Marketing  Marketing
+Tidak             Sales              Sales
+Tidak             Brand & Marketing  Marketing
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales Dept
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales
+Tidak             Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Supply Chain       Supply Chain
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Supply Chain       Supply Chain
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Supply Chain       Supply Chain
+Tidak
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Ya     Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Supply Chain       Supply Chain
+Tidak  Sales              Sales
+Tidak
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  SALES              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Ya     Brand & Marketing  Marketing
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales Dept
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Ya     Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Brand & Marketing  Marketing
+Tidak  Brand & Marketing  Marketing
+Tidak
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak
+Tidak
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Supply Chain       Supply Chain
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Sales              Sales
+Tidak  Brand & Marketing  Marketing
+Tidak  Brand & Marketing  Marketing
+Tidak
+Tidak  Supply Chain       Supply Chain
+Tidak  Sales              Sales
+Tidak  Sales              Sales Dept
+Tidak  Sales              Sales
+Tidak  Sales  Sales
+Tidak
+Tidak  Sales  Sales Dept
+Tidak  Sales  Sales
+Tidak  Sales  Sales
+Tidak  Sales  Sales
+Tidak
+Tidak  Sales  Sales
+Tidak  Sales  Sales Dept
+
