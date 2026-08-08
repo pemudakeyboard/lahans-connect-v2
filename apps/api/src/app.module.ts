@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ApiConfigModule } from './core/config/api-config.module';
 import { CoreRulesModule } from './core/rules/rules.module';
+import { DelegationModule } from './core/delegation/delegation.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthCoreModule } from './core/auth/auth-core.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -13,6 +14,7 @@ import { LeaveModule } from './modules/leave/leave.module';
 import { OvertimeModule } from './modules/overtime/overtime.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
+import { RosterModule } from './modules/roster/roster.module';
 import { PermissionGuard } from './core/auth/guards/permission.guard';
 import { AuditInterceptor } from './core/audit/audit.interceptor';
 
@@ -21,6 +23,7 @@ import { AuditInterceptor } from './core/audit/audit.interceptor';
     ConfigModule.forRoot({ isGlobal: true }),
     ApiConfigModule,
     CoreRulesModule,
+    DelegationModule,
     PrismaModule,
     AuthCoreModule,
     AuthModule,
@@ -31,6 +34,7 @@ import { AuditInterceptor } from './core/audit/audit.interceptor';
     OvertimeModule,
     PayrollModule,
     AttendanceModule,
+    RosterModule,
   ],
   providers: [
     // PermissionGuard is global — deny-by-default (FR-M0-004). Public endpoints

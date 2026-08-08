@@ -17,6 +17,14 @@ const SCHED = {
   is_working_day: true,
 };
 
+/**
+ * WIB wall time → UTC instant on WORKDAY. The app stores clock instants as UTC,
+ * so 09:00 WIB = 02:00Z (Asia/Jakarta is UTC+7). The derivation's `ms()` helper
+ * subtracts exactly this offset, so spec instants must match it.
+ */
+const wib = (hh: number, mm = 0) =>
+  new Date(WORKDAY.getTime() + (hh - 7) * 3_600_000 + mm * 60_000);
+
 const base = (over: Partial<DerivationInput> = {}): DerivationInput => ({
   date: WORKDAY,
   scheduleDay: SCHED,
@@ -33,8 +41,8 @@ describe('deriveDailyFields', () => {
   it('HADIR when on time in+out', () => {
     const r = deriveDailyFields(
       base({
-        firstIn: new Date('2026-08-06T09:00:00.000Z'),
-        lastOut: new Date('2026-08-06T17:00:00.000Z'),
+        firstIn: wib(9),
+        lastOut: wib(17),
         hasAnyLog: true,
         isPast: false,
       }),
@@ -50,8 +58,8 @@ describe('deriveDailyFields', () => {
   it('TERLAMBAT when in after start (tolerance 0)', () => {
     const r = deriveDailyFields(
       base({
-        firstIn: new Date('2026-08-06T09:10:00.000Z'),
-        lastOut: new Date('2026-08-06T17:00:00.000Z'),
+        firstIn: wib(9, 10),
+        lastOut: wib(17),
         hasAnyLog: true,
         isPast: false,
       }),
@@ -64,8 +72,8 @@ describe('deriveDailyFields', () => {
     const r = deriveDailyFields(
       base({
         scheduleDay: { ...SCHED, late_tolerance_minutes: 5 },
-        firstIn: new Date('2026-08-06T09:08:00.000Z'),
-        lastOut: new Date('2026-08-06T17:00:00.000Z'),
+        firstIn: wib(9, 8),
+        lastOut: wib(17),
         hasAnyLog: true,
         isPast: false,
       }),
@@ -79,8 +87,8 @@ describe('deriveDailyFields', () => {
     const r = deriveDailyFields(
       base({
         scheduleDay: { ...SCHED, late_tolerance_minutes: 10 },
-        firstIn: new Date('2026-08-06T09:08:00.000Z'),
-        lastOut: new Date('2026-08-06T17:00:00.000Z'),
+        firstIn: wib(9, 8),
+        lastOut: wib(17),
         hasAnyLog: true,
         isPast: false,
       }),
@@ -92,8 +100,8 @@ describe('deriveDailyFields', () => {
   it('PULANG_CEPAT when out before end', () => {
     const r = deriveDailyFields(
       base({
-        firstIn: new Date('2026-08-06T09:00:00.000Z'),
-        lastOut: new Date('2026-08-06T16:30:00.000Z'),
+        firstIn: wib(9),
+        lastOut: wib(16, 30),
         hasAnyLog: true,
         isPast: false,
       }),
@@ -105,8 +113,8 @@ describe('deriveDailyFields', () => {
   it('TERLAMBAT wins over PULANG_CEPAT when both ≥ threshold', () => {
     const r = deriveDailyFields(
       base({
-        firstIn: new Date('2026-08-06T09:10:00.000Z'),
-        lastOut: new Date('2026-08-06T16:30:00.000Z'),
+        firstIn: wib(9, 10),
+        lastOut: wib(16, 30),
         hasAnyLog: true,
         isPast: false,
       }),
@@ -119,7 +127,7 @@ describe('deriveDailyFields', () => {
   it('INCOMPLETE when only IN (no OUT)', () => {
     const r = deriveDailyFields(
       base({
-        firstIn: new Date('2026-08-06T09:00:00.000Z'),
+        firstIn: wib(9),
         hasAnyLog: true,
         isPast: false,
       }),
@@ -159,8 +167,8 @@ describe('deriveDailyFields', () => {
   it('anomaly codes pass through', () => {
     const r = deriveDailyFields(
       base({
-        firstIn: new Date('2026-08-06T09:00:00.000Z'),
-        lastOut: new Date('2026-08-06T17:00:00.000Z'),
+        firstIn: wib(9),
+        lastOut: wib(17),
         hasAnyLog: true,
         isPast: false,
         anomalyCodes: ['OUT_OF_ZONE', 'MOCK_LOCATION'],
@@ -173,8 +181,8 @@ describe('deriveDailyFields', () => {
   it('work minutes subtract the break', () => {
     const r = deriveDailyFields(
       base({
-        firstIn: new Date('2026-08-06T09:00:00.000Z'),
-        lastOut: new Date('2026-08-06T18:00:00.000Z'),
+        firstIn: wib(9),
+        lastOut: wib(18),
         hasAnyLog: true,
         isPast: false,
       }),

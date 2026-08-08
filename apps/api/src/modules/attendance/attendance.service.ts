@@ -11,6 +11,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { ParameterService } from '../../core/config/parameter.service';
 import { CurrentUser } from '../../core/auth/decorators/current-user.decorator';
 import { PayrollScopeService } from '../payroll/payroll-scope.service';
+import { RosterService } from '../roster/roster.service';
 import { deriveDailyFields, DerivationScheduleDay } from './attendance-derivation';
 import { ClockInDto } from './dto/clock-in.dto';
 import { CreateCorrectionDto } from './dto/create-correction.dto';
@@ -36,6 +37,7 @@ export class AttendanceService {
     private readonly prisma: PrismaService,
     private readonly params: ParameterService,
     private readonly scope: PayrollScopeService,
+    private readonly roster: RosterService,
   ) {}
 
   // -------------------------------------------------------------------------
@@ -293,42 +295,18 @@ export class AttendanceService {
   }
 
   /**
-   * Resolve the employee's schedule for a date (admin-configurable master data):
-   * highest-priority schedule_assignment for the employee, else the first active
-   * work_schedule; then the day-of-week row.
+   * Resolve the employee's schedule for a date. M2B: delegates to the shared
+   * roster resolver (5-level priority individu > jabatan > golongan > cabang >
+   * entitas, SHIFT rotation, night-shift rollover) so a roster change is
+   * honored here too. Runs on the transaction client so clock/finalize stay
+   * atomic.
    */
   private async resolveScheduleDay(
     tx: Tx,
     employeeId: string,
     date: Date,
   ): Promise<(DerivationScheduleDay & { scheduleId: string | null }) | null> {
-    const assignment = await tx.schedule_assignments.findFirst({
-      where: {
-        scope_type: 'EMPLOYEE',
-        scope_ref_id: employeeId,
-        effective_from: { lte: date },
-        OR: [{ effective_to: null }, { effective_to: { gte: date } }],
-      },
-      orderBy: { priority: 'asc' },
-      include: { work_schedule: { include: { days: true } } },
-    });
-    const schedule =
-      assignment?.work_schedule ??
-      (await tx.work_schedules.findFirst({
-        where: { is_active: true },
-        include: { days: true },
-      }));
-    if (!schedule) return null;
-
-    const day = schedule.days.find((d) => d.day_of_week === date.getUTCDay());
-    return {
-      scheduleId: schedule.id,
-      start_time: day?.start_time ?? null,
-      end_time: day?.end_time ?? null,
-      break_minutes: day?.break_minutes ?? 0,
-      late_tolerance_minutes: day?.late_tolerance_minutes ?? 0,
-      is_working_day: day?.is_working_day ?? true,
-    };
+    return this.roster.resolveWorkSchedule(employeeId, date, tx);
   }
 
   private async isHoliday(tx: Tx, date: Date): Promise<boolean> {

@@ -436,9 +436,46 @@ exports.Prisma.Work_schedulesScalarFieldEnum = {
   schedule_type: 'schedule_type',
   weekly_target_minutes: 'weekly_target_minutes',
   daily_standard_minutes: 'daily_standard_minutes',
+  shift_pattern_id: 'shift_pattern_id',
   is_active: 'is_active',
   created_at: 'created_at',
   updated_at: 'updated_at'
+};
+
+exports.Prisma.Shift_definitionsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  code: 'code',
+  name: 'name',
+  start_time: 'start_time',
+  end_time: 'end_time',
+  break_minutes: 'break_minutes',
+  late_tolerance_minutes: 'late_tolerance_minutes',
+  crosses_midnight: 'crosses_midnight',
+  cover_end_date: 'cover_end_date',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Shift_patternsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  code: 'code',
+  name: 'name',
+  cycle_length: 'cycle_length',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Shift_rotationsScalarFieldEnum = {
+  id: 'id',
+  shift_pattern_id: 'shift_pattern_id',
+  day_index: 'day_index',
+  shift_definition_id: 'shift_definition_id',
+  is_working_day: 'is_working_day',
+  created_at: 'created_at'
 };
 
 exports.Prisma.Work_schedule_daysScalarFieldEnum = {
@@ -1215,6 +1252,9 @@ exports.Prisma.ModelName = {
   refresh_tokens: 'refresh_tokens',
   audit_logs: 'audit_logs',
   work_schedules: 'work_schedules',
+  shift_definitions: 'shift_definitions',
+  shift_patterns: 'shift_patterns',
+  shift_rotations: 'shift_rotations',
   work_schedule_days: 'work_schedule_days',
   schedule_assignments: 'schedule_assignments',
   schedule_overrides: 'schedule_overrides',

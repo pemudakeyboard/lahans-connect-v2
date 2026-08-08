@@ -9,6 +9,7 @@ import { Prisma } from '../../generated/prisma';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ParameterService } from '../../core/config/parameter.service';
 import { ConfigService } from '../config/config.service';
+import { RosterService } from '../roster/roster.service';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
 
 type Tx = Prisma.TransactionClient;
@@ -40,6 +41,7 @@ export class LeaveService {
     private readonly prisma: PrismaService,
     private readonly params: ParameterService,
     private readonly config: ConfigService,
+    private readonly roster: RosterService,
   ) {}
 
   // -------------------------------------------------------------------------
@@ -152,7 +154,7 @@ export class LeaveService {
     }
 
     // -- Compute the working-day list ------------------------------------------
-    const { days, totalDays } = await this.computeWorkingDays(employee, start, end, asOf);
+    const { days, totalDays } = await this.computeWorkingDays(employee, start, end);
 
     if (totalDays <= 0) {
       throw new BadRequestException('Tidak ada hari kerja dalam rentang tanggal yang dipilih.');
@@ -649,32 +651,10 @@ export class LeaveService {
    * Compute the working-day list between start and end, excluding non-working
    * days (per the employee's schedule) and holidays.
    */
-  private async computeWorkingDays(employee: { id: string }, start: Date, end: Date, asOf: Date) {
-    // Highest-priority schedule assignment for this employee.
-    const assignment = await this.prisma.schedule_assignments.findFirst({
-      where: {
-        scope_type: 'EMPLOYEE',
-        scope_ref_id: employee.id,
-        effective_from: { lte: asOf },
-        OR: [{ effective_to: null }, { effective_to: { gte: asOf } }],
-      },
-      orderBy: { priority: 'asc' },
-      include: { work_schedule: { include: { days: true } } },
-    });
-
-    // Fall back to the first active schedule when no assignment exists.
-    const schedule =
-      assignment?.work_schedule ??
-      (await this.prisma.work_schedules.findFirst({
-        where: { is_active: true },
-        include: { days: true },
-      }));
-
-    const workingDays = new Set(
-      (schedule?.days ?? []).filter((d) => d.is_working_day).map((d) => d.day_of_week),
-    );
-
-    // Holidays (national + company) on the leave range.
+  private async computeWorkingDays(employee: { id: string }, start: Date, end: Date) {
+    // M2B: working days come from the shared roster resolver (5-level priority,
+    // SHIFT rotation, per-date overrides) so a roster change is honored here
+    // too — not from a single day-of-week set.
     const holidays = await this.prisma.holidays.findMany({
       where: {
         date: { gte: this.startOfDay(start), lte: this.endOfDay(end) },
@@ -686,9 +666,9 @@ export class LeaveService {
     let cursor = this.startOfDay(start);
     const endDay = this.startOfDay(end);
     while (cursor <= endDay) {
-      const dow = cursor.getDay();
       const iso = cursor.toISOString().slice(0, 10);
-      const isWorking = workingDays.has(dow);
+      const window = await this.roster.resolveWorkSchedule(employee.id, cursor);
+      const isWorking = window?.is_working_day ?? true; // no schedule → treat as working
       const isHoliday = holidayDates.has(iso);
       result.push({
         date: cursor,

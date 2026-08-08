@@ -41,6 +41,8 @@ model companies {
   work_schedules  work_schedules[]
   payroll_periods payroll_periods[]
   holidays        holidays[]
+  shift_definitions shift_definitions[]
+  shift_patterns    shift_patterns[]
 
   @@index([is_active])
 }
@@ -187,6 +189,7 @@ model employees {
   user                  users?
   attendance_logs       attendance_logs[]
   attendance_daily      attendance_daily[]
+  schedule_overrides    schedule_overrides[]
   leave_balances        leave_balances[]
   leave_requests        leave_requests[]
   overtime_requests     overtime_requests[]
@@ -286,6 +289,8 @@ model users {
   devices           user_devices[]
   audit_logs        audit_logs[]
   refresh_tokens    refresh_tokens[]
+  delegations_as_delegator approval_delegations[] @relation("DelegationDelegator")
+  delegations_as_delegate  approval_delegations[] @relation("DelegationDelegate")
 }
 
 model user_groups {
@@ -419,6 +424,12 @@ model approval_delegations {
   reason            String
   is_active         Boolean  @default(true)
   created_at        DateTime @default(now())
+
+  delegator users @relation("DelegationDelegator", fields: [delegator_user_id], references: [id], onDelete: Restrict)
+  delegate  users @relation("DelegationDelegate", fields: [delegate_user_id], references: [id], onDelete: Restrict)
+
+  @@index([delegate_user_id, is_active])
+  @@index([delegator_user_id])
 }
 
 model user_devices {
@@ -482,11 +493,12 @@ model audit_logs {
 model work_schedules {
   id                     String   @id @default(uuid()) @db.Uuid
   company_id             String   @db.Uuid
-  code                   String   @unique // HO_STANDARD, PABRIK_STAFFUP, PABRIK_OPERATOR, FIELD_MARKET
+  code                   String   @unique // HO_STANDARD, PABRIK_STAFFUP, PABRIK_OPERATOR, FIELD_MARKET, SHIFT_3X
   name                   String
   schedule_type          String // FIXED | SHIFT | FLEXIBLE
   weekly_target_minutes  Int?
   daily_standard_minutes Int?
+  shift_pattern_id       String?  @db.Uuid // SHIFT schedules: the rotation pattern
   is_active              Boolean  @default(true)
   created_at             DateTime @default(now())
   updated_at             DateTime @updatedAt
@@ -495,8 +507,74 @@ model work_schedules {
   days                 work_schedule_days[]
   schedule_assignments schedule_assignments[]
   holiday_workdays     holidays[]
+  shift_pattern        shift_patterns?        @relation(fields: [shift_pattern_id], references: [id], onDelete: Restrict)
 
   @@index([company_id])
+}
+
+// M2B — shift definitions (FR-M2B-002). The concrete shift windows admins
+// configure per company: NORMAL/PAGI/SIANG/MALAM (+ any future shift). A night
+// shift (MALAM) crosses midnight, so `crosses_midnight` + `cover_end_date`
+// tell the resolver/derivation which Indonesian day the shift belongs to
+// (always the day it STARTS on — attendance work_date UTC-midnight convention).
+model shift_definitions {
+  id                     String   @id @default(uuid()) @db.Uuid
+  company_id             String   @db.Uuid
+  code                   String
+  name                   String
+  start_time             String?  // "06:00" | "14:00" | "22:00"
+  end_time               String?  // "14:00" | "22:00" | "06:00"
+  break_minutes          Int      @default(60)
+  late_tolerance_minutes Int      @default(0)
+  crosses_midnight       Boolean  @default(false) // start > end (night shift)
+  cover_end_date         Boolean  @default(false) // end_time belongs to the next Indonesian day
+  is_active              Boolean  @default(true)
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  company  companies       @relation(fields: [company_id], references: [id], onDelete: Restrict)
+  rotations shift_rotations[]
+
+  @@unique([company_id, code])
+  @@index([company_id])
+}
+
+// M2B — rotation pattern (FR-M2B-002). A named cycle (e.g. 3-shift × N days)
+// whose ordered slots reference shift definitions. A SHIFT work_schedule points
+// here; per-date resolution = positions in the cycle (day_index mod cycle_length).
+model shift_patterns {
+  id           String   @id @default(uuid()) @db.Uuid
+  company_id   String   @db.Uuid
+  code         String
+  name         String
+  cycle_length Int      @default(7) // days per cycle
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  company        companies        @relation(fields: [company_id], references: [id], onDelete: Restrict)
+  rotations      shift_rotations[]
+  work_schedules work_schedules[]
+
+  @@unique([company_id, code])
+  @@index([company_id])
+}
+
+// One slot of a rotation cycle: cycle day `day_index` → shift definition
+// (null = day off). `is_working_day` mirrors work_schedule_days semantics.
+model shift_rotations {
+  id                 String   @id @default(uuid()) @db.Uuid
+  shift_pattern_id   String   @db.Uuid
+  day_index          Int // 0-based position within the cycle
+  shift_definition_id String? @db.Uuid // null = off day
+  is_working_day     Boolean  @default(true)
+  created_at         DateTime @default(now())
+
+  shift_pattern    shift_patterns     @relation(fields: [shift_pattern_id], references: [id], onDelete: Cascade)
+  shift_definition shift_definitions? @relation(fields: [shift_definition_id], references: [id], onDelete: Restrict)
+
+  @@unique([shift_pattern_id, day_index])
+  @@index([shift_definition_id])
 }
 
 model work_schedule_days {
@@ -544,6 +622,8 @@ model schedule_overrides {
   swap_pair_id         String?  @db.Uuid
   approval_instance_id String?  @db.Uuid
   created_at           DateTime @default(now())
+
+  employee employees @relation(fields: [employee_id], references: [id], onDelete: Restrict)
 
   @@unique([employee_id, work_date])
 }

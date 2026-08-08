@@ -2,6 +2,7 @@ import { LeaveService } from './leave.service';
 import { ParameterService } from '../../core/config/parameter.service';
 import { ConfigService } from '../config/config.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RosterService } from '../roster/roster.service';
 
 /**
  * Unit tests for LeaveService (S7-M3).
@@ -73,7 +74,10 @@ describe('LeaveService', () => {
       }),
     } as unknown as ParameterService;
     const config = {} as ConfigService;
-    const svc = new LeaveService(prisma, params, config);
+    const roster = {
+      resolveWorkSchedule: jest.fn().mockResolvedValue(null),
+    } as unknown as RosterService;
+    const svc = new LeaveService(prisma, params, config, roster);
     return { svc, balances, prisma };
   };
 

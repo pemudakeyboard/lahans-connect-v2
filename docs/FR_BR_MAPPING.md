@@ -11,44 +11,44 @@ future module). Status legend:
 
 ## M0 — Identity & Access (foundation)
 
-| FR        | Requirement                                                    | Status | Where                                                                            |
-| --------- | -------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
-| FR-M0-001 | RBAC + ABAC (permission vs data scope)                         | ✅     | `core/auth/access-resolver.service.ts`, `group_permissions.data_scope`           |
-| FR-M0-002 | Permissions in `permissions` table `{mod}.{resource}.{action}` | ✅     | seed `PERMISSIONS`; `identity`/`config`/`master` modules                         |
-| FR-M0-003 | Backend authorization (not just frontend hiding)               | ✅     | `core/auth/guards/permission.guard.ts`                                           |
-| FR-M0-004 | Deny-by-default; no annotation = rejected                      | ✅     | `PermissionGuard`; CI would fail on missing decorator                            |
-| FR-M0-010 | user ↔ employee (max 1)                                        | ✅     | `users.employee_id` unique                                                       |
-| FR-M0-011 | Login NIK+password (mobile) / email+password (web)             | ✅     | `auth.controller.ts` `POST /auth/login`; web login screen                        |
-| FR-M0-012 | Password policy from `system_parameters`                       | 🟡     | `SECURITY.*` seeded; enforcement in `PasswordService`                            |
-| FR-M0-013 | Lock account after N fails for M min (from config)             | 🟡     | `auth.service.ts recordFailedAttempt` — hardcoded 5/15, TODO to read from config |
-| FR-M0-014 | User status lifecycle                                          | ✅     | `users.status`; `RESIGNED` auto-disable pending M1B                              |
-| FR-M0-015 | Device binding (mobile)                                        | ⏳     | deferred with Flutter                                                            |
-| FR-M0-016 | Reset password via OTP                                         | 🟡     | `forgot-password`/`reset-password`; OTP channel mocked                           |
-| FR-M0-017 | Active sessions + force logout                                 | 🟡     | refresh token rotation; admin force-logout deferred                              |
-| FR-M0-018 | 2FA (TOTP) forced for `requires_2fa` groups                    | ✅     | `otplib`, `auth.service.userRequires2fa`                                         |
-| FR-M0-020 | Group CRUD + clone via UI                                      | ✅     | `identity` module (API); UI deferred                                             |
-| FR-M0-021 | User in multiple groups; effective = union                     | ✅     | `AccessResolver`                                                                 |
-| FR-M0-022 | `user_permission_overrides` GRANT/DENY; DENY wins              | 🟡     | table exists; override resolution TODO                                           |
-| FR-M0-023 | `is_system` groups protected                                   | ✅     | seed `SUPER_ADMIN` `is_system`                                                   |
-| FR-M0-024 | Simulate-as-user screen                                        | ⏳     | deferred                                                                         |
-| FR-M0-025 | Group `requires_2fa`/`max_session_minutes`/`allowed_ip_cidr`   | 🟡     | `requires_2fa` active; rest deferred                                             |
-| FR-M0-030 | `data_scope` as reference data                                 | ✅     | seeded enum via `reference_data`                                                 |
-| FR-M0-031 | Scope effective = widest                                       | 🟡     | TODO in `AccessResolver`                                                         |
-| FR-M0-032 | Scope filter at repository/query layer                         | 🔒     | `DataScopeInterceptor` + Prisma where                                            |
-| FR-M0-033 | `TEAM_TREE` depth cap                                          | ⏳     | deferred                                                                         |
-| FR-M0-034 | Scope guard on employee queries + leak tests                   | 🟡     | guard present; cross-branch unit test TODO                                       |
-| FR-M0-040 | `sensitive_fields` registry + masking                          | ✅     | `core/auth/interceptors/field-mask.interceptor.ts`                               |
-| FR-M0-041 | Per group×permission field masking, `"***"`                    | 🟡     | mask interceptor; per-scope config TODO                                          |
-| FR-M0-042 | Export honors masking                                          | ⏳     | deferred                                                                         |
-| FR-M0-050 | `menus` table                                                  | ✅     | seed `menus`                                                                     |
-| FR-M0-051 | Nav from `GET /me/navigation`, not static array                | ✅     | `me-navigation.service.ts`; web `app-shell` renders from state                   |
-| FR-M0-052 | Hide parent when all children inaccessible                     | ✅     | `me-navigation.service.ts prunes`                                                |
-| FR-M0-053 | Admin reorders menu without deploy                             | 🟡     | API supports; UI deferred                                                        |
-| FR-M0-054 | Menu TTL cache + forced invalidation                           | 🟡     | `cache_ttl_seconds: 300`; invalidation deferred                                  |
-| FR-M0-060 | Approval delegation                                            | ⏳     | deferred                                                                         |
-| FR-M0-061 | Delegated approval attribution                                 | ⏳     | deferred                                                                         |
-| FR-M0-062 | Audit users/groups/menus changes with before/after             | ✅     | `audit.interceptor.ts`                                                           |
-| FR-M0-063 | `audit_logs` append-only                                       | ✅     | migration `REVOKE UPDATE/DELETE`                                                 |
+| FR        | Requirement                                                    | Status | Where                                                                                              |
+| --------- | -------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| FR-M0-001 | RBAC + ABAC (permission vs data scope)                         | ✅     | `core/auth/access-resolver.service.ts`, `group_permissions.data_scope`                             |
+| FR-M0-002 | Permissions in `permissions` table `{mod}.{resource}.{action}` | ✅     | seed `PERMISSIONS`; `identity`/`config`/`master` modules                                           |
+| FR-M0-003 | Backend authorization (not just frontend hiding)               | ✅     | `core/auth/guards/permission.guard.ts`                                                             |
+| FR-M0-004 | Deny-by-default; no annotation = rejected                      | ✅     | `PermissionGuard`; CI would fail on missing decorator                                              |
+| FR-M0-010 | user ↔ employee (max 1)                                        | ✅     | `users.employee_id` unique                                                                         |
+| FR-M0-011 | Login NIK+password (mobile) / email+password (web)             | ✅     | `auth.controller.ts` `POST /auth/login`; web login screen                                          |
+| FR-M0-012 | Password policy from `system_parameters`                       | 🟡     | `SECURITY.*` seeded; enforcement in `PasswordService`                                              |
+| FR-M0-013 | Lock account after N fails for M min (from config)             | 🟡     | `auth.service.ts recordFailedAttempt` — hardcoded 5/15, TODO to read from config                   |
+| FR-M0-014 | User status lifecycle                                          | ✅     | `users.status`; `RESIGNED` auto-disable pending M1B                                                |
+| FR-M0-015 | Device binding (mobile)                                        | ⏳     | deferred with Flutter                                                                              |
+| FR-M0-016 | Reset password via OTP                                         | 🟡     | `forgot-password`/`reset-password`; OTP channel mocked                                             |
+| FR-M0-017 | Active sessions + force logout                                 | 🟡     | refresh token rotation; admin force-logout deferred                                                |
+| FR-M0-018 | 2FA (TOTP) forced for `requires_2fa` groups                    | ✅     | `otplib`, `auth.service.userRequires2fa`                                                           |
+| FR-M0-020 | Group CRUD + clone via UI                                      | ✅     | `identity` module (API); UI deferred                                                               |
+| FR-M0-021 | User in multiple groups; effective = union                     | ✅     | `AccessResolver`                                                                                   |
+| FR-M0-022 | `user_permission_overrides` GRANT/DENY; DENY wins              | 🟡     | table exists; override resolution TODO                                                             |
+| FR-M0-023 | `is_system` groups protected                                   | ✅     | seed `SUPER_ADMIN` `is_system`                                                                     |
+| FR-M0-024 | Simulate-as-user screen                                        | ⏳     | deferred                                                                                           |
+| FR-M0-025 | Group `requires_2fa`/`max_session_minutes`/`allowed_ip_cidr`   | 🟡     | `requires_2fa` active; rest deferred                                                               |
+| FR-M0-030 | `data_scope` as reference data                                 | ✅     | seeded enum via `reference_data`                                                                   |
+| FR-M0-031 | Scope effective = widest                                       | 🟡     | TODO in `AccessResolver`                                                                           |
+| FR-M0-032 | Scope filter at repository/query layer                         | 🔒     | `DataScopeInterceptor` + Prisma where                                                              |
+| FR-M0-033 | `TEAM_TREE` depth cap                                          | ⏳     | deferred                                                                                           |
+| FR-M0-034 | Scope guard on employee queries + leak tests                   | 🟡     | guard present; cross-branch unit test TODO                                                         |
+| FR-M0-040 | `sensitive_fields` registry + masking                          | ✅     | `core/auth/interceptors/field-mask.interceptor.ts`                                                 |
+| FR-M0-041 | Per group×permission field masking, `"***"`                    | 🟡     | mask interceptor; per-scope config TODO                                                            |
+| FR-M0-042 | Export honors masking                                          | ⏳     | deferred                                                                                           |
+| FR-M0-050 | `menus` table                                                  | ✅     | seed `menus`                                                                                       |
+| FR-M0-051 | Nav from `GET /me/navigation`, not static array                | ✅     | `me-navigation.service.ts`; web `app-shell` renders from state                                     |
+| FR-M0-052 | Hide parent when all children inaccessible                     | ✅     | `me-navigation.service.ts prunes`                                                                  |
+| FR-M0-053 | Admin reorders menu without deploy                             | 🟡     | API supports; UI deferred                                                                          |
+| FR-M0-054 | Menu TTL cache + forced invalidation                           | 🟡     | `cache_ttl_seconds: 300`; invalidation deferred                                                    |
+| FR-M0-060 | Approval delegation                                            | ✅     | `approval_delegations` + delegation endpoints di modul roster (lihat M2B); `guardActiveDelegation` |
+| FR-M0-061 | Delegated approval attribution                                 | ✅     | `DelegationService.resolveStepAssignee` → `approval_tasks.delegated_from_user_id` (lihat M2B)      |
+| FR-M0-062 | Audit users/groups/menus changes with before/after             | ✅     | `audit.interceptor.ts`                                                                             |
+| FR-M0-063 | `audit_logs` append-only                                       | ✅     | migration `REVOKE UPDATE/DELETE`                                                                   |
 
 ## M1B — Master Data (generic CRUD)
 
@@ -134,6 +134,32 @@ Sumber: modul M2 (Absensi) — `Tintin Compensation & Benefit - LEMBUR & ABSEN.p
 | —         | Scheduler harian otomatis (bukan manual finalize)                                            | ⏳     | `finalizeDay` endpoint; cron deferred                                                                              |
 
 **Catatan data masa:** `attendance_daily.work_date` disimpan sebagai **UTC midnight** hari Indonesia (Asia/Jakarta) — konvensi sama dengan batas `cutoff_*` payroll dan seed. `startOfDay/endOfDay` di `attendance.service.ts` memakai `Date.UTC`, dan `resolveScheduleDay` memakai `getUTCDay()` supaya lookup hari-jadwal konsisten. Baris yang sudah `source=MANUAL` (hasil koreksi yang disetujui) dibekukan — `finalizeDay`/clock tidak menimpa override manual.
+
+## M2B — Roster Management
+
+Sumber: modul M2B (Roster) — admin mengonfigurasi shift schedule per branch/unit (manufaktur vs branch), tanpa pemblokiran karyawan. Jadwal yang hilang tidak pernah memblokir clock-in — hanya muncul sebagai anomali `NO_SCHEDULE` di rekap kehadiran (keputusan user atas FR-M2B-006). Resolver shift dipakai bersama oleh attendance + leave agar perubahan roster dihormati di mana-mana.
+
+| FR/BR      | Requirement                                                                                     | Status | Where                                                                                                                                                                                                    |
+| ---------- | ----------------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-M2B-001 | Roster & shift management — admin configures shift schedules per branch/unit, no blocking       | ✅     | `roster` module (`/roster/*`); master CRUD `shift-definitions`/`shift-patterns`/`shift-rotations`/`schedule-assignments`; `schedule_assignments.scope_type` = EMPLOYEE\|POSITION\|GRADE\|BRANCH\|COMPANY |
+| FR-M2B-002 | Shift definitions (NORMAL/PAGI/SIANG/MALAM) + rotation patterns (PABRIK_3X 7-slot cycle)        | ✅     | `shift_definitions` (`crosses_midnight`, `cover_end_date`), `shift_patterns.cycle_length` (default 7), `shift_rotations` (day_index → shift; null = libur); seed `PABRIK_3X`                             |
+| FR-M2B-003 | Schedule resolution priority — individu(1) > jabatan(2) > golongan(3) > cabang(4) > entitas(5)  | ✅     | `shift-resolver.ts` `SCOPE_PRIORITY` + `rankAssignments`; dipakai attendance (`attendance.service.ts resolveScheduleDay`) + leave (`leave.service.ts computeWorkingDays`)                                |
+| FR-M2B-004 | Calendar view per employee × date, branch-filterable; per-date overrides (swap shift / day off) | ✅     | `GET /roster/calendar` (from/to/branchId); `GET/POST /roster/overrides` → `schedule_overrides` (upsert `employee_id_work_date`, unique); override menang atas assignment                                 |
+| FR-M2B-005 | Bulk assignment of a work_schedule to many employees                                            | ✅     | `POST /roster/schedules/:id/assign` (`employee_ids[]`) → EMPLOYEE scope priority 1, `effective_from`=now; reassign update bila assignment terbuka sudah ada                                              |
+| FR-M2B-006 | Missing schedule → NO_SCHEDULE anomaly, never blocks period close                               | ✅     | `attendance-derivation.ts` push `NO_SCHEDULE`; `RosterService` no-block (`collectBlockers` sengaja kosong); spec `attendance-derivation.spec.ts` "no schedule → working day"                             |
+| FR-M0-060  | Approval delegation — roster duties delegable                                                   | ✅     | `approval_delegations` + `POST /roster/delegations` / `DELETE /roster/delegations/:id`; `RosterService.guardActiveDelegation` blokir delegator aktif                                                     |
+| FR-M0-061  | Delegated approval attribution                                                                  | ✅     | `DelegationService.resolveStepAssignee` → `approval_tasks.delegated_from_user_id`; `GET /roster/delegations` (mine + delegatingToMe)                                                                     |
+| —          | Swap / ganti-hari (pair bidirectional, ADR-0003 `swap_pair_id` + flow auto-approval)            | ⏳     | `schedule_overrides.swap_pair_id`/`approval_instance_id` ada di schema (ADR-0003); endpoint overrides ada, flow auto-approval belum diimplementasikan                                                    |
+
+**BR / perilaku (catatan):**
+
+- **Sumbu prioritas 5-level** — `SCOPE_PRIORITY` di `shift-resolver.ts`: `EMPLOYEE`=1 (individu) > `POSITION`=2 (jabatan) > `GRADE`=3 (golongan) > `BRANCH`=4 (cabang) > `COMPANY`=5 (entitas). `rankAssignments` memilih pemenang dari assignment effective (window `effective_from..effective_to` inklusif); tie-break ke `priority` tersimpan lalu schedule id. `scopeRefsFor` membangun daftar scope per karyawan (ref org null dilewati).
+- **Semantik window shift** — value seed: `NORMAL` 08:00–17:00 (break 60), `PAGI` 06:00–14:00, `SIANG` 14:00–22:00, `MALAM` 22:00–06:00 (break 0) — semua WIB wall-time dari `shift_definitions`, bukan hardcode (`RosterService.infersCrossesMidnight` menandai `crosses_midnight` saat start ≥ end). `MALAM` masuk hitungan hari Indonesia saat shift **mulai**; `shiftWindowInstants` me-roll end +24h → label `"06:00 (esok)"` (`advanceWallClock`), dan `cover_end_date` menandai end_time milik hari berikutnya.
+- **Konvensi work_date UTC-midnight** — dipakai ulang dari S6: kalender roster memajukan kursor pada jam UTC (`startOfDay`/`Date.UTC`, lihat komentar anti-infinite-loop di `roster.service.ts calendar`), lookup FIXED/FLEXIBLE untuk hari-jadwal via `getUTCDay()`, selaras `attendance_daily.work_date` = UTC midnight hari Indonesia.
+- **No-block NO_SCHEDULE** — jadwal yang hilang tidak pernah memblokir clock-in/penutupan periode (keputusan user atas FR-M2B-006): `attendance-derivation.ts` memperlakukan null schedule sebagai hari kerja (ALPHA tetap bisa terbakar) dan push anomali `NO_SCHEDULE` (FR-M2-011); `collectBlockers` sengaja kosong. Di kalender roster sel tanpa jadwal tampil shift `—`.
+- **Konfigurasi per branch/unit** — SHIFT schedule `PABRIK_SHIFT_3X` di-assign di scope BRANCH (priority 4) ke cabang PBR = default unit manufaktur untuk karyawan tanpa jadwal individu di branch itu. Shift config per-company (`resolveCompanyId` pilih bind COMPANY scope user, fallback company pertama) — unit baru tidak butuh perubahan kode.
+
+**UAT / demo note:** seed menciptakan `PABRIK_SHIFT_3X` (SHIFT, "Pabrik Shift 3x8") → pattern `PABRIK_3X` (cycle 7: PAGI→SIANG→MALAM→libur→PAGI→SIANG→MALAM) yang di-assign di scope BRANCH ke `PBR` ("Pabrik Rancaekek", priority 4, effective 2026-01-01). Karyawan OPERATOR-TINTIN (`20230612` BYW, `20000173` & `20240682` GRT) mendapat assignment EMPLOYEE-scope yang sama (priority 1) → rotasi 3-shift ter-resolve di kalender roster. Roster group grants: `COMBEN` + `HCGA_MANAGER` manage penuh di scope DIVISION; `EMPLOYEE` baca kalender/override/delegation (SELF). Delegasi (FR-M0-060/061): demo supervisor `88000002` (SUPER_ADMIN, reporting line untuk UAT cuti/koreksi) dapat membuat delegasi roster via UI; selama delegasi aktif `guardActiveDelegation` memblokir `88000002` bertindak sampai delegasi dibatalkan.
 
 ## Core cross-cutting (BRD S0/S0b)
 

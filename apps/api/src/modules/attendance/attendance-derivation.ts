@@ -13,11 +13,13 @@
 
 /** A single resolved schedule day (or null when no schedule could be resolved). */
 export interface DerivationScheduleDay {
-  start_time: string | null; // "09:00"
-  end_time: string | null; // "17:00"
+  start_time: string | null; // "09:00" (WIB wall time)
+  end_time: string | null; // "17:00" (WIB wall time; next-day if crosses_midnight)
   break_minutes: number;
   late_tolerance_minutes: number;
   is_working_day: boolean;
+  /** Night shift: end_time belongs to the next Indonesian day (M2B). */
+  crosses_midnight?: boolean;
 }
 
 export interface DerivationInput {
@@ -44,12 +46,19 @@ export interface DerivationResult {
   anomaly_reasons: string[] | null;
 }
 
-/** Parse "09:00" into a UTC Date on the given work_date. */
+/**
+ * Parse a WIB wall time "09:00" into the UTC instant it occurs at on the given
+ * work_date. work_date is stored as UTC midnight of the Indonesian day
+ * (Asia/Jakarta, UTC+7); a real clock at 09:10 WIB stores 02:10Z, so the
+ * schedule instant must be the UTC instant of the WIB wall clock — i.e.
+ * 09:00 WIB = 02:00Z on the same calendar day. (The date is already a UTC
+ * midnight, so subtracting the 7h offset yields the correct UTC instant.)
+ */
 function ms(hhmm: string, date: Date): Date {
   const [h, m] = hhmm.split(':').map(Number);
-  return new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), h || 0, m || 0),
-  );
+  // 7 = Asia/Jakarta UTC offset (timezone constant, not a policy number).
+  // eslint-disable-next-line lahans/no-magic-policy-numbers
+  return new Date(date.getTime() + (h - 7) * 3_600_000 + m * 60_000);
 }
 
 const asMinutes = (a: Date, b: Date) => {
@@ -80,7 +89,13 @@ export function deriveDailyFields(input: DerivationInput): DerivationResult {
   }
 
   const start = scheduleDay?.start_time ? ms(scheduleDay.start_time, date) : null;
-  const end = scheduleDay?.end_time ? ms(scheduleDay.end_time, date) : null;
+  // Night shift: the end wall time belongs to the NEXT Indonesian day, so the
+  // instant is +24h from today's wall clock (e.g. 06:00 WIB esok = 30:00-local).
+  const end = scheduleDay?.end_time
+    ? new Date(
+        ms(scheduleDay.end_time, date).getTime() + (scheduleDay.crosses_midnight ? 86_400_000 : 0),
+      )
+    : null;
   const breakMinutes = scheduleDay?.break_minutes ?? 0;
   const tolerance = scheduleDay?.late_tolerance_minutes ?? 0;
 

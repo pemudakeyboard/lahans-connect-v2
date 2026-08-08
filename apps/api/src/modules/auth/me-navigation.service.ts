@@ -43,9 +43,12 @@ export class MeNavigationService {
       return permissionSet.has(m.permission!.code);
     });
 
+    // Group children under the parent's *code* — the recursion in build() keys
+    // on code, so the two must agree (a parent's UUID is meaningless to build()).
+    const codeById = new Map(allMenus.map((m) => [m.id, m.code] as const));
     const byParent = new Map<string | null, NavMenu[]>();
     for (const m of visible) {
-      const key = m.parent_id;
+      const key = m.parent_id == null ? null : (codeById.get(m.parent_id) ?? m.parent_id);
       if (!byParent.has(key)) byParent.set(key, []);
       byParent.get(key)!.push({
         code: m.code,

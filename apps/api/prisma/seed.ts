@@ -58,6 +58,13 @@ const PERMISSIONS = [
   'master.schedule_assignments.write',
   'master.holidays.read',
   'master.holidays.write',
+  // master — M2B shift config (shift definitions / rotation patterns, admin-editable)
+  'master.shift_definitions.read',
+  'master.shift_definitions.write',
+  'master.shift_patterns.read',
+  'master.shift_patterns.write',
+  'master.shift_rotations.read',
+  'master.shift_rotations.write',
   // attendance
   'attendance.log.read',
   'attendance.log.write',
@@ -66,6 +73,15 @@ const PERMISSIONS = [
   'attendance.correction.read',
   'attendance.correction.write',
   'attendance.correction.approve',
+  // roster (M2B — shift config, calendar, assignment, delegation)
+  'roster.calendar.read',
+  'roster.shift.read',
+  'roster.shift.write',
+  'roster.override.read',
+  'roster.override.write',
+  'roster.assign.write',
+  'roster.delegation.read',
+  'roster.delegation.write',
   // leave
   'leave.request.read',
   'leave.request.write',
@@ -1648,6 +1664,221 @@ async function main() {
   console.log('✔ attendance group grants (COMBEN/HCGA DIVISION, EMPLOYEE SELF)');
 
   // ---------------------------------------------------------------------------
+  // M2B — Roster group grants (FR-M2B-001..004, FR-M0-060/061)
+  // ---------------------------------------------------------------------------
+  // COMBEN + HCGA_MANAGER manage the roster (shifts, calendar, overrides,
+  // assignment, delegation) at DIVISION scope; EMPLOYEE reads the calendar.
+  for (const g of ['COMBEN', 'HCGA_MANAGER']) {
+    for (const code of [
+      'roster.calendar.read',
+      'roster.shift.read',
+      'roster.shift.write',
+      'roster.override.read',
+      'roster.override.write',
+      'roster.assign.write',
+      'roster.delegation.read',
+      'roster.delegation.write',
+      'master.shift_definitions.read',
+      'master.shift_definitions.write',
+      'master.shift_patterns.read',
+      'master.shift_patterns.write',
+      'master.shift_rotations.read',
+      'master.shift_rotations.write',
+    ]) {
+      await prisma.group_permissions.upsert({
+        where: {
+          group_id_permission_id: {
+            group_id: groupIds.get(g)!,
+            permission_id: permissionIds.get(code)!,
+          },
+        },
+        create: {
+          group_id: groupIds.get(g)!,
+          permission_id: permissionIds.get(code)!,
+          data_scope: 'DIVISION',
+        },
+        update: { data_scope: 'DIVISION' },
+      });
+    }
+  }
+  for (const code of ['roster.calendar.read', 'roster.override.read', 'roster.delegation.read']) {
+    await prisma.group_permissions.upsert({
+      where: {
+        group_id_permission_id: {
+          group_id: groupIds.get('EMPLOYEE')!,
+          permission_id: permissionIds.get(code)!,
+        },
+      },
+      create: {
+        group_id: groupIds.get('EMPLOYEE')!,
+        permission_id: permissionIds.get(code)!,
+        data_scope: 'SELF',
+      },
+      update: { data_scope: 'SELF' },
+    });
+  }
+  console.log('✔ roster group grants (COMBEN/HCGA DIVISION, EMPLOYEE SELF)');
+
+  // ---------------------------------------------------------------------------
+  // M2B — Shift management (FR-M2B-002): definitions + rotation + SHIFT schedule
+  // ---------------------------------------------------------------------------
+  // The SOP hours are fixed-day schedules (office 09–17, pabrik 07:30–15:30/15:00,
+  // field flexible). On top of those, admins configure named shift windows
+  // (NORMAL/PAGI/SIANG/MALAM) that a rotation pattern composes into a SHIFT
+  // work_schedule — the "3 shift" set-up for the manufaktur unit. These are
+  // seed defaults, fully admin-editable via the master web UI; the roster
+  // resolver reads them from the DB (no code change when a unit is added).
+  const shiftDefSeeds = [
+    {
+      code: 'NORMAL',
+      name: 'Shift Normal',
+      start: '08:00',
+      end: '17:00',
+      break: 60,
+      tol: 0,
+      crosses: false,
+    },
+    {
+      code: 'PAGI',
+      name: 'Shift Pagi',
+      start: '06:00',
+      end: '14:00',
+      break: 0,
+      tol: 0,
+      crosses: false,
+    },
+    {
+      code: 'SIANG',
+      name: 'Shift Siang',
+      start: '14:00',
+      end: '22:00',
+      break: 0,
+      tol: 0,
+      crosses: false,
+    },
+    {
+      code: 'MALAM',
+      name: 'Shift Malam',
+      start: '22:00',
+      end: '06:00',
+      break: 0,
+      tol: 0,
+      crosses: true,
+    },
+  ];
+  const shiftDefIdByCode = new Map<string, string>();
+  for (const s of shiftDefSeeds) {
+    const row = await prisma.shift_definitions.upsert({
+      where: { company_id_code: { company_id: company.id, code: s.code } },
+      create: {
+        company_id: company.id,
+        code: s.code,
+        name: s.name,
+        start_time: s.start,
+        end_time: s.end,
+        break_minutes: s.break,
+        late_tolerance_minutes: s.tol,
+        crosses_midnight: s.crosses,
+        is_active: true,
+      },
+      update: {
+        name: s.name,
+        start_time: s.start,
+        end_time: s.end,
+        break_minutes: s.break,
+        late_tolerance_minutes: s.tol,
+        crosses_midnight: s.crosses,
+        is_active: true,
+      },
+    });
+    shiftDefIdByCode.set(s.code, row.id);
+  }
+  console.log(`✔ ${shiftDefSeeds.length} shift definitions (NORMAL/PAGI/SIANG/MALAM)`);
+
+  // 3-shift rotation pattern: 7-day cycle, PAGI→SIANG→MALAM→LIBUR→PAGI→SIANG→MALAM.
+  const PABRIK_PATTERN_CODE = 'PABRIK_3X';
+  const pattern = await prisma.shift_patterns.upsert({
+    where: { company_id_code: { company_id: company.id, code: PABRIK_PATTERN_CODE } },
+    create: {
+      company_id: company.id,
+      code: PABRIK_PATTERN_CODE,
+      name: 'Pola 3 Shift Pabrik',
+      cycle_length: 7,
+      is_active: true,
+    },
+    update: { name: 'Pola 3 Shift Pabrik', cycle_length: 7, is_active: true },
+  });
+  const rotationSeeds: { idx: number; shift: string | null; working: boolean }[] = [
+    { idx: 0, shift: 'PAGI', working: true },
+    { idx: 1, shift: 'SIANG', working: true },
+    { idx: 2, shift: 'MALAM', working: true },
+    { idx: 3, shift: null, working: false }, // libur
+    { idx: 4, shift: 'PAGI', working: true },
+    { idx: 5, shift: 'SIANG', working: true },
+    { idx: 6, shift: 'MALAM', working: true },
+  ];
+  for (const r of rotationSeeds) {
+    await prisma.shift_rotations.upsert({
+      where: { shift_pattern_id_day_index: { shift_pattern_id: pattern.id, day_index: r.idx } },
+      create: {
+        shift_pattern_id: pattern.id,
+        day_index: r.idx,
+        shift_definition_id: r.shift ? (shiftDefIdByCode.get(r.shift) ?? null) : null,
+        is_working_day: r.working,
+      },
+      update: {
+        shift_definition_id: r.shift ? (shiftDefIdByCode.get(r.shift) ?? null) : null,
+        is_working_day: r.working,
+      },
+    });
+  }
+  console.log(`✔ ${PABRIK_PATTERN_CODE} rotation pattern (${rotationSeeds.length} slots)`);
+
+  // SHIFT work_schedule pointing at the 3-shift pattern, assigned to the
+  // manufaktur unit (PBR branch) at BRANCH scope (priority 4) — the operator
+  // demo employees resolving it get their day-off/shift from the rotation.
+  const shiftSchedule = await prisma.work_schedules.upsert({
+    where: { code: 'PABRIK_SHIFT_3X' },
+    create: {
+      company_id: company.id,
+      code: 'PABRIK_SHIFT_3X',
+      name: 'Pabrik Shift 3x8',
+      schedule_type: 'SHIFT',
+      shift_pattern_id: pattern.id,
+      is_active: true,
+    },
+    update: {
+      name: 'Pabrik Shift 3x8',
+      schedule_type: 'SHIFT',
+      shift_pattern_id: pattern.id,
+      is_active: true,
+    },
+  });
+  const existingShiftAssign = await prisma.schedule_assignments.findFirst({
+    where: { scope_type: 'BRANCH', scope_ref_id: branch.id, work_schedule_id: shiftSchedule.id },
+  });
+  const shiftAssignData = {
+    work_schedule_id: shiftSchedule.id,
+    scope_type: 'BRANCH' as const,
+    scope_ref_id: branch.id,
+    priority: 4,
+    effective_from: ASOF,
+    effective_to: null,
+  };
+  if (existingShiftAssign) {
+    await prisma.schedule_assignments.update({
+      where: { id: existingShiftAssign.id },
+      data: shiftAssignData,
+    });
+  } else {
+    await prisma.schedule_assignments.create({ data: shiftAssignData });
+  }
+  // Shared schedule-id registry populated here (M2B) and by the S6 block below.
+  const scheduleIdByCode = new Map<string, string>();
+  scheduleIdByCode.set('PABRIK_SHIFT_3X', shiftSchedule.id);
+  console.log('✔ PABRIK_SHIFT_3X work schedule + BRANCH assignment (PBR)');
+
+  // ---------------------------------------------------------------------------
   // S6 — Work schedules + calendar (admin-configurable baseline, NOT hardcoded)
   // ---------------------------------------------------------------------------
   // Seeded as demo defaults only; admins reconfigure them (and add new ones per
@@ -1730,7 +1961,6 @@ async function main() {
       ],
     },
   ];
-  const scheduleIdByCode = new Map<string, string>();
   for (const s of workScheduleSeeds) {
     const row = await prisma.work_schedules.upsert({
       where: { code: s.code },
@@ -1777,9 +2007,13 @@ async function main() {
   console.log(`✔ ${workScheduleSeeds.length} work schedules (admin-configurable)`);
 
   // Assign schedules to employees (EMPLOYEE scope, priority 1, effective 2026-01-01).
+  // Operators get the 3-shift ROTATION (PAGI/SIANG/MALAM) so the demo shows the
+  // M2B shift machinery; office staff get fixed SOP schedules. The PBR BRANCH
+  // assignment (priority 4) is the manufaktur-unit default for any employee with
+  // no individual schedule — admins configure per unit via master, not code.
   const scheduleForEmployee = (nik: string): string | null => {
     const pos = m6Employees.find((e) => e.nik === nik)?.positionCode;
-    if (pos === 'OPERATOR-TINTIN') return 'PABRIK_OPERATOR';
+    if (pos === 'OPERATOR-TINTIN') return 'PABRIK_SHIFT_3X';
     if (pos) return 'FIELD_MARKET'; // SALESMAN/DRIVER/SPG
     if (nik === '88000002' || nik === '88000011' || nik === '88000012') return 'HO_STANDARD';
     return null;
@@ -2092,6 +2326,33 @@ async function main() {
       permission_code: 'master.holidays.read',
     },
     {
+      code: 'MASTER.SHIFT_DEFINITIONS',
+      label: 'Shift',
+      route: '/master/shift-definitions',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 19,
+      permission_code: 'master.shift_definitions.read',
+    },
+    {
+      code: 'MASTER.SHIFT_PATTERNS',
+      label: 'Pola Rotasi Shift',
+      route: '/master/shift-patterns',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 20,
+      permission_code: 'master.shift_patterns.read',
+    },
+    {
+      code: 'MASTER.SHIFT_ROTATIONS',
+      label: 'Slot Rotasi Shift',
+      route: '/master/shift-rotations',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 21,
+      permission_code: 'master.shift_rotations.read',
+    },
+    {
       code: 'CONFIG',
       label: 'Pengaturan',
       icon: 'Settings',
@@ -2237,6 +2498,42 @@ async function main() {
       platform: 'BOTH',
       sort_order: 81,
       permission_code: 'attendance.daily.read',
+    },
+    // M2B — roster (shift config + calendar)
+    {
+      code: 'ROSTER',
+      label: 'Roster',
+      icon: 'CalendarDays',
+      platform: 'BOTH',
+      sort_order: 85,
+      permission_code: 'roster.calendar.read',
+    },
+    {
+      code: 'ROSTER.CALENDAR',
+      label: 'Kalender Roster',
+      route: '/roster',
+      parent_code: 'ROSTER',
+      platform: 'BOTH',
+      sort_order: 86,
+      permission_code: 'roster.calendar.read',
+    },
+    {
+      code: 'ROSTER.SHIFTS',
+      label: 'Konfigurasi Shift',
+      route: '/roster?tab=shifts',
+      parent_code: 'ROSTER',
+      platform: 'BOTH',
+      sort_order: 87,
+      permission_code: 'roster.shift.read',
+    },
+    {
+      code: 'ROSTER.DELEGATIONS',
+      label: 'Delegasi Roster',
+      route: '/roster?tab=delegations',
+      parent_code: 'ROSTER',
+      platform: 'BOTH',
+      sort_order: 88,
+      permission_code: 'roster.delegation.read',
     },
     // M6 — payroll (BRD §11.4)
     {

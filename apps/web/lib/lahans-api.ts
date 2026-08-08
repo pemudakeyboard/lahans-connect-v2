@@ -686,3 +686,192 @@ export async function cancelCorrection(id: string): Promise<{ id: string; status
     method: 'POST',
   });
 }
+
+// ---------------------------------------------------------------------------
+// M2B — roster (shift config + calendar + delegation)
+// ---------------------------------------------------------------------------
+
+export interface ShiftDefinitionRow {
+  id: string;
+  company_id: string;
+  code: string;
+  name: string;
+  start_time: string | null;
+  end_time: string | null;
+  break_minutes: number;
+  late_tolerance_minutes: number;
+  crosses_midnight: boolean;
+  cover_end_date: boolean;
+  is_active: boolean;
+}
+
+export interface ShiftRotationRow {
+  id: string;
+  day_index: number;
+  shift_definition_id: string | null;
+  is_working_day: boolean;
+  shift_definition?: { code: string; name: string } | null;
+}
+
+export interface ShiftPatternRow {
+  id: string;
+  company_id: string;
+  code: string;
+  name: string;
+  cycle_length: number;
+  is_active: boolean;
+  rotations?: ShiftRotationRow[];
+}
+
+export interface RosterCalendarRow {
+  employee_id: string;
+  nik: string;
+  full_name: string;
+  work_date: string;
+  shift_code: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  is_working_day: boolean;
+  crosses_midnight: boolean;
+  source: 'SCHEDULE' | 'OVERRIDE';
+  override: { work_schedule_id: string | null; is_day_off: boolean; reason: string } | null;
+}
+
+export interface RosterCalendarResponse {
+  branchId: string | null;
+  from: string;
+  to: string;
+  rows: RosterCalendarRow[];
+}
+
+export interface ScheduleOverrideRow {
+  id: string;
+  employee_id: string;
+  work_date: string;
+  work_schedule_id: string | null;
+  is_day_off: boolean;
+  reason: string;
+  employee?: { nik: string; full_name: string } | null;
+}
+
+export interface RosterDelegationRow {
+  id: string;
+  delegator_user_id: string;
+  delegate_user_id: string;
+  module_codes?: unknown;
+  start_date: string;
+  end_date: string;
+  reason: string;
+  is_active: boolean;
+  delegator?: { login_nik: string; employee?: { full_name: string } | null } | null;
+  delegate?: { login_nik: string; employee?: { full_name: string } | null } | null;
+}
+
+export async function listShifts(): Promise<ShiftDefinitionRow[]> {
+  return api<ShiftDefinitionRow[]>('/api/roster/shifts');
+}
+
+export async function createShift(body: {
+  code: string;
+  name: string;
+  start_time?: string;
+  end_time?: string;
+  break_minutes?: number;
+  late_tolerance_minutes?: number;
+  crosses_midnight?: boolean;
+}): Promise<ShiftDefinitionRow> {
+  return api<ShiftDefinitionRow>('/api/roster/shifts', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateShift(
+  id: string,
+  body: Partial<ShiftDefinitionRow>,
+): Promise<ShiftDefinitionRow> {
+  return api<ShiftDefinitionRow>(`/api/roster/shifts/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function deleteShift(id: string): Promise<void> {
+  await api(`/api/roster/shifts/${id}`, { method: 'DELETE' });
+}
+
+export async function listShiftPatterns(): Promise<ShiftPatternRow[]> {
+  return api<ShiftPatternRow[]>('/api/roster/patterns');
+}
+
+export async function listRosterCalendar(params: {
+  from: string;
+  to: string;
+  branchId?: string;
+}): Promise<RosterCalendarResponse> {
+  const q = new URLSearchParams();
+  q.set('from', params.from);
+  q.set('to', params.to);
+  if (params.branchId) q.set('branchId', params.branchId);
+  return api<RosterCalendarResponse>(`/api/roster/calendar?${q.toString()}`);
+}
+
+export async function listScheduleOverrides(params?: {
+  from?: string;
+  to?: string;
+  employeeId?: string;
+}): Promise<ScheduleOverrideRow[]> {
+  const q = new URLSearchParams();
+  if (params?.from) q.set('from', params.from);
+  if (params?.to) q.set('to', params.to);
+  if (params?.employeeId) q.set('employeeId', params.employeeId);
+  const qs = q.toString();
+  return api<ScheduleOverrideRow[]>(`/api/roster/overrides${qs ? `?${qs}` : ''}`);
+}
+
+export async function createScheduleOverride(body: {
+  employee_id: string;
+  work_date: string;
+  work_schedule_id?: string;
+  is_day_off?: boolean;
+  reason: string;
+}): Promise<ScheduleOverrideRow> {
+  return api<ScheduleOverrideRow>('/api/roster/overrides', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function assignSchedules(
+  scheduleId: string,
+  employee_ids: string[],
+): Promise<{ assigned: number }> {
+  return api<{ assigned: number }>(`/api/roster/schedules/${scheduleId}/assign`, {
+    method: 'POST',
+    body: JSON.stringify({ employee_ids }),
+  });
+}
+
+export async function listRosterDelegations(): Promise<{
+  mine: RosterDelegationRow[];
+  delegatingToMe: string[];
+}> {
+  return api<{ mine: RosterDelegationRow[]; delegatingToMe: string[] }>('/api/roster/delegations');
+}
+
+export async function createRosterDelegation(body: {
+  delegate_user_id: string;
+  module_codes?: string[];
+  start_date: string;
+  end_date: string;
+  reason: string;
+}): Promise<RosterDelegationRow> {
+  return api<RosterDelegationRow>('/api/roster/delegations', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function cancelRosterDelegation(id: string): Promise<RosterDelegationRow> {
+  return api<RosterDelegationRow>(`/api/roster/delegations/${id}`, { method: 'DELETE' });
+}

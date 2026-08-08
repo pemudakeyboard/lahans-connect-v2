@@ -128,6 +128,37 @@ export const MASTER_REGISTRY: Record<string, MasterEntityConfig> = {
     label: 'Penugasan Jadwal',
     include: { work_schedule: { select: { name: true } } },
   },
+  /**
+   * M2B — shift definitions (FR-M2B-002). The concrete shift windows admins
+   * configure per company: NORMAL/PAGI/SIANG/MALAM + any future shift. Parent
+   * reference is `company_id` (each company/unit edits its own shifts).
+   */
+  'shift-definitions': {
+    delegate: 'shift_definitions',
+    searchable: ['code', 'name'],
+    label: 'Shift',
+    isActive: true,
+  },
+  /**
+   * M2B — rotation patterns (FR-M2B-002). A SHIFT work_schedule points here;
+   * `cycle_length` bounds the day_indexes of its slots.
+   */
+  'shift-patterns': {
+    delegate: 'shift_patterns',
+    searchable: ['code', 'name'],
+    label: 'Pola Rotasi Shift',
+    isActive: true,
+  },
+  /**
+   * M2B — rotation slots (FR-M2B-002). One row per cycle day: day_index →
+   * shift_definition (null = day off). Parent reference is `shift_pattern_id`.
+   */
+  'shift-rotations': {
+    delegate: 'shift_rotations',
+    searchable: ['shift_pattern_id', 'day_index'],
+    label: 'Slot Rotasi Shift',
+    include: { shift_definition: { select: { code: true, name: true } } },
+  },
   'payroll-components': {
     delegate: 'payroll_components',
     searchable: ['code', 'name'],

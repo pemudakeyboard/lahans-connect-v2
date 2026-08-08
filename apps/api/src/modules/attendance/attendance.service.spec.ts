@@ -2,6 +2,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { ParameterService } from '../../core/config/parameter.service';
 import { PayrollScopeService } from '../payroll/payroll-scope.service';
+import { RosterService } from '../roster/roster.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '../../generated/prisma';
 
@@ -84,6 +85,7 @@ const makeService = (
     prisma as unknown as PrismaService,
     paramsStub(opts.radius ?? 150),
     opts.scope ?? scopeStub(),
+    { resolveWorkSchedule: jest.fn().mockResolvedValue(null) } as unknown as RosterService,
   );
   return { svc, prisma };
 };
