@@ -34,7 +34,7 @@ export interface SelectOption {
 export interface FieldDef {
   name: string;
   label: string;
-  type?: 'text' | 'number' | 'date' | 'email';
+  type?: 'text' | 'number' | 'date' | 'email' | 'time' | 'boolean';
   required?: boolean;
   placeholder?: string;
   /**
@@ -151,6 +151,8 @@ export function MasterCrud<T extends { id: string }>({
       } else if (f.type === 'date') {
         // Prisma returns ISO datetime; <input type="date"> needs YYYY-MM-DD.
         init[f.name] = String(raw).slice(0, 10);
+      } else if (f.type === 'boolean') {
+        init[f.name] = raw ? 'true' : 'false';
       } else {
         init[f.name] = String(raw);
       }
@@ -167,7 +169,9 @@ export function MasterCrud<T extends { id: string }>({
     for (const f of fields) {
       const v = form[f.name];
       if (v === '') continue;
-      payload[f.name] = f.type === 'number' ? Number(v) : v;
+      if (f.type === 'number') payload[f.name] = Number(v);
+      else if (f.type === 'boolean') payload[f.name] = v === 'true';
+      else payload[f.name] = v;
     }
     try {
       if (editing) {
@@ -270,7 +274,20 @@ export function MasterCrud<T extends { id: string }>({
                   }
                 >
                   <Label htmlFor={`field-${f.name}`}>{f.label}</Label>
-                  {f.select || f.options ? (
+                  {f.type === 'boolean' ? (
+                    <Select
+                      value={form[f.name] ?? ''}
+                      onValueChange={(v) => setForm({ ...form, [f.name]: v })}
+                    >
+                      <SelectTrigger id={`field-${f.name}`} className="w-full">
+                        <SelectValue placeholder={f.placeholder ?? 'Pilih…'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">Ya</SelectItem>
+                        <SelectItem value="false">Tidak</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : f.select || f.options ? (
                     <Select
                       value={form[f.name] ?? ''}
                       onValueChange={(v) => setForm({ ...form, [f.name]: v })}

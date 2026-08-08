@@ -106,6 +106,28 @@ export const MASTER_REGISTRY: Record<string, MasterEntityConfig> = {
     label: 'Jadwal Kerja',
     isActive: true,
   },
+  /**
+   * Per-day schedule definition (Mon–Sun). Admin-configurable so future
+   * branches/manufacturing units can be configured without code changes (user
+   * directive: jadwal kerja tidak hardcoded). Parent reference is a FK dropdown
+   * (`work_schedule_id`), `day_of_week` 0=Sun..6=Sat.
+   */
+  'work-schedule-days': {
+    delegate: 'work_schedule_days',
+    searchable: ['work_schedule_id'],
+    label: 'Hari Kerja',
+    include: { work_schedule: { select: { name: true } } },
+  },
+  /**
+   * Who gets which schedule (employee/position/grade/branch/company) and when.
+   * Admin-configurable assignment so admins bind schedules per unit without code.
+   */
+  'schedule-assignments': {
+    delegate: 'schedule_assignments',
+    searchable: ['scope_type', 'scope_ref_id'],
+    label: 'Penugasan Jadwal',
+    include: { work_schedule: { select: { name: true } } },
+  },
   'payroll-components': {
     delegate: 'payroll_components',
     searchable: ['code', 'name'],

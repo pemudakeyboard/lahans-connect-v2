@@ -48,11 +48,24 @@ const PERMISSIONS = [
   'master.employees.write',
   'master.reference_data.read',
   'master.reference_data.write',
+  // master — schedule/calendar admin config (jadwal kerja & kalender kerja,
+  // admin-editable per user directive — not hardcoded)
+  'master.work_schedules.read',
+  'master.work_schedules.write',
+  'master.work_schedule_days.read',
+  'master.work_schedule_days.write',
+  'master.schedule_assignments.read',
+  'master.schedule_assignments.write',
+  'master.holidays.read',
+  'master.holidays.write',
   // attendance
   'attendance.log.read',
   'attendance.log.write',
   'attendance.daily.read',
   'attendance.daily.write',
+  'attendance.correction.read',
+  'attendance.correction.write',
+  'attendance.correction.approve',
   // leave
   'leave.request.read',
   'leave.request.write',
@@ -143,6 +156,37 @@ const REFERENCE_DATA_SEED: { category: string; code: string; label: string; sort
       code: 'OWN_WEDDING',
       label: 'Pernikahan diri sendiri',
       sort_order: 4,
+    },
+    // S6 — attendance correction reasons (FR-M2-012, PRD 6.4.1 — no frontend arrays)
+    {
+      category: 'ATTENDANCE_CORRECTION_REASON',
+      code: 'LUPA_ABSEN',
+      label: 'Lupa absen masuk/pulang',
+      sort_order: 1,
+    },
+    {
+      category: 'ATTENDANCE_CORRECTION_REASON',
+      code: 'HP_RUSAK',
+      label: 'Ganti HP / HP rusak',
+      sort_order: 2,
+    },
+    {
+      category: 'ATTENDANCE_CORRECTION_REASON',
+      code: 'SINYAL_HILANG',
+      label: 'Sinyal/kuota hilang saat absen',
+      sort_order: 3,
+    },
+    {
+      category: 'ATTENDANCE_CORRECTION_REASON',
+      code: 'BATERAI_HABIS',
+      label: 'Baterai HP habis',
+      sort_order: 4,
+    },
+    {
+      category: 'ATTENDANCE_CORRECTION_REASON',
+      code: 'DINAS_LUAR',
+      label: 'Dinas luar / bekerja di luar lokasi',
+      sort_order: 5,
     },
   ];
 
@@ -675,6 +719,20 @@ async function main() {
       code: 'SWAP',
       module_code: 'ATTENDANCE',
       name: 'Ganti hari — Atasan Langsung → Comben',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        {
+          step_order: 2,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'COMBEN',
+          sla_working_days: 2,
+        },
+      ],
+    },
+    {
+      code: 'ATTENDANCE_CORRECTION',
+      module_code: 'ATTENDANCE',
+      name: 'Koreksi absensi — Atasan Langsung → Comben',
       steps: [
         { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
         {
@@ -1503,6 +1561,395 @@ async function main() {
   }
   console.log('✔ M6 Comben users 88000011 (Sales) + 88000012 (Pabrik) + DIVISION bindings');
 
+  // ---------------------------------------------------------------------------
+  // S6 — Attendance group grants (FR-M2-001..012)
+  // ---------------------------------------------------------------------------
+  // COMBEN + HCGA_MANAGER review/process attendance at DIVISION scope; every
+  // EMPLOYEE clocks and reads their own + self-service corrections at SELF scope.
+  const combenAttendancePerms = [
+    'attendance.log.read',
+    'attendance.daily.read',
+    'attendance.daily.write',
+    'attendance.correction.read',
+    'attendance.correction.write',
+    'attendance.correction.approve',
+  ];
+  for (const code of combenAttendancePerms) {
+    for (const g of ['COMBEN', 'HCGA_MANAGER']) {
+      await prisma.group_permissions.upsert({
+        where: {
+          group_id_permission_id: {
+            group_id: groupIds.get(g)!,
+            permission_id: permissionIds.get(code)!,
+          },
+        },
+        create: {
+          group_id: groupIds.get(g)!,
+          permission_id: permissionIds.get(code)!,
+          data_scope: 'DIVISION',
+        },
+        update: { data_scope: 'DIVISION' },
+      });
+    }
+  }
+  const employeeAttendancePerms = [
+    'attendance.log.read',
+    'attendance.log.write',
+    'attendance.daily.read',
+    'attendance.correction.write',
+    'attendance.correction.read',
+  ];
+  for (const code of employeeAttendancePerms) {
+    await prisma.group_permissions.upsert({
+      where: {
+        group_id_permission_id: {
+          group_id: groupIds.get('EMPLOYEE')!,
+          permission_id: permissionIds.get(code)!,
+        },
+      },
+      create: {
+        group_id: groupIds.get('EMPLOYEE')!,
+        permission_id: permissionIds.get(code)!,
+        data_scope: 'SELF',
+      },
+      update: { data_scope: 'SELF' },
+    });
+  }
+  // Admin-config schedules/calendars: HCGA (master role) can edit work-schedule
+  // days + assignments so future branches/manufacturing units are configured in
+  // the admin UI, not hardcoded (user directive).
+  for (const g of ['COMBEN', 'HCGA_MANAGER']) {
+    for (const code of [
+      'master.work_schedule_days.read',
+      'master.work_schedule_days.write',
+      'master.schedule_assignments.read',
+      'master.schedule_assignments.write',
+      'master.work_schedules.read',
+      'master.work_schedules.write',
+      'master.holidays.read',
+      'master.holidays.write',
+    ]) {
+      await prisma.group_permissions.upsert({
+        where: {
+          group_id_permission_id: {
+            group_id: groupIds.get(g)!,
+            permission_id: permissionIds.get(code)!,
+          },
+        },
+        create: {
+          group_id: groupIds.get(g)!,
+          permission_id: permissionIds.get(code)!,
+          data_scope: 'DIVISION',
+        },
+        update: {},
+      });
+    }
+  }
+  console.log('✔ attendance group grants (COMBEN/HCGA DIVISION, EMPLOYEE SELF)');
+
+  // ---------------------------------------------------------------------------
+  // S6 — Work schedules + calendar (admin-configurable baseline, NOT hardcoded)
+  // ---------------------------------------------------------------------------
+  // Seeded as demo defaults only; admins reconfigure them (and add new ones per
+  // branch/manufacturing unit) via the master web UI. The runtime resolves
+  // schedules from the DB, so no code change is needed when a unit is added.
+  //
+  // Day tuples: [day_of_week, is_working_day, start_time, end_time, break_min, tolerance]
+  type ScheduleDaySeed = [number, boolean, string | null, string | null, number, number];
+  type WorkScheduleSeed = {
+    code: string;
+    name: string;
+    schedule_type: string;
+    weekly_target_minutes: number | null;
+    daily_standard_minutes: number | null;
+    days: ScheduleDaySeed[];
+  };
+  const workScheduleSeeds: WorkScheduleSeed[] = [
+    {
+      code: 'HO_STANDARD',
+      name: 'HO Standard',
+      schedule_type: 'FIXED',
+      weekly_target_minutes: null,
+      daily_standard_minutes: null,
+      days: [
+        [1, true, '09:00', '17:00', 60, 0],
+        [2, true, '09:00', '17:00', 60, 0],
+        [3, true, '09:00', '17:00', 60, 0],
+        [4, true, '09:00', '17:00', 60, 0],
+        [5, true, '09:00', '17:00', 60, 0],
+        [6, false, null, null, 0, 0],
+        [0, false, null, null, 0, 0],
+      ],
+    },
+    {
+      code: 'PABRIK_STAFFUP',
+      name: 'Pabrik Staff/Up',
+      schedule_type: 'FIXED',
+      weekly_target_minutes: null,
+      daily_standard_minutes: null,
+      days: [
+        [1, true, '07:30', '15:30', 60, 0],
+        [2, true, '07:30', '15:30', 60, 0],
+        [3, true, '07:30', '15:30', 60, 0],
+        [4, true, '07:30', '15:30', 60, 0],
+        [5, true, '07:30', '15:30', 60, 0],
+        [6, true, '07:30', '12:00', 0, 0],
+        [0, false, null, null, 0, 0],
+      ],
+    },
+    {
+      code: 'PABRIK_OPERATOR',
+      name: 'Pabrik Operator',
+      schedule_type: 'FIXED',
+      weekly_target_minutes: null,
+      daily_standard_minutes: null,
+      days: [
+        [1, true, '07:30', '15:00', 60, 0],
+        [2, true, '07:30', '15:00', 60, 0],
+        [3, true, '07:30', '15:00', 60, 0],
+        [4, true, '07:30', '15:00', 60, 0],
+        [5, true, '07:30', '15:00', 60, 0],
+        [6, false, null, null, 0, 0],
+        [0, false, null, null, 0, 0],
+      ],
+    },
+    {
+      code: 'FIELD_MARKET',
+      name: 'Field Market',
+      schedule_type: 'FLEXIBLE',
+      weekly_target_minutes: 1800,
+      daily_standard_minutes: 480,
+      days: [
+        [1, true, '09:00', '15:00', 60, 0],
+        [2, true, '09:00', '15:00', 60, 0],
+        [3, true, '09:00', '15:00', 60, 0],
+        [4, true, '09:00', '15:00', 60, 0],
+        [5, true, '09:00', '15:00', 60, 0],
+        [6, false, null, null, 0, 0],
+        [0, false, null, null, 0, 0],
+      ],
+    },
+  ];
+  const scheduleIdByCode = new Map<string, string>();
+  for (const s of workScheduleSeeds) {
+    const row = await prisma.work_schedules.upsert({
+      where: { code: s.code },
+      create: {
+        company_id: company.id,
+        code: s.code,
+        name: s.name,
+        schedule_type: s.schedule_type,
+        weekly_target_minutes: s.weekly_target_minutes,
+        daily_standard_minutes: s.daily_standard_minutes,
+        is_active: true,
+      },
+      update: {
+        name: s.name,
+        schedule_type: s.schedule_type,
+        weekly_target_minutes: s.weekly_target_minutes,
+        daily_standard_minutes: s.daily_standard_minutes,
+        is_active: true,
+      },
+    });
+    scheduleIdByCode.set(s.code, row.id);
+    for (const [dow, working, start, end, breakMin, tol] of s.days) {
+      await prisma.work_schedule_days.upsert({
+        where: { work_schedule_id_day_of_week: { work_schedule_id: row.id, day_of_week: dow } },
+        create: {
+          work_schedule_id: row.id,
+          day_of_week: dow,
+          is_working_day: working,
+          start_time: start,
+          end_time: end,
+          break_minutes: breakMin,
+          late_tolerance_minutes: tol,
+        },
+        update: {
+          is_working_day: working,
+          start_time: start,
+          end_time: end,
+          break_minutes: breakMin,
+          late_tolerance_minutes: tol,
+        },
+      });
+    }
+  }
+  console.log(`✔ ${workScheduleSeeds.length} work schedules (admin-configurable)`);
+
+  // Assign schedules to employees (EMPLOYEE scope, priority 1, effective 2026-01-01).
+  const scheduleForEmployee = (nik: string): string | null => {
+    const pos = m6Employees.find((e) => e.nik === nik)?.positionCode;
+    if (pos === 'OPERATOR-TINTIN') return 'PABRIK_OPERATOR';
+    if (pos) return 'FIELD_MARKET'; // SALESMAN/DRIVER/SPG
+    if (nik === '88000002' || nik === '88000011' || nik === '88000012') return 'HO_STANDARD';
+    return null;
+  };
+  const attendanceEmployees = [
+    ...m6Employees.map((e) => e.nik),
+    '88000002',
+    '88000011',
+    '88000012',
+  ];
+  for (const nik of attendanceEmployees) {
+    const scheduleCode = scheduleForEmployee(nik);
+    if (!scheduleCode) continue;
+    const scheduleId = scheduleIdByCode.get(scheduleCode)!;
+    const empRow = await prisma.employees.findUnique({ where: { nik }, select: { id: true } });
+    if (!empRow) continue;
+    const existingAssign = await prisma.schedule_assignments.findFirst({
+      where: { scope_type: 'EMPLOYEE', scope_ref_id: empRow.id, effective_from: ASOF },
+    });
+    const assignData = {
+      work_schedule_id: scheduleId,
+      scope_type: 'EMPLOYEE',
+      scope_ref_id: empRow.id,
+      priority: 1,
+      effective_from: ASOF,
+      effective_to: null,
+    };
+    if (existingAssign) {
+      await prisma.schedule_assignments.update({
+        where: { id: existingAssign.id },
+        data: assignData,
+      });
+    } else {
+      await prisma.schedule_assignments.create({ data: assignData });
+    }
+  }
+  console.log(`✔ ${attendanceEmployees.length} schedule assignments (EMPLOYEE scope)`);
+
+  // Demo clock logs for NIK 20250055 (Aan) on 2026-08-06 so the web demo shows
+  // a derived daily row (IN 08:58 / OUT 17:02 Asia/Jakarta → UTC 01:58/10:02).
+  const demoClockEmployee = await prisma.employees.findUnique({
+    where: { nik: '20250055' },
+    select: { id: true, branch_id: true },
+  });
+  if (demoClockEmployee) {
+    const demoDay = new Date('2026-08-06');
+    const inTime = new Date('2026-08-06T01:58:00.000Z');
+    const outTime = new Date('2026-08-06T10:02:00.000Z');
+    const inLog = await prisma.attendance_logs.findUnique({
+      where: { client_request_id: 'demo-s6-in-20250055-20260806' },
+    });
+    if (!inLog) {
+      await prisma.attendance_logs.create({
+        data: {
+          employee_id: demoClockEmployee.id,
+          log_type: 'IN',
+          server_time: inTime,
+          device_time: inTime,
+          latitude: new Prisma.Decimal('-6.200000'),
+          longitude: new Prisma.Decimal('106.800000'),
+          branch_id: demoClockEmployee.branch_id,
+          distance_from_geofence_m: new Prisma.Decimal('15.00'),
+          is_out_of_zone: false,
+          is_mock_location: false,
+          is_offline_sync: false,
+          client_request_id: 'demo-s6-in-20250055-20260806',
+        },
+      });
+    }
+    const outLog = await prisma.attendance_logs.findUnique({
+      where: { client_request_id: 'demo-s6-out-20250055-20260806' },
+    });
+    if (!outLog) {
+      await prisma.attendance_logs.create({
+        data: {
+          employee_id: demoClockEmployee.id,
+          log_type: 'OUT',
+          server_time: outTime,
+          device_time: outTime,
+          latitude: new Prisma.Decimal('-6.200000'),
+          longitude: new Prisma.Decimal('106.800000'),
+          branch_id: demoClockEmployee.branch_id,
+          distance_from_geofence_m: new Prisma.Decimal('15.00'),
+          is_out_of_zone: false,
+          is_mock_location: false,
+          is_offline_sync: false,
+          client_request_id: 'demo-s6-out-20250055-20260806',
+        },
+      });
+    }
+    // Derive the daily row for the demo day (idempotent upsert).
+    const demoDaily = await prisma.attendance_daily.findUnique({
+      where: { employee_id_work_date: { employee_id: demoClockEmployee.id, work_date: demoDay } },
+    });
+    if (demoDaily) {
+      await prisma.attendance_daily.update({
+        where: { id: demoDaily.id },
+        data: {
+          first_in_at: inTime,
+          last_out_at: outTime,
+          status: 'HADIR',
+          late_minutes: 0,
+          early_leave_minutes: 0,
+        },
+      });
+    } else {
+      await prisma.attendance_daily.create({
+        data: {
+          employee_id: demoClockEmployee.id,
+          work_date: demoDay,
+          first_in_at: inTime,
+          last_out_at: outTime,
+          status: 'HADIR',
+          late_minutes: 0,
+          early_leave_minutes: 0,
+          work_minutes: 420,
+          source: 'MANUAL',
+        },
+      });
+    }
+    console.log('✔ demo attendance_logs + daily for 20250055 (2026-08-06)');
+
+    // Demo user login for Aan (20250055) so the "Absen Saya" web tab is usable
+    // (self-scope EMPLOYEE group grants already cover attendance.*).
+    const demoAanHash = await argon2.hash('Lahans@2026', {
+      memoryCost: 64 * 1024,
+      timeCost: 3,
+      parallelism: 2,
+      outputLen: 32,
+    });
+    const demoAanUser = await prisma.users.upsert({
+      where: { login_nik: '20250055' },
+      create: {
+        employee_id: demoClockEmployee.id,
+        login_nik: '20250055',
+        email: 'aan.agustian@lahans.dev',
+        password_hash: demoAanHash,
+        status: 'ACTIVE',
+        must_change_password: false,
+        two_factor_enabled: false,
+      },
+      update: { employee_id: demoClockEmployee.id, email: 'aan.agustian@lahans.dev' },
+    });
+    await prisma.user_group_members.upsert({
+      where: { user_id_group_id: { user_id: demoAanUser.id, group_id: groupIds.get('EMPLOYEE')! } },
+      create: { user_id: demoAanUser.id, group_id: groupIds.get('EMPLOYEE')! },
+      update: {},
+    });
+    console.log('✔ demo login 20250055 (Aan, EMPLOYEE) — Lahans@2026');
+
+    // Direct reporting line for Aan → 88000002 so the attendance-correction
+    // workflow (step 1 = DIRECT_SUPERVISOR) resolves an assignee. Without it a
+    // correction would sit at PENDING with no task (orphaned).
+    const aanReportingLine = await prisma.reporting_lines.findFirst({
+      where: { employee_id: demoClockEmployee.id, line_type: 'DIRECT', effective_to: null },
+    });
+    if (!aanReportingLine) {
+      await prisma.reporting_lines.create({
+        data: {
+          employee_id: demoClockEmployee.id,
+          supervisor_id: supervisorEmployee.id,
+          line_type: 'DIRECT',
+          effective_from: ASOF,
+          effective_to: null,
+        },
+      });
+    }
+    console.log('✔ reporting line 20250055 → 88000002 (attendance correction chain)');
+  }
+
   // ---------- system_parameters (effective-dated) ----------
   // No unique key on system_parameters (only a composite index), so idempotency
   // is achieved by matching the (param_key, effective_from) pair via findFirst.
@@ -1607,6 +2054,42 @@ async function main() {
       platform: 'BOTH',
       sort_order: 14,
       permission_code: 'master.divisions.read',
+    },
+    {
+      code: 'MASTER.WORK_SCHEDULES',
+      label: 'Jadwal Kerja',
+      route: '/master/work-schedules',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 15,
+      permission_code: 'master.work_schedules.read',
+    },
+    {
+      code: 'MASTER.WORK_SCHEDULE_DAYS',
+      label: 'Hari Kerja',
+      route: '/master/work-schedule-days',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 16,
+      permission_code: 'master.work_schedule_days.read',
+    },
+    {
+      code: 'MASTER.SCHEDULE_ASSIGNMENTS',
+      label: 'Penugasan Jadwal',
+      route: '/master/schedule-assignments',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 17,
+      permission_code: 'master.schedule_assignments.read',
+    },
+    {
+      code: 'MASTER.HOLIDAYS',
+      label: 'Hari Libur',
+      route: '/master/holidays',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 18,
+      permission_code: 'master.holidays.read',
     },
     {
       code: 'CONFIG',

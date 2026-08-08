@@ -18,6 +18,8 @@ import { PayrollAggregator } from './payroll.aggregator';
   imports: [],
   controllers: [PayrollController],
   providers: [PayrollService, PayrollScopeService, PayrollAggregator],
-  exports: [PayrollService],
+  // PayrollScopeService is exported so the AttendanceModule (S6) can reuse the
+  // data-scope resolver for its daily recap — one sanctioned implementation.
+  exports: [PayrollService, PayrollScopeService],
 })
 export class PayrollModule {}

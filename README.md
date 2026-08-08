@@ -15,6 +15,8 @@ Foundation (BRD S0+S0b) + unblocked modules:
 
 - **M8B — Format & Validasi**: format settings, validation rules, number sequences
 - **M1B — Master Data**: generic schema-driven CRUD
+- **S6 — Absensi**: clock-in/out + geofence, derivasi harian (HADIR/TERLAMBAT/ALPHA/…), rekap data-scoped, koreksi self-service dengan approval (Atasan → Comben)
+- **M6 — Payroll**: periode cutoff, feeder batas, komponen, data-scope divisi (Sales/Pabrik)
 - **S7 — Cuti & Izin**: pengajuan, saldo prorata, approval chain (CUTI/IZIN), post-approval effects
 
 Features baked in from the BRD:

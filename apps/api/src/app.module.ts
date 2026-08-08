@@ -12,6 +12,7 @@ import { MasterModule } from './modules/master/master.module';
 import { LeaveModule } from './modules/leave/leave.module';
 import { OvertimeModule } from './modules/overtime/overtime.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
+import { AttendanceModule } from './modules/attendance/attendance.module';
 import { PermissionGuard } from './core/auth/guards/permission.guard';
 import { AuditInterceptor } from './core/audit/audit.interceptor';
 
@@ -29,6 +30,7 @@ import { AuditInterceptor } from './core/audit/audit.interceptor';
     LeaveModule,
     OvertimeModule,
     PayrollModule,
+    AttendanceModule,
   ],
   providers: [
     // PermissionGuard is global — deny-by-default (FR-M0-004). Public endpoints

@@ -492,3 +492,197 @@ export async function overrideFeederLine(
 export function exportFeederUrl(periodId: string): string {
   return `/api/payroll/periods/${periodId}/feeder/export`;
 }
+
+// ---------------------------------------------------------------------------
+// S6 — attendance (absensi)
+// ---------------------------------------------------------------------------
+
+export interface AttendanceDailyRow {
+  id: string;
+  employee_id: string;
+  work_date: string;
+  schedule_id?: string | null;
+  first_in_at?: string | null;
+  last_out_at?: string | null;
+  status: string;
+  late_minutes: number;
+  early_leave_minutes: number;
+  work_minutes: number;
+  overtime_minutes: number;
+  source: string;
+  is_anomaly: boolean;
+  anomaly_reasons?: unknown[] | null;
+  employee?: { nik: string; full_name: string } | null;
+}
+
+export interface AttendanceToday {
+  date: string;
+  daily: AttendanceDailyRow | null;
+  lastLog: {
+    id: string;
+    log_type: 'IN' | 'OUT';
+    server_time: string;
+    is_out_of_zone: boolean;
+  } | null;
+  logs: Array<{
+    id: string;
+    log_type: 'IN' | 'OUT';
+    server_time: string;
+    is_out_of_zone: boolean;
+  }>;
+  schedule: {
+    scheduleId: string | null;
+    start_time: string | null;
+    end_time: string | null;
+    break_minutes: number;
+    late_tolerance_minutes: number;
+    is_working_day: boolean;
+  } | null;
+  geofence: {
+    radius: number;
+    policy: string;
+    branchLatitude: string | null;
+    branchLongitude: string | null;
+  };
+}
+
+export interface ClockResult {
+  log: { id: string; log_type: string; server_time: string };
+  idempotent: boolean;
+  geofence?: {
+    distance: number | null;
+    out_of_zone: boolean;
+    radius: number;
+    policy: string;
+    noData: boolean;
+  };
+}
+
+export async function clockIn(body: {
+  log_type: 'IN' | 'OUT';
+  latitude?: string;
+  longitude?: string;
+  gps_accuracy_m?: number;
+  is_mock_location?: boolean;
+  is_offline_sync?: boolean;
+  device_time?: string;
+  client_request_id: string;
+}): Promise<ClockResult> {
+  return api<ClockResult>('/api/attendance/clock', { method: 'POST', body: JSON.stringify(body) });
+}
+
+export async function getAttendanceToday(): Promise<AttendanceToday> {
+  return api<AttendanceToday>('/api/attendance/today');
+}
+
+export async function listAttendanceDaily(params?: {
+  page?: number;
+  pageSize?: number;
+  from?: string;
+  to?: string;
+  employeeId?: string;
+}): Promise<ListResponse<AttendanceDailyRow>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  if (params?.from) q.set('from', params.from);
+  if (params?.to) q.set('to', params.to);
+  if (params?.employeeId) q.set('employeeId', params.employeeId);
+  const qs = q.toString();
+  return api<ListResponse<AttendanceDailyRow>>(`/api/attendance/daily${qs ? `?${qs}` : ''}`);
+}
+
+export async function finalizeAttendanceDaily(body: {
+  date: string;
+  employee_id?: string;
+}): Promise<{ date: string; finalized: number }> {
+  return api('/api/attendance/daily/finalize', { method: 'POST', body: JSON.stringify(body) });
+}
+
+export interface AttendanceCorrectionRow {
+  id: string;
+  attendance_daily_id: string;
+  requested_by: string;
+  reason_code: string;
+  notes?: string | null;
+  proposed_values?: Record<string, unknown> | null;
+  approval_instance_id?: string | null;
+  status: string;
+  created_at: string;
+  attendance_daily?:
+    (AttendanceDailyRow & { employee?: { nik: string; full_name: string } | null }) | null;
+}
+
+export async function listCorrections(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ListResponse<AttendanceCorrectionRow>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  const qs = q.toString();
+  return api<ListResponse<AttendanceCorrectionRow>>(
+    `/api/attendance/corrections${qs ? `?${qs}` : ''}`,
+  );
+}
+
+export interface CorrectionInboxRow {
+  id: string;
+  document_type: string;
+  document_id: string;
+  workflow_id: string;
+  current_step_order: number;
+  status: string;
+  started_at: string;
+  correction?:
+    | (AttendanceCorrectionRow & {
+        attendance_daily?:
+          | (AttendanceDailyRow & {
+              employee?: { nik: string; full_name: string } | null;
+            })
+          | null;
+      })
+    | null;
+}
+
+export async function listCorrectionInbox(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ListResponse<CorrectionInboxRow>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  const qs = q.toString();
+  return api<ListResponse<CorrectionInboxRow>>(
+    `/api/attendance/corrections/inbox${qs ? `?${qs}` : ''}`,
+  );
+}
+
+export async function createCorrection(body: {
+  attendance_daily_id: string;
+  reason_code: string;
+  notes?: string;
+  proposed_values?: Record<string, unknown>;
+}): Promise<AttendanceCorrectionRow> {
+  return api<AttendanceCorrectionRow>('/api/attendance/corrections', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function decideCorrection(
+  id: string,
+  action: 'APPROVE' | 'REJECT' | 'RETURN',
+  comment?: string,
+): Promise<{ id: string; status: string }> {
+  return api<{ id: string; status: string }>(`/api/attendance/corrections/${id}/decide`, {
+    method: 'POST',
+    body: JSON.stringify({ action, comment }),
+  });
+}
+
+export async function cancelCorrection(id: string): Promise<{ id: string; status: string }> {
+  return api<{ id: string; status: string }>(`/api/attendance/corrections/${id}/cancel`, {
+    method: 'POST',
+  });
+}

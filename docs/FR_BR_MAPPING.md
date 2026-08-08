@@ -104,6 +104,37 @@ future module). Status legend:
 | —      | Cuti Advance clawback on early resignation                         | ⏳     | `advance_used_days` tracked; clawback on resign deferred        |
 | —      | Carryover ≤ 7 hari (BR-C07 related)                                | ⏳     | `LEAVE.MAX_CARRYOVER_DAYS` param; expiry job deferred           |
 
+## S6 — Absensi (Attendance)
+
+Sumber: modul M2 (Absensi) — `Tintin Compensation & Benefit - LEMBUR & ABSEN.pdf` + `Contoh Jadwal kerja.pdf`.
+
+| FR/BR     | Requirement                                                                                  | Status | Where                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------ |
+| FR-M2-001 | Harian absensi turun dari log + jadwal (HADIR/TERLAMBAT/PULANG_CEPAT/ALPHA/INCOMPLETE/LIBUR) | ✅     | `attendance-derivation.ts deriveDailyFields`; `deriveTx` on every clock + finalize                                 |
+| FR-M2-002 | Absen masuk & pulang (clock) dengan `log_type` IN/OUT                                        | ✅     | `POST /attendance/clock` (BRD §7.3 semantics)                                                                      |
+| FR-M2-003 | Jam kerja & perhitungan menit dari jadwal admin (FIXED/FLEXIBLE/SHIFT)                       | ✅     | `work_schedules`/`work_schedule_days`/`schedule_assignments` (admin-config, **tidak hardcoded**)                   |
+| FR-M2-004 | Kalender kerja / hari libur                                                                  | ✅     | `holidays` master (NATIONAL/JOINT_LEAVE/COMPANY) → status LIBUR                                                    |
+| FR-M2-005 | Geofence radius per cabang (atau parameter global)                                           | ✅     | `branches.geofence_radius_m` / `ATTENDANCE.GEOFENCE_RADIUS_M` param; STRICT 403 / TRACKED anomaly                  |
+| FR-M2-006 | Idempoten retry (jaringan) via `client_request_id`                                           | ✅     | unique + replay → `{idempotent:true}`; P2002 race re-fetch                                                         |
+| FR-M2-008 | Rekap harian data-scoped (Comben/HCGA lihat divisi/cabang sendiri)                           | ✅     | `PayrollScopeService.employeeWhere`; `GET /attendance/daily`                                                       |
+| FR-M2-009 | Kartu "hari ini" untuk karyawan                                                              | ✅     | `GET /attendance/today` (daily, log terakhir, jadwal, geofence)                                                    |
+| FR-M2-010 | Finalisasi harian / bulanan oleh Comben                                                      | ✅     | `POST /attendance/daily/finalize` (re-derive scoped; freeze-guar MANUAL)                                           |
+| FR-M2-011 | Anomali (OUT_OF_ZONE / MOCK_LOCATION / NO_GEOFENCE_DATA / NO_SCHEDULE)                       | ✅     | `attendance_daily.is_anomaly` + `anomaly_reasons` (Json)                                                           |
+| FR-M2-012 | Koreksi kehadiran self-service dengan approval (Atasan → Comben)                             | ✅     | `attendance_corrections` + flow `ATTENDANCE_CORRECTION`; akhir APPROVE terapkan `proposed_values`, `source=MANUAL` |
+| BR-A01    | Absen di luar radius → blokir (STRICT) / flag (TRACKED)                                      | ✅     | `resolveGeofence`; haversine; `GEOFENCE_DENIED` 403                                                                |
+| BR-A02    | Radius default bila cabang tidak set                                                         | ✅     | `ATTENDANCE.GEOFENCE_RADIUS_M` (seeded 150 m)                                                                      |
+| BR-A03    | Toleransi keterlambatan per jadwal                                                           | ✅     | `work_schedule_days.late_tolerance_minutes` → `late_minutes`                                                       |
+| BR-A04    | Sesuatu yang melewati jam → tidak dihitung / anomali                                         | ✅     | `deriveDailyFields` bounds; OUT tanpa IN → `ATTENDANCE_OUT_WITHOUT_IN`                                             |
+| —         | Kartu riwayat bulanan + tombol Koreksi per karyawan                                          | ✅     | web `attendance/page.tsx` (tab Absen Saya)                                                                         |
+| —         | Inbox koreksi + setujui/tolak                                                                | ✅     | web tab Rekap Harian; `decideCorrection`                                                                           |
+| —         | Periode gaji CLOSED → koreksi diblokir                                                       | ✅     | `createCorrection` → `ATTENDANCE_PERIOD_CLOSED`                                                                    |
+| —         | Sinkronisasi offline `/sync` (FR-M2-006/007 mobile)                                          | ⏳     | seam `is_offline_sync` + `client_request_id`; endpoint deferred                                                    |
+| —         | Proxy attendance (EC-07)                                                                     | ⏳     | deferred                                                                                                           |
+| —         | Swap / ganti-hari (`schedule_overrides`)                                                     | ⏳     | seeded; unimplemented                                                                                              |
+| —         | Scheduler harian otomatis (bukan manual finalize)                                            | ⏳     | `finalizeDay` endpoint; cron deferred                                                                              |
+
+**Catatan data masa:** `attendance_daily.work_date` disimpan sebagai **UTC midnight** hari Indonesia (Asia/Jakarta) — konvensi sama dengan batas `cutoff_*` payroll dan seed. `startOfDay/endOfDay` di `attendance.service.ts` memakai `Date.UTC`, dan `resolveScheduleDay` memakai `getUTCDay()` supaya lookup hari-jadwal konsisten. Baris yang sudah `source=MANUAL` (hasil koreksi yang disetujui) dibekukan — `finalizeDay`/clock tidak menimpa override manual.
+
 ## Core cross-cutting (BRD S0/S0b)
 
 | Requirement                                 | Status | Where                                                        |

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Calculator, Database, LayoutDashboard, LogOut, Settings } from 'lucide-react';
+import { Calculator, Database, Fingerprint, LayoutDashboard, LogOut, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
 import { navigationRequest, type NavMenu } from '@/lib/lahans-api';
@@ -18,6 +18,7 @@ const ICONS: Record<string, LucideIcon> = {
   Database,
   Settings,
   Calculator,
+  Fingerprint,
 };
 
 type LucideIcon = (props: React.ComponentProps<'svg'>) => React.ReactNode;
