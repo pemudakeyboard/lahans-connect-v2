@@ -82,6 +82,28 @@ future module). Status legend:
 | FR-M8B-032  | Numbers generated at submit, not draft                             | ✅     | `reserve` on submit                                         |
 | FR-M8B-040  | Shared report template                                             | ⏳     | reporting deferred                                          |
 
+## S7 — Cuti & Izin (Leave)
+
+| FR/BR  | Requirement                                                        | Status | Where                                                           |
+| ------ | ------------------------------------------------------------------ | ------ | --------------------------------------------------------------- |
+| BR-C01 | Cuti Tahunan 12 hari kerja/tahun, diberikan di tanggal anniversary | ✅     | `leave.service.ts runAnnualGrant`; `LEAVE.ANNUAL_DAYS` param    |
+| BR-C02 | Year-1 pro-rata months-based (1 hari/bulan s.d. Desember)          | ✅     | `prorateDays`; unit-tested (Mar→10, Dec→1, Jan→12)              |
+| BR-C03 | Rekomendasi: cuti tidak boleh melewati sisa saldo                  | ✅     | `balanceFor` check + `LEAVE_MAX_DAYS_EXCEEDED`                  |
+| BR-C05 | Cuti di Muka maks 3 hari kerja, dipotong dari entitas masa depan   | ✅     | `LEAVE.ADVANCE_MAX_DAYS` param + `advance_used_days` on balance |
+| BR-C07 | Notice cuti H-7 hari kerja                                         | ✅     | `min_notice_days=7` on `CUTI_TAHUNAN`; `addWorkingDays` check   |
+| BR-C08 | Notice izin H-1                                                    | ✅     | `min_notice_days=1` on `IZIN`; `addWorkingDays` check           |
+| BR-C09 | Izin tanpa keterangan potong gaji pokok (÷25)                      | ✅     | `leave_types.deduct_salary`; `PAYROLL.ABSENCE_DIVISOR` param    |
+| BR-C12 | Approval chain CUTI: Atasan → Division Head                        | ✅     | `approval_workflows.code=CUTI`; `resolveStepAssignee`           |
+| BR-C13 | Approval chain IZIN: Atasan → Dept. Comben                         | ✅     | `approval_workflows.code=IZIN`; `resolveStepAssignee`           |
+| —      | Pengajuan cuti/izin dengan nomor dokumen (DOC_LEAVE/DOC_IZIN)      | ✅     | `ConfigService.reserveNextNumber`; `POST /leave/requests`       |
+| —      | Saldo card (Hak \| Terpakai \| Pending \| Sisa)                    | ✅     | `GET /leave/balance`; web `cuti/page.tsx`                       |
+| —      | Ledger append-only (GRANT/USE/ADVANCE/EXPIRE/ADJUST/PAYOUT)        | ✅     | `leave_balance_ledger`; `GET /leave/ledger`                     |
+| —      | Approval inbox + decide (approve/reject/return)                    | ✅     | `GET /leave/inbox`; `POST /leave/requests/:id/decide`           |
+| —      | Post-approval effects: debit saldo + attendance_daily stamp        | ✅     | `applyApprovedEffects` (CUTI/IZIN/SAKIT)                        |
+| —      | Jalur darurat (backdate / melewati notice)                         | ✅     | `is_emergency` bypass; `leave_types.allow_backdate`             |
+| —      | Cuti Advance clawback on early resignation                         | ⏳     | `advance_used_days` tracked; clawback on resign deferred        |
+| —      | Carryover ≤ 7 hari (BR-C07 related)                                | ⏳     | `LEAVE.MAX_CARRYOVER_DAYS` param; expiry job deferred           |
+
 ## Core cross-cutting (BRD S0/S0b)
 
 | Requirement                                 | Status | Where                                                        |
@@ -91,3 +113,4 @@ future module). Status legend:
 | No policy-number literals                   | 🔒     | `lahans/no-magic-policy-numbers` ESLint rule                 |
 | No group-name checks                        | 🔒     | `lahans/no-group-name-checks` ESLint rule                    |
 | Indexing (BRD §6.4)                         | ✅     | Prisma migrations                                            |
+| Decimal/BigInt serialized as strings        | ✅     | `bigint-serializer.interceptor.ts` (Prisma.Decimal + bigint) |

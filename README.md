@@ -15,6 +15,7 @@ Foundation (BRD S0+S0b) + unblocked modules:
 
 - **M8B — Format & Validasi**: format settings, validation rules, number sequences
 - **M1B — Master Data**: generic schema-driven CRUD
+- **S7 — Cuti & Izin**: pengajuan, saldo prorata, approval chain (CUTI/IZIN), post-approval effects
 
 Features baked in from the BRD:
 
@@ -57,10 +58,8 @@ pnpm dev            # API on :3001, web on :3000
 - API docs (OpenAPI): `http://localhost:3001/api/docs`
 - Web: `http://localhost:3000`
 - Demo login: `admin@lahans.dev` / `Lahans@2026`
-  - SUPER_ADMIN group requires 2FA. Seed enrolls the demo admin with TOTP
-    secret `JBSWY3DPEHPK3PXP` — add it to any authenticator app and use the
-    6-digit code as the OTP at login. (Demo-only convenience; production
-    secrets are generated at `POST /auth/2fa/enroll`.)
+  - Authenticator/OTP 2FA was removed from the login flow (product decision).
+    Sign in with NIK/email + password only.
 
 The web dev server proxies `/api/*` → `http://localhost:3001/api/v1/*` (BRD 7 global prefix).
 
