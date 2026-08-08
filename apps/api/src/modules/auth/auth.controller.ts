@@ -86,6 +86,7 @@ export class AuthController {
       email: resolved.email,
       groups: resolved.groups,
       permissions: resolved.permissions,
+      scopes: resolved.scopes,
     };
   }
 

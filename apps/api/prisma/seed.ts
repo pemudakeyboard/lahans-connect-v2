@@ -8,7 +8,7 @@
  * read at runtime via ParameterService.resolve(key, asOf) — never imported into
  * application code.
  */
-import { PrismaClient } from '../src/generated/prisma';
+import { Prisma, PrismaClient } from '../src/generated/prisma';
 import * as argon2 from '@node-rs/argon2';
 
 const prisma = new PrismaClient();
@@ -80,6 +80,16 @@ const PERMISSIONS = [
   'license.request.read',
   'license.request.write',
   'license.request.approve',
+  // M6 payroll (BRD §11.4)
+  'payroll.period.read',
+  'payroll.period.write',
+  'payroll.period.close',
+  'payroll.feeder.read',
+  'payroll.feeder.export',
+  'payroll.feeder.override',
+  'payroll.payslip.read_self',
+  'payroll.payslip.read_all',
+  'payroll.payslip.publish',
 ];
 
 const REFERENCE_DATA_SEED: { category: string; code: string; label: string; sort_order: number }[] =
@@ -148,6 +158,19 @@ const SYSTEM_PARAMETERS = [
   {
     param_key: 'PAYROLL.ABSENCE_MINUTES_DIVISOR',
     param_value: '25',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  // Payroll cutoff (BRD §11.4 source of truth: 22 → 21 of following month)
+  {
+    param_key: 'PAYROLL.CUTOFF_START_DAY',
+    param_value: '22',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  {
+    param_key: 'PAYROLL.CUTOFF_END_DAY',
+    param_value: '21',
     data_type: 'NUMBER',
     effective_from: ASOF,
   },
@@ -288,38 +311,43 @@ const NUMBER_SEQUENCES = [
   },
   {
     sequence_code: 'DOC_LEAVE',
-    pattern: 'C/YYYY/{SEQ}',
+    pattern: 'C/{YYYY}/{SEQ}',
     reset_period: 'YEARLY',
     padding_length: 4,
   },
-  { sequence_code: 'DOC_IZIN', pattern: 'I/YYYY/{SEQ}', reset_period: 'YEARLY', padding_length: 4 },
+  {
+    sequence_code: 'DOC_IZIN',
+    pattern: 'I/{YYYY}/{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
   {
     sequence_code: 'DOC_OVERTIME',
-    pattern: 'L/YYYY/{SEQ}',
+    pattern: 'L/{YYYY}/{SEQ}',
     reset_period: 'YEARLY',
     padding_length: 4,
   },
   {
     sequence_code: 'DOC_PERDIN',
-    pattern: 'PD/YYYY/{SEQ}',
+    pattern: 'PD/{YYYY}/{SEQ}',
     reset_period: 'YEARLY',
     padding_length: 4,
   },
   {
     sequence_code: 'DOC_ADVANCE',
-    pattern: 'UM/YYYY/{SEQ}',
+    pattern: 'UM/{YYYY}/{SEQ}',
     reset_period: 'YEARLY',
     padding_length: 4,
   },
   {
     sequence_code: 'DOC_LOAN',
-    pattern: 'PJ/YYYY/{SEQ}',
+    pattern: 'PJ/{YYYY}/{SEQ}',
     reset_period: 'YEARLY',
     padding_length: 4,
   },
   {
     sequence_code: 'DOC_SIM',
-    pattern: 'SIM/YYYY/{SEQ}',
+    pattern: 'SIM/{YYYY}/{SEQ}',
     reset_period: 'YEARLY',
     padding_length: 4,
   },
@@ -477,7 +505,81 @@ async function main() {
     },
     update: {},
   });
-  console.log('✔ master data org');
+
+  // ---------- M6 org: SALES vs PABRIK (data-scope axis) ----------
+  // Decision 1: the sales-non-staff vs operator feeder split is materialized as
+  // two divisions. A Comben user bound to DIVISION SALES processes only the
+  // non-staff sales employees; the PABRIK-bound user only the operators.
+  const nonStaffGrade = await prisma.job_grades.upsert({
+    where: { code: 'NON_STAFF' },
+    create: { code: 'NON_STAFF', name: 'Non-Staff', level_order: 1, is_staff: false },
+    update: {},
+  });
+  const divisionSales = await prisma.divisions.upsert({
+    where: { code: 'SALES' },
+    create: { company_id: company.id, code: 'SALES', name: 'Sales & Distribusi' },
+    update: {},
+  });
+  const divisionPabrik = await prisma.divisions.upsert({
+    where: { code: 'PABRIK' },
+    create: { company_id: company.id, code: 'PABRIK', name: 'Pabrik / Manufaktur' },
+    update: {},
+  });
+  const deptSales = await prisma.departments.upsert({
+    where: { code: 'SALES-DIST' },
+    create: { division_id: divisionSales.id, code: 'SALES-DIST', name: 'Sales Distribution' },
+    update: {},
+  });
+  const deptPabrik = await prisma.departments.upsert({
+    where: { code: 'PABRIK-PROD' },
+    create: { division_id: divisionPabrik.id, code: 'PABRIK-PROD', name: 'Produksi' },
+    update: {},
+  });
+  // Positions carry the feeder ladder key (schema: job_positions.attendance_rule_set).
+  const positions = [
+    { code: 'SALESMAN', name: 'Salesman', ruleSet: 'NON_STAFF_DEFAULT', dept: deptSales },
+    { code: 'DRIVER', name: 'Driver', ruleSet: 'NON_STAFF_DEFAULT', dept: deptSales },
+    { code: 'SPG', name: 'Sales Promotion Girl', ruleSet: 'NON_STAFF_DEFAULT', dept: deptSales },
+    {
+      code: 'OPERATOR-TINTIN',
+      name: 'Operator Tintin',
+      ruleSet: 'OPERATOR_TINTIN',
+      dept: deptPabrik,
+    },
+  ];
+  const positionIdByCode = new Map<string, string>();
+  for (const p of positions) {
+    const row = await prisma.job_positions.upsert({
+      where: { code: p.code },
+      create: {
+        department_id: p.dept.id,
+        job_grade_id: nonStaffGrade.id,
+        code: p.code,
+        name: p.name,
+        attendance_rule_set: p.ruleSet,
+      },
+      update: { attendance_rule_set: p.ruleSet, job_grade_id: nonStaffGrade.id },
+    });
+    positionIdByCode.set(p.code, row.id);
+  }
+  // Branch fixtures from the source-of-truth employee master (PDF locations).
+  const branchSeeds = [
+    { code: 'WNG', name: 'PT LMN - Wangon' },
+    { code: 'PBG', name: 'PT LMN - Probolinggo' },
+    { code: 'PWR', name: 'PT LMN - Purwakarta' },
+    { code: 'BYW', name: 'PT LMN - Banyuwangi' },
+    { code: 'GRT', name: 'PT LMN - Garut' },
+  ];
+  const branchIdByCode = new Map<string, string>();
+  for (const b of branchSeeds) {
+    const row = await prisma.branches.upsert({
+      where: { code: b.code },
+      create: { company_id: company.id, code: b.code, name: b.name, geofence_radius_m: 150 },
+      update: {},
+    });
+    branchIdByCode.set(b.code, row.id);
+  }
+  console.log('✔ master data org (+ M6 SALES/PABRIK scope axis)');
 
   // ---------- Approval workflows (per document type — never one normalized chain) ----------
   // CONTEXT.md "Approval Chains": each document has its own chain.
@@ -696,11 +798,7 @@ async function main() {
 
   // ---------- Overtime rate rules (Class A) — CONTEXT.md: ×2 holiday is Non-Staff only ----------
   // Grade-scoped: Non-Staff ×2 on holidays, Staff/SPV/Manager ×1.
-  const nonStaffGrade = await prisma.job_grades.upsert({
-    where: { code: 'NON_STAFF' },
-    create: { code: 'NON_STAFF', name: 'Non-Staff', level_order: 1, is_staff: false },
-    update: {},
-  });
+  // (`nonStaffGrade` is declared in the M6 org block above.)
   const supervisorGrade = await prisma.job_grades.upsert({
     where: { code: 'SUPERVISOR' },
     create: { code: 'SUPERVISOR', name: 'Supervisor', level_order: 3, is_staff: true },
@@ -885,13 +983,24 @@ async function main() {
       taxable: true,
       display_order: 5,
     },
+    {
+      code: 'POTONGAN_IZIN',
+      name: 'Potongan Izin',
+      component_type: 'DEDUCTION',
+      calc_method: 'FORMULA',
+      formula_expression: '-(GP / ABSENCE_MINUTES_DIVISOR) * IZIN_DAYS',
+      taxable: false,
+      display_order: 6,
+    },
   ];
+  const payrollComponentId = new Map<string, string>();
   for (const c of payrollComponents) {
-    await prisma.payroll_components.upsert({
+    const comp = await prisma.payroll_components.upsert({
       where: { code: c.code },
       create: c,
       update: c,
     });
+    payrollComponentId.set(c.code, comp.id);
   }
   console.log(`✔ ${payrollComponents.length} payroll components`);
 
@@ -919,6 +1028,10 @@ async function main() {
   console.log('✔ 1 loan type');
 
   // ---------- Demo employee + user ----------
+  // Demo login is shared by the whole ops team, so it carries a STAFF grade
+  // (not Manager) plus a BASIC_SALARY assignment — this makes transaction
+  // modules (lembur, perdin, pinjaman) exercisable end-to-end with a real
+  // calculated amount. Manager grade has calc_method NONE and would block demo.
   const demoEmployee = await prisma.employees.upsert({
     where: { nik: DEMO_ADMIN_NIK },
     create: {
@@ -928,11 +1041,39 @@ async function main() {
       phone: '081234567890',
       branch_id: branch.id,
       job_position_id: position.id,
+      job_grade_id: gradeStaff.id,
       join_date: new Date('2024-01-01'),
       employment_status: 'AKTIF',
     },
-    update: {},
+    update: { job_grade_id: gradeStaff.id },
   });
+  const basicSalaryComponentId = payrollComponentId.get('BASIC_SALARY') ?? null;
+  if (basicSalaryComponentId) {
+    // No unique key on employee_component_assignments — idempotency via the
+    // (employee, component, effective_from) pair, same as system_parameters.
+    const existingAssignment = await prisma.employee_component_assignments.findFirst({
+      where: {
+        employee_id: demoEmployee.id,
+        payroll_component_id: basicSalaryComponentId,
+        effective_from: ASOF,
+      },
+    });
+    const assignmentData = {
+      employee_id: demoEmployee.id,
+      payroll_component_id: basicSalaryComponentId,
+      amount: new Prisma.Decimal(5_000_000),
+      effective_from: ASOF,
+      effective_to: null,
+    };
+    if (existingAssignment) {
+      await prisma.employee_component_assignments.update({
+        where: { id: existingAssignment.id },
+        data: { amount: assignmentData.amount },
+      });
+    } else {
+      await prisma.employee_component_assignments.create({ data: assignmentData });
+    }
+  }
   const passwordHash = await argon2.hash('Lahans@2026', {
     memoryCost: 64 * 1024,
     timeCost: 3,
@@ -961,6 +1102,406 @@ async function main() {
     create: { user_id: demoUser.id, group_id: groupIds.get('SUPER_ADMIN')! },
     update: {},
   });
+
+  // ---------- Demo supervisor + reporting line ----------
+  // Approval chains (CUTI/OVERTIME/PERDIN/PINJAMAN) start at the direct
+  // supervisor. Without a reporting line the demo request would sit at step 1
+  // with no assignee, so we seed one supervisor the demo employee reports to.
+  const supervisorEmployee = await prisma.employees.upsert({
+    where: { nik: '88000002' },
+    create: {
+      nik: '88000002',
+      full_name: 'Demo Supervisor',
+      email: 'supervisor@lahans.dev',
+      phone: '081234567891',
+      branch_id: branch.id,
+      job_position_id: position.id,
+      job_grade_id: gradeStaff.id,
+      join_date: new Date('2023-01-01'),
+      employment_status: 'AKTIF',
+    },
+    update: {},
+  });
+  const supervisorPasswordHash = await argon2.hash('Lahans@2026', {
+    memoryCost: 64 * 1024,
+    timeCost: 3,
+    parallelism: 2,
+    outputLen: 32,
+  });
+  const supervisorUser = await prisma.users.upsert({
+    where: { login_nik: '88000002' },
+    create: {
+      employee_id: supervisorEmployee.id,
+      login_nik: '88000002',
+      email: 'supervisor@lahans.dev',
+      password_hash: supervisorPasswordHash,
+      status: 'ACTIVE',
+      must_change_password: false,
+      two_factor_enabled: false,
+    },
+    update: { employee_id: supervisorEmployee.id, email: 'supervisor@lahans.dev' },
+  });
+  await prisma.user_group_members.upsert({
+    where: {
+      user_id_group_id: { user_id: supervisorUser.id, group_id: groupIds.get('SUPER_ADMIN')! },
+    },
+    create: { user_id: supervisorUser.id, group_id: groupIds.get('SUPER_ADMIN')! },
+    update: {},
+  });
+  const existingReportingLine = await prisma.reporting_lines.findFirst({
+    where: { employee_id: demoEmployee.id, line_type: 'DIRECT', effective_to: null },
+  });
+  if (!existingReportingLine) {
+    await prisma.reporting_lines.create({
+      data: {
+        employee_id: demoEmployee.id,
+        supervisor_id: supervisorEmployee.id,
+        line_type: 'DIRECT',
+        effective_from: ASOF,
+        effective_to: null,
+      },
+    });
+  }
+  console.log('✔ demo supervisor 88000002 + reporting line');
+
+  // ---------------------------------------------------------------------------
+  // M6 — Payroll demo data (UAT-M6-01..05, decision 6)
+  // ---------------------------------------------------------------------------
+  // Proves the sales-vs-pabrik data split: 3 non-staff sales employees (SALES
+  // division, NON_STAFF_DEFAULT ladder) + 3 operator employees (PABRIK division,
+  // OPERATOR_TINTIN ladder). Two Comben users are bound to DIVISION SALES / PABRIK
+  // via user_scope_bindings — each sees and processes only its own slice.
+  const M6_PERIOD_CODE = '2026-08';
+  const M6_CUTOFF_START = new Date('2026-07-22');
+  const M6_CUTOFF_END = new Date('2026-08-21');
+  const M6_ASOF = ASOF; // assignments effective 2026-01-01 (before period)
+
+  // -- Payload: per-employee component assignments (amounts from source of truth).
+  const m6Employees = [
+    // SALES division — non-staff, NON_STAFF_DEFAULT ladder.
+    {
+      nik: '20250055',
+      full_name: 'Aan Agustian',
+      email: 'aan.agustian@lahans.dev',
+      branchCode: 'WNG',
+      positionCode: 'SALESMAN',
+      // 0 absence days -> kehadiran 100%, full 200k.
+      attendance: { present: 31, absence: 0 },
+      assignments: [
+        { code: 'BASIC_SALARY', amount: 3250000 },
+        { code: 'TUNJANGAN_MAKAN', amount: 20000 }, // per-day
+        { code: 'TUNJANGAN_KEHADIRAN', amount: 200000 }, // base (monthly)
+      ],
+      overtime: [
+        {
+          date: '2026-08-03',
+          dayType: 'WEEKDAY',
+          plannedHours: 2,
+          actualHours: 2,
+          amount: 37572.25,
+        },
+        {
+          date: '2026-08-04',
+          dayType: 'WEEKDAY',
+          plannedHours: 2,
+          actualHours: 2,
+          amount: 37572.25,
+        },
+      ],
+    },
+    {
+      nik: '20230567',
+      full_name: 'Abdullah Hasan',
+      email: 'abdullah.hasan@lahans.dev',
+      branchCode: 'PBG',
+      positionCode: 'DRIVER',
+      // 1 absence day -> kehadiran 50% (200k -> 100k) (NON_STAFF_DEFAULT 1->50%).
+      attendance: { present: 30, absence: 1 },
+      assignments: [
+        { code: 'BASIC_SALARY', amount: 3250000 },
+        { code: 'TUNJANGAN_MAKAN', amount: 20000 },
+        { code: 'TUNJANGAN_KEHADIRAN', amount: 200000 },
+      ],
+      overtime: [],
+    },
+    {
+      nik: '20260007',
+      full_name: 'Acep Hendra',
+      email: 'acep.hendra@lahans.dev',
+      branchCode: 'PWR',
+      positionCode: 'SPG',
+      // 2 absence days -> kehadiran 0% (NON_STAFF_DEFAULT 2+->0).
+      attendance: { present: 29, absence: 2 },
+      assignments: [
+        { code: 'BASIC_SALARY', amount: 3250000 },
+        { code: 'TUNJANGAN_MAKAN', amount: 10000 }, // SPG makan 10k/day
+        { code: 'TUNJANGAN_KEHADIRAN', amount: 100000 }, // SPG kehadiran base 100k
+      ],
+      overtime: [],
+    },
+    // PABRIK division — operators, OPERATOR_TINTIN ladder.
+    {
+      nik: '20230612',
+      full_name: 'Ach. Firdaus',
+      email: 'firdaus@lahans.dev',
+      branchCode: 'BYW',
+      positionCode: 'OPERATOR-TINTIN',
+      // 0 absence days -> kehadiran 100% (130k).
+      attendance: { present: 31, absence: 0 },
+      assignments: [
+        { code: 'BASIC_SALARY', amount: 3000000 },
+        { code: 'TUNJANGAN_MAKAN', amount: 13000 }, // operator makan 13k/day
+        { code: 'TUNJANGAN_KEHADIRAN', amount: 130000 }, // all operators 130k
+      ],
+      overtime: [
+        {
+          date: '2026-08-08',
+          dayType: 'WEEKEND',
+          plannedHours: 3,
+          actualHours: 3,
+          amount: 56358.38,
+        },
+      ],
+    },
+    {
+      nik: '20000173',
+      full_name: 'Ade Nurjaman',
+      email: 'ade.nurjaman@lahans.dev',
+      branchCode: 'GRT',
+      positionCode: 'OPERATOR-TINTIN',
+      // 1 absence day -> kehadiran 80% (130k -> 104k) (OPERATOR_TINTIN 1->80%).
+      attendance: { present: 30, absence: 1 },
+      assignments: [
+        { code: 'BASIC_SALARY', amount: 3000000 },
+        { code: 'TUNJANGAN_MAKAN', amount: 13000 },
+        { code: 'TUNJANGAN_KEHADIRAN', amount: 130000 },
+      ],
+      overtime: [],
+    },
+    {
+      nik: '20240682',
+      full_name: 'Adie Wirahadie',
+      email: 'adie.wirahadie@lahans.dev',
+      branchCode: 'GRT',
+      positionCode: 'OPERATOR-TINTIN',
+      // 2 absence days -> kehadiran 50% (130k -> 65k) (OPERATOR_TINTIN 2->50%).
+      attendance: { present: 29, absence: 2 },
+      assignments: [
+        { code: 'BASIC_SALARY', amount: 3000000 },
+        { code: 'TUNJANGAN_MAKAN', amount: 13000 },
+        { code: 'TUNJANGAN_KEHADIRAN', amount: 130000 },
+      ],
+      overtime: [],
+    },
+  ];
+
+  const m6EmployeeIdByNik = new Map<string, string>();
+  for (const e of m6Employees) {
+    const branchId = branchIdByCode.get(e.branchCode)!;
+    const positionId = positionIdByCode.get(e.positionCode)!;
+    const emp = await prisma.employees.upsert({
+      where: { nik: e.nik },
+      create: {
+        nik: e.nik,
+        full_name: e.full_name,
+        email: e.email,
+        branch_id: branchId,
+        job_position_id: positionId,
+        job_grade_id: nonStaffGrade.id,
+        join_date: new Date('2024-01-01'),
+        employment_status: 'AKTIF',
+      },
+      update: { branch_id: branchId, job_position_id: positionId, job_grade_id: nonStaffGrade.id },
+    });
+    m6EmployeeIdByNik.set(e.nik, emp.id);
+
+    // Component assignments (idempotent by employee+component+effective_from).
+    for (const a of e.assignments) {
+      const compId = payrollComponentId.get(a.code);
+      if (!compId) continue;
+      const existingAssignment = await prisma.employee_component_assignments.findFirst({
+        where: {
+          employee_id: emp.id,
+          payroll_component_id: compId,
+          effective_from: M6_ASOF,
+        },
+      });
+      const data = {
+        employee_id: emp.id,
+        payroll_component_id: compId,
+        amount: new Prisma.Decimal(a.amount),
+        effective_from: M6_ASOF,
+        effective_to: null,
+      };
+      if (existingAssignment) {
+        await prisma.employee_component_assignments.update({
+          where: { id: existingAssignment.id },
+          data: { amount: data.amount },
+        });
+      } else {
+        await prisma.employee_component_assignments.create({ data });
+      }
+    }
+
+    // Attendance days for the period (22 Jul – 21 Aug 2026 = 31 days).
+    // Absence days are marked IZIN (deducts salary pro-rata + meal/transport);
+    // the rest are HADIR.
+    const dayMs = 86400000;
+    for (let i = 0; i < 31; i++) {
+      const d = new Date(M6_CUTOFF_START.getTime() + i * dayMs);
+      const status = i < e.attendance.absence ? 'IZIN' : 'HADIR';
+      const existingDay = await prisma.attendance_daily.findUnique({
+        where: { employee_id_work_date: { employee_id: emp.id, work_date: d } },
+      });
+      if (existingDay) {
+        await prisma.attendance_daily.update({
+          where: { id: existingDay.id },
+          data: { status, source: 'MANUAL' },
+        });
+      } else {
+        await prisma.attendance_daily.create({
+          data: { employee_id: emp.id, work_date: d, status, source: 'MANUAL' },
+        });
+      }
+    }
+
+    // Approved overtime (in-period).
+    const ot = e.overtime ?? [];
+    for (const o of ot) {
+      const doc = `L/M6/${e.nik}/${o.date}`;
+      const overtimeDate = new Date(o.date + 'T00:00:00Z');
+      const existingOt = await prisma.overtime_requests.findUnique({ where: { doc_number: doc } });
+      if (existingOt) {
+        await prisma.overtime_requests.update({
+          where: { id: existingOt.id },
+          data: {
+            day_type: o.dayType,
+            planned_hours: new Prisma.Decimal(o.plannedHours),
+            actual_hours: new Prisma.Decimal(o.actualHours),
+            calculated_amount: new Prisma.Decimal(o.amount),
+            status: 'APPROVED',
+          },
+        });
+      } else {
+        await prisma.overtime_requests.create({
+          data: {
+            doc_number: doc,
+            employee_id: emp.id,
+            overtime_date: overtimeDate,
+            day_type: o.dayType,
+            planned_hours: new Prisma.Decimal(o.plannedHours),
+            actual_hours: new Prisma.Decimal(o.actualHours),
+            calculated_amount: new Prisma.Decimal(o.amount),
+            status: 'APPROVED',
+            reason: 'Demo M6 lembur',
+          },
+        });
+      }
+    }
+  }
+  console.log(`✔ ${m6Employees.length} M6 employees + attendance + overtime`);
+
+  // -- Payroll period 2026-08 (OPEN, 22 Jul – 21 Aug 2026).
+  await prisma.payroll_periods.upsert({
+    where: { code: M6_PERIOD_CODE },
+    create: {
+      company_id: company.id,
+      code: M6_PERIOD_CODE,
+      cutoff_start: M6_CUTOFF_START,
+      cutoff_end: M6_CUTOFF_END,
+      status: 'OPEN',
+    },
+    update: { cutoff_start: M6_CUTOFF_START, cutoff_end: M6_CUTOFF_END, status: 'OPEN' },
+  });
+  console.log(`✔ payroll period ${M6_PERIOD_CODE} (OPEN)`);
+
+  // -- COMBEN group gets payroll permissions at DIVISION data scope, plus the
+  //    two Comben users bound to the SALES / PABRIK divisions.
+  const combenPayrollPerms = [
+    'payroll.period.read',
+    'payroll.period.close',
+    'payroll.feeder.read',
+    'payroll.feeder.export',
+    'payroll.feeder.override',
+  ];
+  for (const code of combenPayrollPerms) {
+    await prisma.group_permissions.upsert({
+      where: {
+        group_id_permission_id: {
+          group_id: groupIds.get('COMBEN')!,
+          permission_id: permissionIds.get(code)!,
+        },
+      },
+      create: {
+        group_id: groupIds.get('COMBEN')!,
+        permission_id: permissionIds.get(code)!,
+        data_scope: 'DIVISION',
+      },
+      update: { data_scope: 'DIVISION' },
+    });
+  }
+
+  const combenUsers = [
+    { nik: '88000011', email: 'comben.sales@lahans.dev', divisionId: divisionSales.id },
+    { nik: '88000012', email: 'comben.pabrik@lahans.dev', divisionId: divisionPabrik.id },
+  ];
+  for (const cu of combenUsers) {
+    const emp = await prisma.employees.upsert({
+      where: { nik: cu.nik },
+      create: {
+        nik: cu.nik,
+        full_name: cu.nik === '88000011' ? 'Comben Sales' : 'Comben Pabrik',
+        email: cu.email,
+        branch_id: branch.id,
+        job_position_id: position.id,
+        job_grade_id: gradeStaff.id,
+        join_date: new Date('2023-01-01'),
+        employment_status: 'AKTIF',
+      },
+      update: {},
+    });
+    const hash = await argon2.hash('Lahans@2026', {
+      memoryCost: 64 * 1024,
+      timeCost: 3,
+      parallelism: 2,
+      outputLen: 32,
+    });
+    const usr = await prisma.users.upsert({
+      where: { login_nik: cu.nik },
+      create: {
+        employee_id: emp.id,
+        login_nik: cu.nik,
+        email: cu.email,
+        password_hash: hash,
+        status: 'ACTIVE',
+        must_change_password: false,
+        two_factor_enabled: false,
+      },
+      update: { employee_id: emp.id, email: cu.email },
+    });
+    await prisma.user_group_members.upsert({
+      where: { user_id_group_id: { user_id: usr.id, group_id: groupIds.get('COMBEN')! } },
+      create: { user_id: usr.id, group_id: groupIds.get('COMBEN')! },
+      update: {},
+    });
+    // DATA-SCOPE BINDING: each Comben user is bound to exactly one division.
+    await prisma.user_scope_bindings.upsert({
+      where: {
+        user_id_scope_type_scope_ref_id: {
+          user_id: usr.id,
+          scope_type: 'DIVISION',
+          scope_ref_id: cu.divisionId,
+        },
+      },
+      create: {
+        user_id: usr.id,
+        scope_type: 'DIVISION',
+        scope_ref_id: cu.divisionId,
+      },
+      update: {},
+    });
+  }
+  console.log('✔ M6 Comben users 88000011 (Sales) + 88000012 (Pabrik) + DIVISION bindings');
 
   // ---------- system_parameters (effective-dated) ----------
   // No unique key on system_parameters (only a composite index), so idempotency
@@ -1213,6 +1754,33 @@ async function main() {
       platform: 'BOTH',
       sort_order: 81,
       permission_code: 'attendance.daily.read',
+    },
+    // M6 — payroll (BRD §11.4)
+    {
+      code: 'PAYROLL',
+      label: 'Payroll',
+      icon: 'Calculator',
+      platform: 'BOTH',
+      sort_order: 90,
+      permission_code: 'payroll.period.read',
+    },
+    {
+      code: 'PAYROLL.PERIODS',
+      label: 'Periode Penggajian',
+      route: '/payroll/periods',
+      parent_code: 'PAYROLL',
+      platform: 'BOTH',
+      sort_order: 91,
+      permission_code: 'payroll.period.read',
+    },
+    {
+      code: 'PAYROLL.FEEDER',
+      label: 'Payroll Feeder',
+      route: '/payroll/feeder',
+      parent_code: 'PAYROLL',
+      platform: 'BOTH',
+      sort_order: 92,
+      permission_code: 'payroll.feeder.read',
     },
   ];
   const menuIdByCode = new Map<string, string>();

@@ -10,6 +10,8 @@ import { IdentityModule } from './modules/identity/identity.module';
 import { ConfigModule as M8BConfigModule } from './modules/config/config.module';
 import { MasterModule } from './modules/master/master.module';
 import { LeaveModule } from './modules/leave/leave.module';
+import { OvertimeModule } from './modules/overtime/overtime.module';
+import { PayrollModule } from './modules/payroll/payroll.module';
 import { PermissionGuard } from './core/auth/guards/permission.guard';
 import { AuditInterceptor } from './core/audit/audit.interceptor';
 
@@ -25,6 +27,8 @@ import { AuditInterceptor } from './core/audit/audit.interceptor';
     M8BConfigModule,
     MasterModule,
     LeaveModule,
+    OvertimeModule,
+    PayrollModule,
   ],
   providers: [
     // PermissionGuard is global — deny-by-default (FR-M0-004). Public endpoints

@@ -27,6 +27,7 @@ export interface MeResponse {
   email: string;
   groups: string[];
   permissions: string[];
+  scopes: Record<string, string>;
 }
 
 export async function meRequest(): Promise<MeResponse> {
@@ -317,4 +318,177 @@ export async function cancelLeaveRequest(id: string): Promise<{ id: string; stat
   return api<{ id: string; status: string }>(`/api/leave/requests/${id}/cancel`, {
     method: 'POST',
   });
+}
+
+// ---------------------------------------------------------------------------
+// S8 — overtime (lebur)
+// ---------------------------------------------------------------------------
+
+export interface OvertimeRequestRow {
+  id: string;
+  doc_number: string;
+  employee_id: string;
+  overtime_date: string;
+  day_type: string;
+  planned_hours: string;
+  actual_hours?: string | null;
+  rate_rule_id?: string | null;
+  calculated_amount?: string | null;
+  calculation_trace?: Record<string, unknown> | null;
+  reason?: string | null;
+  status: string;
+  approval_instance_id?: string | null;
+  created_at: string;
+}
+
+export async function listOvertimeRequests(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ListResponse<OvertimeRequestRow>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  const qs = q.toString();
+  return api<ListResponse<OvertimeRequestRow>>(`/api/overtime/requests${qs ? `?${qs}` : ''}`);
+}
+
+export async function createOvertimeRequest(body: {
+  overtime_date: string;
+  planned_hours: number;
+  reason?: string;
+}): Promise<OvertimeRequestRow> {
+  return api<OvertimeRequestRow>('/api/overtime/requests', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function decideOvertimeRequest(
+  id: string,
+  action: 'APPROVE' | 'REJECT' | 'RETURN',
+  opts?: { comment?: string; actual_hours?: number },
+): Promise<{ id: string; status: string; amount?: string | null }> {
+  return api<{ id: string; status: string; amount?: string | null }>(
+    `/api/overtime/requests/${id}/decide`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ action, ...opts }),
+    },
+  );
+}
+
+export async function cancelOvertimeRequest(id: string): Promise<{ id: string; status: string }> {
+  return api<{ id: string; status: string }>(`/api/overtime/requests/${id}/cancel`, {
+    method: 'POST',
+  });
+}
+
+// ---------------------------------------------------------------------------
+// M6 — payroll feeder (periods + feeder, data-scoped)
+// ---------------------------------------------------------------------------
+
+export interface PayrollPeriodRow {
+  id: string;
+  code: string;
+  cutoff_start: string;
+  cutoff_end: string;
+  payment_date: string | null;
+  status: 'OPEN' | 'LOCKED' | 'CLOSED';
+  closed_by: string | null;
+  closed_at: string | null;
+  company?: { code: string; legal_name: string } | null;
+}
+
+export interface FeederLineRow {
+  id: string;
+  payroll_period_id: string;
+  employee_id: string;
+  component_code: string;
+  quantity: string | null;
+  amount: string | null;
+  is_manual_override: boolean;
+  override_reason?: string | null;
+  calculation_trace?: Record<string, unknown> | null;
+  employee?: { nik: string; full_name: string } | null;
+}
+
+export interface PeriodBlockers {
+  ok: boolean;
+  blockers: Array<{
+    code: string;
+    type: string;
+    detail: string;
+    docNumber?: string;
+    employee?: string;
+  }>;
+}
+
+export async function listPayrollPeriods(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ListResponse<PayrollPeriodRow> & { scope: boolean }> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  const qs = q.toString();
+  return api<ListResponse<PayrollPeriodRow> & { scope: boolean }>(
+    `/api/payroll/periods${qs ? `?${qs}` : ''}`,
+  );
+}
+
+export async function createPayrollPeriod(body: {
+  code: string;
+  cutoff_start: string;
+  cutoff_end: string;
+  payment_date?: string;
+}): Promise<PayrollPeriodRow> {
+  return api<PayrollPeriodRow>('/api/payroll/periods', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function validatePayrollPeriod(id: string): Promise<PeriodBlockers> {
+  return api<PeriodBlockers>(`/api/payroll/periods/${id}/validate`, { method: 'POST' });
+}
+
+export async function lockPayrollPeriod(
+  id: string,
+): Promise<{ id: string; status: string; aggregatedEmployees: number; aggregatedLines: number }> {
+  return api(`/api/payroll/periods/${id}/lock`, { method: 'POST' });
+}
+
+export async function closePayrollPeriod(id: string): Promise<PayrollPeriodRow> {
+  return api<PayrollPeriodRow>(`/api/payroll/periods/${id}/close`, { method: 'POST' });
+}
+
+export async function listFeederLines(
+  periodId: string,
+  params?: { page?: number; pageSize?: number },
+): Promise<ListResponse<FeederLineRow> & { periodStatus: string }> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  const qs = q.toString();
+  return api<ListResponse<FeederLineRow> & { periodStatus: string }>(
+    `/api/payroll/periods/${periodId}/feeder${qs ? `?${qs}` : ''}`,
+  );
+}
+
+export async function getFeederTrace(lineId: string): Promise<FeederLineRow> {
+  return api<FeederLineRow>(`/api/payroll/feeder-lines/${lineId}/trace`);
+}
+
+export async function overrideFeederLine(
+  lineId: string,
+  body: { amount: number; reason?: string },
+): Promise<FeederLineRow> {
+  return api<FeederLineRow>(`/api/payroll/feeder-lines/${lineId}/override`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function exportFeederUrl(periodId: string): string {
+  return `/api/payroll/periods/${periodId}/feeder/export`;
 }

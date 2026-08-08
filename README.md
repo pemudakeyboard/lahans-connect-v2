@@ -60,6 +60,9 @@ pnpm dev            # API on :3001, web on :3000
 - Demo login: `admin@lahans.dev` / `Lahans@2026`
   - Authenticator/OTP 2FA was removed from the login flow (product decision).
     Sign in with NIK/email + password only.
+  - Demo supervisor (approval step 1): `88000002` / `Lahans@2026` — the demo
+    employee reports to them, so approval chains (cuti, lembur, perdin, pinjaman)
+    are exercisable end-to-end.
 
 The web dev server proxies `/api/*` → `http://localhost:3001/api/v1/*` (BRD 7 global prefix).
 

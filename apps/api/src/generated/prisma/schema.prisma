@@ -117,14 +117,15 @@ model job_grades {
 }
 
 model job_positions {
-  id            String   @id @default(uuid()) @db.Uuid
-  department_id String?  @db.Uuid
-  job_grade_id  String?  @db.Uuid
-  code          String   @unique
-  name          String
-  is_active     Boolean  @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id                  String   @id @default(uuid()) @db.Uuid
+  department_id       String?  @db.Uuid
+  job_grade_id        String?  @db.Uuid
+  attendance_rule_set String? // NON_STAFF_DEFAULT | OPERATOR_TINTIN | null — M6 feeder ladder key
+  code                String   @unique
+  name                String
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 
   department departments? @relation(fields: [department_id], references: [id], onDelete: SetNull)
   job_grade  job_grades?  @relation(fields: [job_grade_id], references: [id], onDelete: SetNull)

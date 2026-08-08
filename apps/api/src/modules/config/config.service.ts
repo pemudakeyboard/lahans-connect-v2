@@ -133,13 +133,21 @@ export class ConfigService {
     opts: { scopeType?: string; scopeRefId?: string } = {},
   ) {
     return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      const seq = await tx.number_sequences.findFirst({
+      // Prefer a scope-specific sequence (e.g. per-branch); fall back to the
+      // global unscoped one seeded by default. Catch the Not Found and rethrow
+      // only when neither exists, so a missing scoped row is not fatal.
+      let seq = await tx.number_sequences.findFirst({
         where: {
           sequence_code: sequenceCode,
           scope_type: opts.scopeType ?? null,
           scope_ref_id: opts.scopeRefId ?? null,
         },
       });
+      if (!seq && opts.scopeType) {
+        seq = await tx.number_sequences.findFirst({
+          where: { sequence_code: sequenceCode, scope_type: null, scope_ref_id: null },
+        });
+      }
       if (!seq) throw new NotFoundException(`Sequence ${sequenceCode} tidak terdaftar.`);
 
       const now = new Date();

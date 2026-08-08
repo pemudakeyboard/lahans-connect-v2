@@ -187,6 +187,7 @@ exports.Prisma.Job_positionsScalarFieldEnum = {
   id: 'id',
   department_id: 'department_id',
   job_grade_id: 'job_grade_id',
+  attendance_rule_set: 'attendance_rule_set',
   code: 'code',
   name: 'name',
   is_active: 'is_active',
