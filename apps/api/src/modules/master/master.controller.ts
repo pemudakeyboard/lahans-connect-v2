@@ -111,4 +111,31 @@ export class MasterController {
     this.assertPermission(user, permissionResource(entity), 'write');
     return this.master.remove(entity, id);
   }
+
+  // -- bulk actions (Ticket 03 — Nonaktifkan / Hapus) -------------------------
+  // Employees use `master.employees.write` like any other write. The generic
+  // per-resource permission is enforced explicitly so the two routes stay
+  // "employees-only" even though the path is hardcoded.
+
+  @Post('employees/bulk-deactivate')
+  @RequirePermission('master.write')
+  @ApiOperation({ summary: 'Nonaktifkan massal karyawan (status → RESIGN)' })
+  bulkDeactivateEmployees(
+    @Body() body: { ids: string[] },
+    @CurrentUser() user: { permissions: string[] },
+  ) {
+    this.assertPermission(user, 'employees', 'write');
+    return this.master.bulkDeactivateEmployees(body.ids);
+  }
+
+  @Post('employees/bulk-delete')
+  @RequirePermission('master.write')
+  @ApiOperation({ summary: 'Hapus massal karyawan (soft-delete)' })
+  bulkDeleteEmployees(
+    @Body() body: { ids: string[] },
+    @CurrentUser() user: { permissions: string[] },
+  ) {
+    this.assertPermission(user, 'employees', 'write');
+    return this.master.bulkDeleteEmployees(body.ids);
+  }
 }

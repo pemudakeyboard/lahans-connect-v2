@@ -160,4 +160,47 @@ export class MasterService {
     }
     return d.delete({ where: { id } });
   }
+
+  // -- bulk actions (Ticket 03) ----------------------------------------------
+
+  private assertIds(ids: string[], label: string): string[] {
+    const clean = Array.isArray(ids)
+      ? [...new Set(ids.filter((i) => typeof i === 'string' && i.length > 0))]
+      : [];
+    if (clean.length === 0) {
+      throw new BadRequestException({ code: 'BULK_EMPTY', message: `Tidak ada ${label} dipilih.` });
+    }
+    return clean;
+  }
+
+  /**
+   * Nonaktifkan massal: set status ke RESIGN + resign_date hari ini dan
+   * non-aktifkan akun. Batch update — referensi (assignment, absensi, payroll)
+   * tetap utuh karena barisnya tidak dihapus.
+   */
+  async bulkDeactivateEmployees(ids: string[]) {
+    const clean = this.assertIds(ids, 'karyawan');
+    const { count } = await this.prisma.employees.updateMany({
+      where: { id: { in: clean }, is_active: true },
+      data: {
+        employment_status: 'RESIGN',
+        resign_date: new Date(),
+        is_active: false,
+      },
+    });
+    return { deactivated: count };
+  }
+
+  /**
+   * Hapus massal: soft-delete (is_active = false) agar referensial integrity
+   * tetap terjaga — sama dengan DELETE /master/employees/:id.
+   */
+  async bulkDeleteEmployees(ids: string[]) {
+    const clean = this.assertIds(ids, 'karyawan');
+    const { count } = await this.prisma.employees.updateMany({
+      where: { id: { in: clean }, is_active: true },
+      data: { is_active: false },
+    });
+    return { deleted: count };
+  }
 }

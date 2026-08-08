@@ -237,6 +237,22 @@ export async function masterDelete(entity: string, id: string): Promise<void> {
   await api(`/api/master/${entity}/${id}`, { method: 'DELETE' });
 }
 
+// -- bulk actions (Ticket 03 — employee list toolbar) -------------------------
+
+export async function bulkDeactivateEmployees(ids: string[]): Promise<{ deactivated: number }> {
+  return api<{ deactivated: number }>('/api/master/employees/bulk-deactivate', {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  });
+}
+
+export async function bulkDeleteEmployees(ids: string[]): Promise<{ deleted: number }> {
+  return api<{ deleted: number }>('/api/master/employees/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  });
+}
+
 // ---------------------------------------------------------------------------
 // S7 — leave (cuti & izin)
 // ---------------------------------------------------------------------------

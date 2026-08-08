@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Search } from 'lucide-react';
+import { Download, Plus, Search, Tag, Trash2, UserMinus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -13,9 +13,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Avatar } from '@/components/ui/avatar';
 import { DataTable, type Column } from '@/components/data-table';
-import { masterList } from '@/lib/lahans-api';
+import {
+  assignSchedules,
+  bulkDeactivateEmployees,
+  bulkDeleteEmployees,
+  masterList,
+} from '@/lib/lahans-api';
 import { ApiError } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import { useAuth } from '@/lib/auth-context';
@@ -71,10 +84,27 @@ function contractDaysLeft(end?: string | null): number | null {
   return diff >= 0 ? diff : null;
 }
 
+/** Headers for the client-side CSV export. */
+const CSV_HEADERS = [
+  'NIK',
+  'Nama',
+  'Email',
+  'Telepon',
+  'Jenis Kelamin',
+  'Area Kerja',
+  'Jabatan',
+  'Golongan',
+  'Status Kontrak',
+  'Akhir Kontrak',
+  'Status',
+  'Mulai Kerja',
+];
+
 export default function EmployeesPage() {
   const { hasPermission } = useAuth();
   const router = useRouter();
   const canWrite = hasPermission('master.employees.write');
+  const canAssignRoster = hasPermission('roster.assign.write');
 
   const [rows, setRows] = useState<EmployeeRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -86,6 +116,29 @@ export default function EmployeesPage() {
   const [branches, setBranches] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Bulk selection (Ticket 03).
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [confirmAction, setConfirmAction] = useState<'deactivate' | 'delete' | null>(null);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [schedules, setSchedules] = useState<{ id: string; name: string }[]>([]);
+  const [assignScheduleId, setAssignScheduleId] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [bulkMsg, setBulkMsg] = useState<string | null>(null);
+
+  const selectedRows = useMemo(
+    () => rows.filter((r) => selectedIds.has(r.id)),
+    [rows, selectedIds],
+  );
+
+  // Work-schedule options for the Assign Jadwal dialog (roster bulk endpoint
+  // validates the schedule belongs to the user's company).
+  useEffect(() => {
+    if (!assignOpen) return;
+    void masterList<{ id: string; name: string }>('work-schedules', { pageSize: 100 })
+      .then((res) => setSchedules(res.rows))
+      .catch(() => setSchedules([]));
+  }, [assignOpen]);
 
   // Branch options for the filter dropdown.
   useEffect(() => {
@@ -193,6 +246,93 @@ export default function EmployeesPage() {
     [],
   );
 
+  // -- bulk actions (Ticket 03) ----------------------------------------------
+
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const runBulk = useCallback(
+    async (fn: (ids: string[]) => Promise<unknown>, okMsg: string) => {
+      if (selectedIds.size === 0) return;
+      setBusy(true);
+      setBulkMsg(null);
+      try {
+        await fn([...selectedIds]);
+        setBulkMsg(`${okMsg} untuk ${selectedIds.size} karyawan.`);
+        clearSelection();
+      } catch (err) {
+        setBulkMsg(err instanceof ApiError ? err.message : `Aksi massal gagal.`);
+      } finally {
+        setBusy(false);
+        setConfirmAction(null);
+        void load(page, search, branchFilter, statusFilter);
+      }
+    },
+    [selectedIds, load, page, search, branchFilter, statusFilter],
+  );
+
+  const handleDeactivate = () =>
+    runBulk(bulkDeactivateEmployees, 'Status diubah ke Nonaktif (RESIGN)');
+
+  const handleDelete = () => runBulk(bulkDeleteEmployees, 'Karyawan dihapus');
+
+  /** Client-side CSV export of the selected rows (no server round-trip). */
+  const downloadCsv = () => {
+    const rowsToCsv = selectedRows.length > 0 ? selectedRows : rows;
+    if (rowsToCsv.length === 0) return;
+    const CONTRACT_LABEL_CSV: Record<string, string> = {
+      PERMANENT: 'Tetap',
+      CONTRACT: 'PKWT',
+      PROBATION: 'Percobaan',
+    };
+    const lines = [
+      CSV_HEADERS.join(';'),
+      ...rowsToCsv.map((r) =>
+        [
+          r.nik,
+          r.full_name,
+          r.email ?? '',
+          r.phone ?? '',
+          r.gender ?? '',
+          r.branch?.name ?? '',
+          r.job_position?.name ?? '',
+          r.job_grade?.name ?? '',
+          r.assignments?.[0]?.contract_type
+            ? (CONTRACT_LABEL_CSV[r.assignments[0].contract_type] ?? r.assignments[0].contract_type)
+            : '',
+          r.assignments?.[0]?.contract_end ? formatDate(r.assignments[0].contract_end) : '',
+          STATUS_LABEL[r.employment_status ?? ''] ?? r.employment_status ?? '',
+          r.join_date ? formatDate(r.join_date) : '',
+        ]
+          .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+          .join(';'),
+      ),
+    ];
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `karyawan_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleAssign = async () => {
+    if (!assignScheduleId || selectedIds.size === 0) return;
+    setBusy(true);
+    setBulkMsg(null);
+    try {
+      const res = await assignSchedules(assignScheduleId, [...selectedIds]);
+      setBulkMsg(`Jadwal diberikan untuk ${res.assigned} karyawan.`);
+      clearSelection();
+      setAssignOpen(false);
+      setAssignScheduleId('');
+    } catch (err) {
+      setBulkMsg(err instanceof ApiError ? err.message : 'Penugasan jadwal gagal.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -263,6 +403,52 @@ export default function EmployeesPage() {
         </Select>
       </div>
 
+      {/* Bulk toolbar (Ticket 03) — visible once ≥1 row is selected. */}
+      {selectedIds.size > 0 && (
+        <div className="bg-muted/40 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2">
+          <span className="text-sm font-medium">{selectedIds.size} dipilih</span>
+          {canWrite && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setConfirmAction('deactivate')}
+                disabled={busy}
+              >
+                <UserMinus className="h-4 w-4" /> Nonaktifkan
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setConfirmAction('delete')}
+                disabled={busy}
+              >
+                <Trash2 className="h-4 w-4" /> Hapus
+              </Button>
+            </>
+          )}
+          <Button variant="outline" size="sm" onClick={downloadCsv} disabled={busy}>
+            <Download className="h-4 w-4" /> Export CSV
+          </Button>
+          {canAssignRoster && (
+            <Button variant="outline" size="sm" onClick={() => setAssignOpen(true)} disabled={busy}>
+              <Tag className="h-4 w-4" /> Assign Jadwal
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-auto"
+            onClick={clearSelection}
+            disabled={busy}
+          >
+            <X className="h-4 w-4" /> Batal
+          </Button>
+        </div>
+      )}
+
+      {bulkMsg && <p className="text-sm">{bulkMsg}</p>}
+
       <DataTable<EmployeeRow>
         columns={columns}
         rows={rows}
@@ -273,7 +459,92 @@ export default function EmployeesPage() {
         onPageChange={(p) => setPage(p)}
         onRowClick={(r) => router.push(`/master/employees/${r.id}`)}
         emptyMessage="Tidak ada karyawan."
+        selectable={canWrite || canAssignRoster}
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        isRowSelectable={(r) => r.employment_status !== 'RESIGN'}
       />
+
+      {/* Confirm dialog: Nonaktifkan */}
+      <Dialog
+        open={confirmAction === 'deactivate'}
+        onOpenChange={(o) => !o && setConfirmAction(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nonaktifkan {selectedIds.size} karyawan?</DialogTitle>
+            <DialogDescription>
+              Status akan diubah menjadi Nonaktif (RESIGN) dan akun tidak dapat login. Data historis
+              (absensi, payroll, jadwal) tetap tersimpan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmAction(null)} disabled={busy}>
+              Batal
+            </Button>
+            <Button onClick={handleDeactivate} disabled={busy}>
+              Nonaktifkan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm dialog: Hapus */}
+      <Dialog open={confirmAction === 'delete'} onOpenChange={(o) => !o && setConfirmAction(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hapus {selectedIds.size} karyawan?</DialogTitle>
+            <DialogDescription>
+              Tindakan ini menyembunyikan karyawan dari daftar tanpa menghapus riwayatnya
+              (soft-delete), agar data absensi/payroll tetap utuh.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmAction(null)} disabled={busy}>
+              Batal
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={busy}>
+              Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Jadwal dialog */}
+      <Dialog open={assignOpen} onOpenChange={(o) => !o && setAssignOpen(false)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Jadwal ke {selectedIds.size} karyawan</DialogTitle>
+            <DialogDescription>
+              Memakai endpoint bulk-assignment roster yang sudah ada. Jadwal lama yang masih berlaku
+              akan diganti.
+            </DialogDescription>
+          </DialogHeader>
+          <Select value={assignScheduleId} onValueChange={setAssignScheduleId}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih jadwal kerja…" />
+            </SelectTrigger>
+            <SelectContent>
+              {schedules.map((s) => (
+                <SelectItem key={s.id} value={s.id}>
+                  {s.name}
+                </SelectItem>
+              ))}
+              {schedules.length === 0 && (
+                <div className="text-muted-foreground px-2 py-1.5 text-sm">Tidak ada jadwal.</div>
+              )}
+            </SelectContent>
+          </Select>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssignOpen(false)} disabled={busy}>
+              Batal
+            </Button>
+            <Button onClick={handleAssign} disabled={!assignScheduleId || busy}>
+              Assign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
