@@ -203,13 +203,21 @@ exports.Prisma.EmployeesScalarFieldEnum = {
   gender: 'gender',
   birth_date: 'birth_date',
   birth_place: 'birth_place',
+  address: 'address',
+  religion: 'religion',
   id_card_no: 'id_card_no',
   tax_id: 'tax_id',
+  tax_status_ptkp: 'tax_status_ptkp',
   marital_status: 'marital_status',
   dependents_count: 'dependents_count',
   bank_name: 'bank_name',
   bank_account_no: 'bank_account_no',
   bank_account_name: 'bank_account_name',
+  bpjs_tk_number: 'bpjs_tk_number',
+  bpjs_kes_number: 'bpjs_kes_number',
+  emergency_contact_name: 'emergency_contact_name',
+  emergency_contact_phone: 'emergency_contact_phone',
+  emergency_contact_relation: 'emergency_contact_relation',
   join_date: 'join_date',
   employment_status: 'employment_status',
   resign_date: 'resign_date',
@@ -219,7 +227,8 @@ exports.Prisma.EmployeesScalarFieldEnum = {
   created_at: 'created_at',
   updated_at: 'updated_at',
   branch_id: 'branch_id',
-  job_position_id: 'job_position_id'
+  job_position_id: 'job_position_id',
+  job_grade_id: 'job_grade_id'
 };
 
 exports.Prisma.Employee_assignmentsScalarFieldEnum = {
@@ -461,6 +470,8 @@ exports.Prisma.Schedule_overridesScalarFieldEnum = {
   is_day_off: 'is_day_off',
   reason: 'reason',
   created_by: 'created_by',
+  swap_pair_id: 'swap_pair_id',
+  approval_instance_id: 'approval_instance_id',
   created_at: 'created_at'
 };
 
@@ -951,6 +962,7 @@ exports.Prisma.Loan_typesScalarFieldEnum = {
   max_per_year: 'max_per_year',
   requires_attachment: 'requires_attachment',
   workflow_code: 'workflow_code',
+  allowed_purposes: 'allowed_purposes',
   is_active: 'is_active',
   created_at: 'created_at'
 };
@@ -1011,6 +1023,8 @@ exports.Prisma.Trip_requestsScalarFieldEnum = {
   doc_number: 'doc_number',
   requester_employee_id: 'requester_employee_id',
   trip_type: 'trip_type',
+  distance_km: 'distance_km',
+  is_overnight: 'is_overnight',
   urgency: 'urgency',
   destination: 'destination',
   depart_date: 'depart_date',
@@ -1040,7 +1054,9 @@ exports.Prisma.Trip_budget_linesScalarFieldEnum = {
 
 exports.Prisma.Cash_advancesScalarFieldEnum = {
   id: 'id',
+  doc_number: 'doc_number',
   trip_request_id: 'trip_request_id',
+  top_up_sequence: 'top_up_sequence',
   amount: 'amount',
   payment_method: 'payment_method',
   bank_name: 'bank_name',
@@ -1068,6 +1084,7 @@ exports.Prisma.Trip_expense_linesScalarFieldEnum = {
   expense_type: 'expense_type',
   expense_date: 'expense_date',
   amount: 'amount',
+  funding_source: 'funding_source',
   receipt_url: 'receipt_url',
   has_valid_receipt: 'has_valid_receipt',
   is_approved: 'is_approved',
@@ -1090,6 +1107,17 @@ exports.Prisma.License_financingsScalarFieldEnum = {
   approval_instance_id: 'approval_instance_id',
   new_license_no: 'new_license_no',
   new_license_file_url: 'new_license_file_url',
+  created_at: 'created_at'
+};
+
+exports.Prisma.License_financing_installmentsScalarFieldEnum = {
+  id: 'id',
+  license_financing_id: 'license_financing_id',
+  payroll_period_id: 'payroll_period_id',
+  sequence_no: 'sequence_no',
+  amount: 'amount',
+  status: 'status',
+  paid_at: 'paid_at',
   created_at: 'created_at'
 };
 
@@ -1235,6 +1263,7 @@ exports.Prisma.ModelName = {
   trip_reports: 'trip_reports',
   trip_expense_lines: 'trip_expense_lines',
   license_financings: 'license_financings',
+  license_financing_installments: 'license_financing_installments',
   feature_flags: 'feature_flags',
   notification_templates: 'notification_templates',
   notifications: 'notifications'

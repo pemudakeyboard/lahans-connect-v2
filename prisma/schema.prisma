@@ -107,6 +107,7 @@ model job_grades {
 
   job_positions job_positions[]
   overtime_rules overtime_rate_rules[]
+  employees employees[]
   @@index([is_active])
 }
 
@@ -137,16 +138,24 @@ model employees {
   full_name          String
   email              String?
   phone              String?
-  gender             String? // Pria | Wanita
+  gender             String? // Pria | Wanita (reference_data GENDER)
   birth_date         DateTime?
   birth_place        String?
+  address            String? // ALAMAT (source-of-truth employee template)
+  religion           String? // Islam | Kristen (reference_data RELIGION)
   id_card_no         String?
   tax_id             String?
-  marital_status     String?
+  tax_status_ptkp    String? // TK/0, K/0, K/1, K/2, K/3, K/4, TK/1 (reference_data PTKP_STATUS)
+  marital_status     String? // reference_data MARITAL_STATUS
   dependents_count   Int      @default(0)
   bank_name          String?
   bank_account_no    String?
   bank_account_name  String?
+  bpjs_tk_number     String? // NOMOR BPJS KETENAGAKERJAAN
+  bpjs_kes_number    String? // NOMOR BPJS KESEHATAN
+  emergency_contact_name     String? // REKAN/KELUARGA — NAMA
+  emergency_contact_phone    String? // REKAN/KELUARGA — NO. HP
+  emergency_contact_relation String? // REKAN/KELUARGA relation (ANAK/SAUDARA/SUAMI/…)
   join_date          DateTime?
   employment_status  String   @default("AKTIF") // reference_data EMPLOYMENT_STATUS
   resign_date        DateTime?
@@ -160,6 +169,8 @@ model employees {
   branch             branches? @relation(fields: [branch_id], references: [id], onDelete: Restrict)
   job_position_id    String?  @db.Uuid
   job_position       job_positions? @relation(fields: [job_position_id], references: [id], onDelete: Restrict)
+  job_grade_id       String?  @db.Uuid
+  job_grade          job_grades? @relation(fields: [job_grade_id], references: [id], onDelete: Restrict)
 
   assignments        employee_assignments[]
   reporting_lines    reporting_lines[] @relation("ReportingLineEmployee")
@@ -177,6 +188,7 @@ model employees {
 
   @@index([branch_id])
   @@index([job_position_id])
+  @@index([job_grade_id])
   @@index([is_active])
   @@index([join_date])
   @@index([employment_status])
@@ -505,6 +517,11 @@ model schedule_overrides {
   is_day_off       Boolean  @default(false)
   reason           String
   created_by       String   @db.Uuid
+  // ADR-0003: ganti hari kerja = a paired bidirectional swap. swap_pair_id groups
+  // the two overrides (day X off, substitute day Y on); resolved BEFORE any
+  // absence classification so a swap never hits the attendance ladder.
+  swap_pair_id     String?  @db.Uuid
+  approval_instance_id String? @db.Uuid
   created_at       DateTime @default(now())
 
   @@unique([employee_id, work_date])
@@ -554,8 +571,9 @@ model attendance_logs {
 
   employee employees @relation(fields: [employee_id], references: [id], onDelete: Restrict)
   @@index([employee_id, server_time(sort: Desc)])
-  // NOTE: partial index WHERE is_mock_location = TRUE added via custom migration (BRD 6.4)
+  // BRD 6.4: partial index WHERE is_mock_location = TRUE added via custom migration.
   @@index([branch_id])
+  @@index([is_mock_location]) // partialized in migration SQL (WHERE is_mock_location = TRUE)
 }
 
 model attendance_daily {
@@ -1136,6 +1154,10 @@ model loan_types {
   max_per_year    Int?
   requires_attachment Boolean @default(false)
   workflow_code   String?
+  // Pinjaman purpose whitelist — enforced at submission against
+  // employee.marital_status + covered-person relation (CONTEXT.md).
+  // Values: MARRIED_MEDICAL | UNMARRIED_MEDICAL | FUNERAL | OWN_WEDDING
+  allowed_purposes Json?
   is_active       Boolean  @default(true)
   created_at      DateTime @default(now())
 }
@@ -1197,7 +1219,9 @@ model trip_requests {
   id                   String   @id @default(uuid()) @db.Uuid
   doc_number           String   @unique
   requester_employee_id String  @db.Uuid
-  trip_type            String // IN_CITY | OUT_OF_CITY
+  trip_type            String // IN_CITY | OUT_OF_CITY (human draft guess — see distance_km/is_overnight)
+  distance_km          Decimal? @db.Decimal(10,2) // ADR-0001: classification is derived from distance
+  is_overnight         Boolean  @default(false) // ADR-0001: >100km OR overnight => PDLK
   urgency              String   @default("PLANNED") // PLANNED | URGENT
   destination          String
   depart_date          DateTime
@@ -1227,7 +1251,9 @@ model trip_budget_lines {
 
 model cash_advances {
   id             String   @id @default(uuid()) @db.Uuid
+  doc_number     String?  @unique // ADR-0002: each advance is a numbered, sequenced child of the trip
   trip_request_id String   @db.Uuid
+  top_up_sequence Int      @default(1) // ADR-0002: 1 = first advance, 2+ = top-up
   amount         Decimal  @db.Decimal(18,2)
   payment_method String // CASH | TRANSFER
   bank_name      String?
@@ -1235,6 +1261,8 @@ model cash_advances {
   disbursed_by   String?  @db.Uuid
   disbursed_at   DateTime?
   created_at     DateTime @default(now())
+
+  @@unique([trip_request_id, top_up_sequence])
 }
 
 model trip_reports {
@@ -1244,7 +1272,7 @@ model trip_reports {
   due_at         DateTime?
   total_actual   Decimal? @db.Decimal(18,2)
   variance_amount Decimal? @db.Decimal(18,2)
-  settlement_type String? // REFUND | REIMBURSE | NONE
+  settlement_type String? // COMPUTED — see trip_expense_lines.funding_source
   status         String   @default("PENDING")
   created_at     DateTime @default(now())
 }
@@ -1255,6 +1283,7 @@ model trip_expense_lines {
   expense_type   String
   expense_date   DateTime
   amount         Decimal  @db.Decimal(18,2)
+  funding_source String   @default("ADVANCE") // ADVANCE | REIMBURSE — ADR-0002, settlement is computed from this
   receipt_url    String?
   has_valid_receipt Boolean @default(false)
   is_approved    Boolean  @default(false)
@@ -1278,6 +1307,25 @@ model license_financings {
   new_license_no   String?
   new_license_file_url String?
   created_at       DateTime @default(now())
+
+  installments license_financing_installments[]
+}
+
+// SIM 50:50 payroll clawback — mirrors loan_installments. The employee's half
+// is recovered via payroll period by period, never as an upfront payment.
+model license_financing_installments {
+  id                  String   @id @default(uuid()) @db.Uuid
+  license_financing_id String  @db.Uuid
+  payroll_period_id   String   @db.Uuid
+  sequence_no         Int
+  amount              Decimal  @db.Decimal(18,2)
+  status              String   @default("PENDING")
+  paid_at             DateTime?
+  created_at          DateTime @default(now())
+
+  license_financing license_financings @relation(fields: [license_financing_id], references: [id], onDelete: Restrict)
+
+  @@unique([license_financing_id, sequence_no])
 }
 
 // ============================================================
