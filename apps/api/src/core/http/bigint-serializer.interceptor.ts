@@ -1,14 +1,17 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Prisma } from '../../generated/prisma';
 
 /**
- * Serializes BigInt values to strings in every JSON response.
+ * Serializes BigInt and Prisma.Decimal values to strings in every JSON response.
  *
  * Prisma maps DB BIGINT columns (e.g. number_sequences.current_number,
- * audit_logs.id, loan_installments) to the JS `bigint` type, which JSON.stringify
- * cannot handle. Sequence counters can exceed Number.MAX_SAFE_INTEGER, so they
- * are exposed as strings rather than numbers (BRD §7.4 — no lossy coercion).
+ * audit_logs.id, loan_installments) to the JS `bigint` type, and NUMERIC/DECIMAL
+ * columns (leave balances, money, rates) to `Prisma.Decimal`. JSON.stringify
+ * cannot serialize bigint, and a Decimal must not be walked as a plain object —
+ * its `s`/`e`/`d` internals would leak as {s,e,d} instead of a number. Both are
+ * exposed as strings so no precision is lost (BRD §7.4 — no lossy coercion).
  */
 @Injectable()
 export class BigIntSerializerInterceptor implements NestInterceptor {
@@ -18,6 +21,9 @@ export class BigIntSerializerInterceptor implements NestInterceptor {
 
   private serialize(value: unknown): unknown {
     if (typeof value === 'bigint') {
+      return value.toString();
+    }
+    if (value instanceof Prisma.Decimal) {
       return value.toString();
     }
     if (value instanceof Date) {

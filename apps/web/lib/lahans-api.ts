@@ -12,15 +12,11 @@ export interface LoginResponse {
   expiresIn: number;
 }
 
-export async function loginRequest(
-  identifier: string,
-  password: string,
-  otp?: string,
-): Promise<LoginResponse> {
+export async function loginRequest(identifier: string, password: string): Promise<LoginResponse> {
   return api<LoginResponse>('/api/auth/login', {
     method: 'POST',
     auth: false,
-    body: JSON.stringify({ identifier, password, ...(otp ? { otp } : {}) }),
+    body: JSON.stringify({ identifier, password }),
   });
 }
 
@@ -35,6 +31,30 @@ export interface MeResponse {
 
 export async function meRequest(): Promise<MeResponse> {
   return api<MeResponse>('/api/auth/me');
+}
+
+// ---------------------------------------------------------------------------
+// M0 — dynamic navigation (BRD §13 rule 8: never a static array in frontend)
+// ---------------------------------------------------------------------------
+
+export interface NavMenu {
+  code: string;
+  label: string;
+  icon?: string;
+  route?: string;
+  children: NavMenu[];
+}
+
+export interface NavigationResponse {
+  platform: string;
+  menus: NavMenu[];
+  cache_ttl_seconds: number;
+}
+
+export async function navigationRequest(
+  platform: 'WEB' | 'MOBILE' | 'BOTH' = 'BOTH',
+): Promise<NavigationResponse> {
+  return api<NavigationResponse>(`/api/auth/me/navigation?platform=${platform}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -204,4 +224,97 @@ export async function masterUpdate<T = Record<string, unknown>>(
 
 export async function masterDelete(entity: string, id: string): Promise<void> {
   await api(`/api/master/${entity}/${id}`, { method: 'DELETE' });
+}
+
+// ---------------------------------------------------------------------------
+// S7 — leave (cuti & izin)
+// ---------------------------------------------------------------------------
+
+export interface LeaveBalanceRow {
+  leave_type_id: string;
+  code: string;
+  name: string;
+  entitlement_days: string;
+  prorate_days: string;
+  carried_over_days: string;
+  used_days: string;
+  advance_used_days: string;
+  pending_days: string;
+  balance_days: string;
+}
+
+export interface LeaveRequestRow {
+  id: string;
+  doc_number: string;
+  leave_type_id: string;
+  start_date: string;
+  end_date: string;
+  total_days: string;
+  is_emergency: boolean;
+  is_backdated: boolean;
+  status: string;
+  reason?: string | null;
+  submitted_at: string;
+  decided_at?: string | null;
+  leave_type?: { code: string; name: string } | null;
+  days?: { leave_date: string; day_portion: string }[];
+}
+
+export async function getLeaveBalance(opts?: {
+  employeeId?: string;
+  asOf?: string;
+}): Promise<LeaveBalanceRow[]> {
+  const q = new URLSearchParams();
+  if (opts?.employeeId) q.set('employeeId', opts.employeeId);
+  if (opts?.asOf) q.set('asOf', opts.asOf);
+  const qs = q.toString();
+  return api<LeaveBalanceRow[]>(`/api/leave/balance${qs ? `?${qs}` : ''}`);
+}
+
+export async function getLeaveLedger(leaveTypeId?: string): Promise<unknown[]> {
+  const q = leaveTypeId ? `?leaveTypeId=${encodeURIComponent(leaveTypeId)}` : '';
+  return api<unknown[]>(`/api/leave/ledger${q}`);
+}
+
+export async function listLeaveRequests(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ListResponse<LeaveRequestRow>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  const qs = q.toString();
+  return api<ListResponse<LeaveRequestRow>>(`/api/leave/requests${qs ? `?${qs}` : ''}`);
+}
+
+export async function createLeaveRequest(body: {
+  leave_type_id: string;
+  start_date: string;
+  end_date: string;
+  reason?: string;
+  is_emergency?: boolean;
+  is_backdated?: boolean;
+  attachment_urls?: string;
+}): Promise<LeaveRequestRow> {
+  return api<LeaveRequestRow>('/api/leave/requests', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function decideLeaveRequest(
+  id: string,
+  action: 'APPROVE' | 'REJECT' | 'RETURN',
+  comment?: string,
+): Promise<{ id: string; status: string }> {
+  return api<{ id: string; status: string }>(`/api/leave/requests/${id}/decide`, {
+    method: 'POST',
+    body: JSON.stringify({ action, comment }),
+  });
+}
+
+export async function cancelLeaveRequest(id: string): Promise<{ id: string; status: string }> {
+  return api<{ id: string; status: string }>(`/api/leave/requests/${id}/cancel`, {
+    method: 'POST',
+  });
 }
