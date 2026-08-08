@@ -19,7 +19,12 @@ const columns: Column<DivisionRow>[] = [
 const fields: FieldDef[] = [
   { name: 'code', label: 'Kode', required: true },
   { name: 'name', label: 'Nama Divisi', required: true },
-  { name: 'company_id', label: 'Company ID' },
+  {
+    name: 'company_id',
+    label: 'Perusahaan',
+    required: true,
+    select: { entity: 'companies', valueField: 'id', labelField: 'legal_name' },
+  },
 ];
 
 export default function DivisionsPage() {

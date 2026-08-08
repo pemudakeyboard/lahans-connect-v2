@@ -17,6 +17,19 @@ import {
 import { DataTable, type Column } from '@/components/data-table';
 import { masterCreate, masterDelete, masterList, masterUpdate } from '@/lib/lahans-api';
 import { ApiError } from '@/lib/api';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+/** A dropdown option: value is the stored FK id, label is what the user sees. */
+export interface SelectOption {
+  value: string;
+  label: string;
+}
 
 export interface FieldDef {
   name: string;
@@ -24,7 +37,15 @@ export interface FieldDef {
   type?: 'text' | 'number' | 'date' | 'email';
   required?: boolean;
   placeholder?: string;
-  /** For temporal entities, include asOf date with the payload. */
+  /**
+   * Render as a dropdown instead of a text input. FK fields (e.g. company_id on
+   * branches) must show the referenced entity's name, never a raw UUID.
+   * `entity` = master entity to fetch options from (e.g. "companies").
+   * `valueField`/`labelField` = which fields become the option value/label.
+   */
+  select?: { entity: string; valueField: string; labelField: string };
+  /** Static options when no master fetch is needed. */
+  options?: SelectOption[];
 }
 
 interface MasterCrudProps<T extends { id: string }> {
@@ -57,6 +78,34 @@ export function MasterCrud<T extends { id: string }>({
   const [editing, setEditing] = useState<T | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  // Cache of dropdown options keyed by the master entity that provides them.
+  const [optionsCache, setOptionsCache] = useState<Record<string, SelectOption[]>>({});
+
+  // Load FK dropdown options (companies, branches, job grades, ...) once per entity.
+  useEffect(() => {
+    const needs: string[] = [];
+    for (const f of fields) {
+      if (f.select?.entity && !(f.select.entity in optionsCache)) {
+        needs.push(f.select.entity);
+      }
+    }
+    if (needs.length === 0) return;
+    void Promise.all(
+      needs.map(async (entity) => {
+        try {
+          const res = await masterList<Record<string, unknown>>(entity, { pageSize: 100 });
+          const f = fields.find((x) => x.select?.entity === entity);
+          const opts: SelectOption[] = res.rows.map((r) => ({
+            value: String(r[f!.select!.valueField]),
+            label: String(r[f!.select!.labelField] ?? ''),
+          }));
+          setOptionsCache((prev) => ({ ...prev, [entity]: opts }));
+        } catch {
+          setOptionsCache((prev) => ({ ...prev, [entity]: [] }));
+        }
+      }),
+    );
+  }, [fields, optionsCache]);
 
   const load = useCallback(
     async (p: number, s: string, a: string) => {
@@ -96,7 +145,15 @@ export function MasterCrud<T extends { id: string }>({
     setEditing(row);
     const init: Record<string, string> = {};
     for (const f of fields) {
-      init[f.name] = String((row as Record<string, unknown>)[f.name] ?? '');
+      const raw = (row as Record<string, unknown>)[f.name];
+      if (raw == null) {
+        init[f.name] = '';
+      } else if (f.type === 'date') {
+        // Prisma returns ISO datetime; <input type="date"> needs YYYY-MM-DD.
+        init[f.name] = String(raw).slice(0, 10);
+      } else {
+        init[f.name] = String(raw);
+      }
     }
     setForm(init);
     setOpen(true);
@@ -213,14 +270,32 @@ export function MasterCrud<T extends { id: string }>({
                   }
                 >
                   <Label htmlFor={`field-${f.name}`}>{f.label}</Label>
-                  <Input
-                    id={`field-${f.name}`}
-                    type={f.type ?? 'text'}
-                    value={form[f.name] ?? ''}
-                    onChange={(ev) => setForm({ ...form, [f.name]: ev.target.value })}
-                    placeholder={f.placeholder}
-                    required={f.required}
-                  />
+                  {f.select || f.options ? (
+                    <Select
+                      value={form[f.name] ?? ''}
+                      onValueChange={(v) => setForm({ ...form, [f.name]: v })}
+                    >
+                      <SelectTrigger id={`field-${f.name}`} className="w-full">
+                        <SelectValue placeholder={f.placeholder ?? 'Pilih…'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(f.options ?? optionsCache[f.select?.entity ?? ''] ?? []).map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      id={`field-${f.name}`}
+                      type={f.type ?? 'text'}
+                      value={form[f.name] ?? ''}
+                      onChange={(ev) => setForm({ ...form, [f.name]: ev.target.value })}
+                      placeholder={f.placeholder}
+                      required={f.required}
+                    />
+                  )}
                 </div>
               ))}
             </div>

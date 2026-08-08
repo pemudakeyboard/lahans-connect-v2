@@ -21,7 +21,12 @@ const columns: Column<BranchRow>[] = [
 const fields: FieldDef[] = [
   { name: 'code', label: 'Kode', required: true, placeholder: 'PBR' },
   { name: 'name', label: 'Nama Cabang', required: true },
-  { name: 'company_id', label: 'Company ID' },
+  {
+    name: 'company_id',
+    label: 'Perusahaan',
+    required: true,
+    select: { entity: 'companies', valueField: 'id', labelField: 'legal_name' },
+  },
   { name: 'geofence_radius_m', label: 'Radius Geolokasi (m)', type: 'number' },
 ];
 

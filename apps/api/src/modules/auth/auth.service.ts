@@ -24,9 +24,10 @@ export class AuthService {
 
   /**
    * Login by NIK or email + password (FR-M0-011). Returns a token pair.
-   * Enforces: account lockout (FR-M0-013), 2FA when the user's group requires it.
+   * Enforces: account lockout (FR-M0-013). Authenticator/OTP 2FA was removed
+   * from the login flow per product decision — no TOTP step at sign-in.
    */
-  async login(identifier: string, password: string, otp?: string): Promise<TokenPair> {
+  async login(identifier: string, password: string): Promise<TokenPair> {
     const user = await this.prisma.users.findFirst({
       where: {
         OR: [{ login_nik: identifier }, { email: identifier }],
@@ -58,21 +59,6 @@ export class AuthService {
         where: { id: user.id },
         data: { failed_attempts: 0, locked_until: null },
       });
-    }
-
-    // 2FA: if the user belongs to a requires_2fa group and has not enrolled, block.
-    const requires2fa = await this.userRequires2fa(user.id);
-    const enrolled = user.two_factor_secret != null;
-    if (requires2fa && !enrolled) {
-      throw new ForbiddenException({
-        code: 'TWO_FACTOR_REQUIRED',
-        message: 'Lengkapi 2FA terlebih dahulu.',
-      });
-    }
-    if (requires2fa || (enrolled && otp)) {
-      if (!otp || !this.totp.verify(otp, user.two_factor_secret ?? '')) {
-        throw new UnauthorizedException('Kode verifikasi salah.');
-      }
     }
 
     await this.prisma.users.update({
@@ -230,13 +216,5 @@ export class AuthService {
         ...(lockUntil ? { locked_until: lockUntil } : {}),
       },
     });
-  }
-
-  private async userRequires2fa(userId: string): Promise<boolean> {
-    const memberships = await this.prisma.user_group_members.findMany({
-      where: { user_id: userId },
-      include: { group: true },
-    });
-    return memberships.some((m) => m.group.requires_2fa && m.group.is_active);
   }
 }

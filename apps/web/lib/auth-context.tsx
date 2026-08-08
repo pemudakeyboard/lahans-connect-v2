@@ -7,7 +7,7 @@ import { loginRequest, meRequest, type MeResponse } from './lahans-api';
 interface AuthContextValue {
   user: MeResponse | null;
   loading: boolean;
-  login: (identifier: string, password: string, otp?: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   logout: () => void;
   hasPermission: (code: string) => boolean;
 }
@@ -30,8 +30,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = useCallback(async (identifier: string, password: string, otp?: string) => {
-    const pair = await loginRequest(identifier, password, otp);
+  const login = useCallback(async (identifier: string, password: string) => {
+    const pair = await loginRequest(identifier, password);
     setTokens(pair);
     const me = await meRequest();
     setUser(me);

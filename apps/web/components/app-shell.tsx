@@ -2,48 +2,49 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Database, LayoutDashboard, LogOut, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
+import { navigationRequest, type NavMenu } from '@/lib/lahans-api';
 import { Button } from '@/components/ui/button';
 
-const NAV = [
-  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, permission: null },
-  {
-    title: 'Master Data',
-    href: '/master/employees',
-    icon: Database,
-    permission: 'master.read',
-    children: [
-      { title: 'Karyawan', href: '/master/employees', permission: 'master.employees.read' },
-      { title: 'Perusahaan', href: '/master/companies', permission: 'master.companies.read' },
-      { title: 'Cabang', href: '/master/branches', permission: 'master.branches.read' },
-      { title: 'Divisi', href: '/master/divisions', permission: 'master.divisions.read' },
-    ],
-  },
-  {
-    title: 'Pengaturan',
-    href: '/config/formats',
-    icon: Settings,
-    permission: 'config.format.read',
-    children: [
-      { title: 'Format', href: '/config/formats', permission: 'config.format.read' },
-      { title: 'Validasi', href: '/config/validation', permission: 'config.validation.read' },
-      { title: 'Nomor Urut', href: '/config/sequences', permission: 'config.sequence.read' },
-    ],
-  },
-];
+// Menu icon comes from the DB as a string code (seeded in `menus`). Map the
+// known codes to lucide components — add a code here when a new menu needs one.
+// Never a static menu *array* in frontend code (BRD §13 rule 8): the tree
+// itself is fetched from GET /auth/me/navigation.
+const ICONS: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Database,
+  Settings,
+};
+
+type LucideIcon = (props: React.ComponentProps<'svg'>) => React.ReactNode;
+
+function NavIcon({ icon }: { icon?: string }) {
+  if (!icon) return null;
+  const Cmp = ICONS[icon];
+  if (!Cmp) return null;
+  return <Cmp className="h-4 w-4" />;
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, logout, hasPermission } = useAuth();
+  const { user, logout } = useAuth();
+  const [menus, setMenus] = useState<NavMenu[]>([]);
 
-  const visible = NAV.filter((item) => {
-    if (!item.permission) return true;
-    if (item.permission === 'master.read')
-      return user?.permissions.some((p) => p.startsWith('master.'));
-    return user?.permissions.includes(item.permission);
-  });
+  useEffect(() => {
+    // The backend prunes the tree by the user's effective permissions (FR-M0-051)
+    // and drops parents with no visible children (FR-M0-052) — we render as-is.
+    navigationRequest('WEB')
+      .then((res) => setMenus(res.menus))
+      .catch(() => setMenus([]));
+  }, [user?.userId]);
+
+  const isActive = (menu: NavMenu): boolean => {
+    if (menu.route && pathname === menu.route) return true;
+    return menu.children?.some((c) => c.route && pathname.startsWith(c.route)) ?? false;
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -54,45 +55,45 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {visible.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.children?.some((c) => pathname.startsWith(c.href)) ?? false);
+          {menus.map((item) => {
+            const hasChildren = item.children.length > 0;
+            const href =
+              hasChildren && item.children[0].route
+                ? item.children[0].route
+                : (item.route ?? '/dashboard');
             return (
-              <div key={item.title}>
+              <div key={item.code}>
                 <Link
-                  href={item.children ? item.children[0].href : item.href}
+                  href={href}
                   className={cn(
                     'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                    isActive
+                    isActive(item)
                       ? 'bg-accent text-accent-foreground'
                       : 'text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground',
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
+                  <NavIcon icon={item.icon} />
+                  {item.label}
                 </Link>
-                {item.children && (
+                {hasChildren && (
                   <div className="ml-4 mt-1 space-y-1 border-l pl-2">
-                    {item.children
-                      .filter((c) => !c.permission || hasPermission(c.permission))
-                      .map((c) => {
-                        const active = pathname === c.href;
-                        return (
-                          <Link
-                            key={c.href}
-                            href={c.href}
-                            className={cn(
-                              'block rounded-md px-3 py-1.5 text-sm transition-colors',
-                              active
-                                ? 'bg-accent text-accent-foreground'
-                                : 'text-muted-foreground hover:text-accent-foreground',
-                            )}
-                          >
-                            {c.title}
-                          </Link>
-                        );
-                      })}
+                    {item.children.map((c) => {
+                      const active = c.route != null && pathname === c.route;
+                      return (
+                        <Link
+                          key={c.code}
+                          href={c.route ?? '/dashboard'}
+                          className={cn(
+                            'block rounded-md px-3 py-1.5 text-sm transition-colors',
+                            active
+                              ? 'bg-accent text-accent-foreground'
+                              : 'text-muted-foreground hover:text-accent-foreground',
+                          )}
+                        >
+                          {c.label}
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
               </div>

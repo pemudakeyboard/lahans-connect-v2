@@ -19,11 +19,9 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  @ApiOperation({ summary: 'Login NIK/email + password (+ OTP 2FA bila diminta)' })
-  async login(
-    @Body() body: { identifier: string; password: string; otp?: string },
-  ): Promise<TokenPair> {
-    return this.auth.login(body.identifier, body.password, body.otp);
+  @ApiOperation({ summary: 'Login NIK/email + password' })
+  async login(@Body() body: { identifier: string; password: string }): Promise<TokenPair> {
+    return this.auth.login(body.identifier, body.password);
   }
 
   @Public()
