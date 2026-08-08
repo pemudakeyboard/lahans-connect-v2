@@ -64,6 +64,8 @@ export class MasterService {
     const d = this.delegate(entity);
 
     const where: Record<string, unknown> = {};
+    // Soft-deleted rows (is_active = false) are hidden from list views.
+    if (config.isActive) where.is_active = true;
     if (config.temporal && asOf) {
       where.effective_from = { lte: asOf };
       where.OR = [{ effective_to: null }, { effective_to: { gte: asOf } }];
@@ -82,6 +84,7 @@ export class MasterService {
         orderBy: config.searchable[0] ? { [config.searchable[0]]: 'asc' } : { id: 'asc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
+        ...(config.include ? { include: config.include } : {}),
       }),
     ]);
     return { total, page, pageSize, rows };
@@ -101,9 +104,23 @@ export class MasterService {
     return row;
   }
 
+  /**
+   * Coerce date-only strings ("2024-01-15") to the ISO-8601 datetime Prisma
+   * DateTime requires. HTML `<input type="date">` submits a bare YYYY-MM-DD,
+   * which Prisma rejects with a validation error ("Data tidak valid."); this
+   * makes master CRUD accept the same payload from every client.
+   */
+  private normalizeDateInputs(body: Record<string, unknown>): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(body)) {
+      out[k] = typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? `${v}T00:00:00.000Z` : v;
+    }
+    return out;
+  }
+
   async create(entity: string, body: Record<string, unknown>) {
     this.resolveConfig(entity);
-    return this.delegate(entity).create({ data: body as never });
+    return this.delegate(entity).create({ data: this.normalizeDateInputs(body) as never });
   }
 
   async update(entity: string, id: string, body: Record<string, unknown>) {
@@ -111,7 +128,7 @@ export class MasterService {
     const d = this.delegate(entity);
     const existing = await d.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException(`${config.label} ${id} tidak ditemukan.`);
-    return d.update({ where: { id }, data: body as never });
+    return d.update({ where: { id }, data: this.normalizeDateInputs(body) as never });
   }
 
   async remove(entity: string, id: string) {

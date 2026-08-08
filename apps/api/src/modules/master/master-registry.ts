@@ -16,6 +16,13 @@ export interface MasterEntityConfig {
   searchable: string[];
   /** Fields that carry Decimal/JSON and must be kept as-is on create/update. */
   jsonFields?: string[];
+  /**
+   * Relations to include on list reads so the UI can show the referenced
+   * entity's name (e.g. employees → branch.name). Mirrors Prisma `include`.
+   */
+  include?: Record<string, { select: Record<string, boolean> }>;
+  /** Entity has an `is_active` soft-delete column; list excludes inactive rows. */
+  isActive?: boolean;
   /** Entity is effective-dated (Class A/B). List/reads then REQUIRE asOf. */
   temporal?: boolean;
   /** Label shown in API docs / UI. */
@@ -28,50 +35,136 @@ export interface MasterEntityConfig {
  * (users, permissions, audit_logs, payslips, ...) are NOT here.
  */
 export const MASTER_REGISTRY: Record<string, MasterEntityConfig> = {
-  companies: { delegate: 'companies', searchable: ['code', 'legal_name'], label: 'Perusahaan' },
-  branches: { delegate: 'branches', searchable: ['code', 'name'], label: 'Cabang' },
-  divisions: { delegate: 'divisions', searchable: ['code', 'name'], label: 'Divisi' },
-  departments: { delegate: 'departments', searchable: ['code', 'name'], label: 'Departemen' },
-  'job-grades': { delegate: 'job_grades', searchable: ['code', 'name'], label: 'Jenjang Jabatan' },
-  'job-positions': { delegate: 'job_positions', searchable: ['code', 'name'], label: 'Jabatan' },
+  companies: {
+    delegate: 'companies',
+    searchable: ['code', 'legal_name'],
+    label: 'Perusahaan',
+    isActive: true,
+  },
+  branches: {
+    delegate: 'branches',
+    searchable: ['code', 'name'],
+    label: 'Cabang',
+    isActive: true,
+  },
+  divisions: {
+    delegate: 'divisions',
+    searchable: ['code', 'name'],
+    label: 'Divisi',
+    isActive: true,
+  },
+  departments: {
+    delegate: 'departments',
+    searchable: ['code', 'name'],
+    label: 'Departemen',
+    isActive: true,
+  },
+  'job-grades': {
+    delegate: 'job_grades',
+    searchable: ['code', 'name'],
+    label: 'Jenjang Jabatan',
+    isActive: true,
+  },
+  'job-positions': {
+    delegate: 'job_positions',
+    searchable: ['code', 'name'],
+    label: 'Jabatan',
+    isActive: true,
+  },
   employees: {
     delegate: 'employees',
     searchable: ['nik', 'full_name', 'email'],
     label: 'Karyawan',
+    isActive: true,
+    include: {
+      branch: { select: { name: true } },
+      job_position: { select: { name: true } },
+      job_grade: { select: { name: true } },
+    },
   },
   'reference-data': {
     delegate: 'reference_data',
     searchable: ['category', 'code', 'label'],
     label: 'Data Referensi',
+    isActive: true,
   },
-  'leave-types': { delegate: 'leave_types', searchable: ['code', 'name'], label: 'Jenis Cuti' },
-  holidays: { delegate: 'holidays', searchable: ['name'], label: 'Hari Libur' },
-  'work-schedules': { delegate: 'work_schedules', searchable: ['name'], label: 'Jadwal Kerja' },
+  'leave-types': {
+    delegate: 'leave_types',
+    searchable: ['code', 'name'],
+    label: 'Jenis Cuti',
+    isActive: true,
+  },
+  holidays: {
+    delegate: 'holidays',
+    searchable: ['name'],
+    label: 'Hari Libur',
+    isActive: true,
+  },
+  'work-schedules': {
+    delegate: 'work_schedules',
+    searchable: ['name'],
+    label: 'Jadwal Kerja',
+    isActive: true,
+  },
   'payroll-components': {
     delegate: 'payroll_components',
     searchable: ['code', 'name'],
     label: 'Komponen Gaji',
+    isActive: true,
   },
   'bpjs-profiles': {
     delegate: 'bpjs_rate_profiles',
     searchable: ['code', 'name'],
     label: 'Profil BPJS',
+    isActive: true,
   },
   'tax-ter-categories': {
     delegate: 'tax_ter_categories',
     searchable: ['code', 'name'],
     label: 'Kategori TER',
   },
-  'loan-types': { delegate: 'loan_types', searchable: ['code', 'name'], label: 'Jenis Pinjaman' },
+  'loan-types': {
+    delegate: 'loan_types',
+    searchable: ['code', 'name'],
+    label: 'Jenis Pinjaman',
+    isActive: true,
+  },
+  // Class A financial rate tables — effective-dated, reads REQUIRE asOf (BRD 4.5.1).
+  'overtime-rate-rules': {
+    delegate: 'overtime_rate_rules',
+    searchable: ['day_type'],
+    temporal: true,
+    label: 'Aturan Tarif Lembur',
+  },
+  'perdiem-rates': {
+    delegate: 'perdiem_rates',
+    searchable: ['city_tier'],
+    temporal: true,
+    label: 'Tarif Perdiem',
+  },
+  'attendance-allowance-rules': {
+    delegate: 'attendance_allowance_rules',
+    searchable: ['rule_set_code'],
+    temporal: true,
+    label: 'Aturan Tunjangan Kehadiran',
+  },
+  'bpjs-rates': {
+    delegate: 'bpjs_rates',
+    searchable: ['contribution_code'],
+    temporal: true,
+    label: 'Tarif BPJS',
+  },
   'report-definitions': {
     delegate: 'report_definitions',
     searchable: ['report_code', 'name'],
     label: 'Definisi Laporan',
+    isActive: true,
   },
   'upload-policies': {
     delegate: 'upload_policies',
     searchable: ['entity_name', 'field_name'],
     label: 'Kebijakan Upload',
+    isActive: true,
   },
 };
 

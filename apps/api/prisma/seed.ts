@@ -48,12 +48,38 @@ const PERMISSIONS = [
   'master.employees.write',
   'master.reference_data.read',
   'master.reference_data.write',
-  // attendance (shell)
+  // attendance
   'attendance.log.read',
   'attendance.log.write',
-  // leave (shell)
+  'attendance.daily.read',
+  'attendance.daily.write',
+  // leave
   'leave.request.read',
   'leave.request.write',
+  'leave.request.approve',
+  'leave.balance.read',
+  'leave.balance.write',
+  // overtime
+  'overtime.request.read',
+  'overtime.request.write',
+  'overtime.request.approve',
+  // perjalanan dinas
+  'perdin.request.read',
+  'perdin.request.write',
+  'perdin.request.approve',
+  'perdin.advance.read',
+  'perdin.advance.write',
+  'perdin.report.read',
+  'perdin.report.write',
+  // pinjaman
+  'loan.request.read',
+  'loan.request.write',
+  'loan.request.approve',
+  'loan.disburse',
+  // SIM financing
+  'license.request.read',
+  'license.request.write',
+  'license.request.approve',
 ];
 
 const REFERENCE_DATA_SEED: { category: string; code: string; label: string; sort_order: number }[] =
@@ -67,9 +93,47 @@ const REFERENCE_DATA_SEED: { category: string; code: string; label: string; sort
     { category: 'DOCUMENT_TYPE', code: 'KTP', label: 'Kartu Tanda Penduduk', sort_order: 1 },
     { category: 'DOCUMENT_TYPE', code: 'NPWP', label: 'NPWP', sort_order: 2 },
     { category: 'DOCUMENT_TYPE', code: 'KK', label: 'Kartu Keluarga', sort_order: 3 },
-    { category: 'MARITAL_STATUS', code: 'LAJANG', label: 'Lajang', sort_order: 1 },
-    { category: 'MARITAL_STATUS', code: 'MENIKAH', label: 'Menikah', sort_order: 2 },
-    { category: 'MARITAL_STATUS', code: 'CERAI', label: 'Cerai', sort_order: 3 },
+    // Source-of-truth employee template (data_pegawai_master.pdf) pick-lists.
+    { category: 'GENDER', code: 'Pria', label: 'Pria', sort_order: 1 },
+    { category: 'GENDER', code: 'Wanita', label: 'Wanita', sort_order: 2 },
+    { category: 'RELIGION', code: 'Islam', label: 'Islam', sort_order: 1 },
+    { category: 'RELIGION', code: 'Kristen', label: 'Kristen', sort_order: 2 },
+    { category: 'MARITAL_STATUS', code: 'Belum Menikah', label: 'Belum Menikah', sort_order: 1 },
+    { category: 'MARITAL_STATUS', code: 'Menikah', label: 'Menikah', sort_order: 2 },
+    { category: 'MARITAL_STATUS', code: 'Janda/duda', label: 'Janda/duda', sort_order: 3 },
+    // STATUS PTKP (source template: TK/0..TK/1, K/0..K/4)
+    { category: 'PTKP_STATUS', code: 'TK/0', label: 'TK/0', sort_order: 1 },
+    { category: 'PTKP_STATUS', code: 'TK/1', label: 'TK/1', sort_order: 2 },
+    { category: 'PTKP_STATUS', code: 'K/0', label: 'K/0', sort_order: 3 },
+    { category: 'PTKP_STATUS', code: 'K/1', label: 'K/1', sort_order: 4 },
+    { category: 'PTKP_STATUS', code: 'K/2', label: 'K/2', sort_order: 5 },
+    { category: 'PTKP_STATUS', code: 'K/3', label: 'K/3', sort_order: 6 },
+    { category: 'PTKP_STATUS', code: 'K/4', label: 'K/4', sort_order: 7 },
+    // Pinjaman purpose whitelist (CONTEXT.md) — enforced at submission
+    {
+      category: 'LOAN_PURPOSE',
+      code: 'MARRIED_MEDICAL',
+      label: 'Pengobatan (menikah: diri, pasangan, anak kandung ≤3)',
+      sort_order: 1,
+    },
+    {
+      category: 'LOAN_PURPOSE',
+      code: 'UNMARRIED_MEDICAL',
+      label: 'Pengobatan (lajang: diri, orang tua kandung)',
+      sort_order: 2,
+    },
+    {
+      category: 'LOAN_PURPOSE',
+      code: 'FUNERAL',
+      label: 'Duka (pasangan, anak kandung, orang tua kandung)',
+      sort_order: 3,
+    },
+    {
+      category: 'LOAN_PURPOSE',
+      code: 'OWN_WEDDING',
+      label: 'Pernikahan diri sendiri',
+      sort_order: 4,
+    },
   ];
 
 // system_parameters — every policy number the BRD names, effective-dated.
@@ -89,6 +153,13 @@ const SYSTEM_PARAMETERS = [
   },
   // Leave (BRD §5.3.1)
   { param_key: 'LEAVE.ANNUAL_DAYS', param_value: '12', data_type: 'NUMBER', effective_from: ASOF },
+  // CONTEXT.md: Cuti Tahunan earned after 12 continuous months of service.
+  {
+    param_key: 'LEAVE.FULL_ENTITLEMENT_SERVICE_MONTHS',
+    param_value: '12',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
   // Overtime (BRD §5.3.1)
   { param_key: 'OVERTIME.SLA_DAYS', param_value: '2', data_type: 'NUMBER', effective_from: ASOF },
   // Attendance / geofence (BRD §6.4)
@@ -138,6 +209,46 @@ const SYSTEM_PARAMETERS = [
     data_type: 'STRING',
     effective_from: ASOF,
   },
+  // Perjalanan dinas (ADR-0001: classification threshold, CONTEXT.md)
+  {
+    param_key: 'TRIP.LONG_DISTANCE_THRESHOLD_KM',
+    param_value: '100',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  {
+    param_key: 'PERDIN.REPORT_DEADLINE_DAYS',
+    param_value: '7',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  // Leave advance (CONTEXT.md: max 3 working days)
+  {
+    param_key: 'LEAVE.ADVANCE_MAX_DAYS',
+    param_value: '3',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  // Pinjaman (CONTEXT.md: min 2 years continuous tenure)
+  {
+    param_key: 'PINJAMAN.MIN_SERVICE_MONTHS',
+    param_value: '24',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  // SIM financing (CONTEXT.md: Driver, min 1 year, 50:50 split)
+  {
+    param_key: 'SIM.MIN_SERVICE_MONTHS',
+    param_value: '12',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
+  {
+    param_key: 'SIM.SHARE_PERCENT',
+    param_value: '50',
+    data_type: 'NUMBER',
+    effective_from: ASOF,
+  },
 ];
 
 const FORMAT_SETTINGS = [
@@ -182,6 +293,36 @@ const NUMBER_SEQUENCES = [
     padding_length: 4,
   },
   { sequence_code: 'DOC_IZIN', pattern: 'I/YYYY/{SEQ}', reset_period: 'YEARLY', padding_length: 4 },
+  {
+    sequence_code: 'DOC_OVERTIME',
+    pattern: 'L/YYYY/{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
+  {
+    sequence_code: 'DOC_PERDIN',
+    pattern: 'PD/YYYY/{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
+  {
+    sequence_code: 'DOC_ADVANCE',
+    pattern: 'UM/YYYY/{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
+  {
+    sequence_code: 'DOC_LOAN',
+    pattern: 'PJ/YYYY/{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
+  {
+    sequence_code: 'DOC_SIM',
+    pattern: 'SIM/YYYY/{SEQ}',
+    reset_period: 'YEARLY',
+    padding_length: 4,
+  },
 ];
 
 const VALIDATION_RULES = [
@@ -338,6 +479,445 @@ async function main() {
   });
   console.log('✔ master data org');
 
+  // ---------- Approval workflows (per document type — never one normalized chain) ----------
+  // CONTEXT.md "Approval Chains": each document has its own chain.
+  const workflows = [
+    {
+      code: 'CUTI',
+      module_code: 'LEAVE',
+      name: 'Cuti — Atasan Langsung → Division Head',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        { step_order: 2, approver_type: 'DIVISION_HEAD', sla_working_days: 2 },
+      ],
+    },
+    {
+      code: 'IZIN',
+      module_code: 'LEAVE',
+      name: 'Izin — Atasan Langsung → Dept. Comben',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        {
+          step_order: 2,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'COMBEN',
+          sla_working_days: 2,
+        },
+      ],
+    },
+    {
+      code: 'OVERTIME',
+      module_code: 'OVERTIME',
+      name: 'Lembur — Atasan Langsung → Division Head',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        { step_order: 2, approver_type: 'DIVISION_HEAD', sla_working_days: 2 },
+      ],
+    },
+    {
+      code: 'PERDIN',
+      module_code: 'PERDIN',
+      name: 'Perdin — Atasan Langsung → Comben → Finance',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        {
+          step_order: 2,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'COMBEN',
+          sla_working_days: 2,
+        },
+        {
+          step_order: 3,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'FINANCE',
+          sla_working_days: 2,
+        },
+      ],
+    },
+    {
+      code: 'PINJAMAN',
+      module_code: 'LOAN',
+      name: 'Pinjaman — Atasan → Div Head → HCGA/Comben → FAT',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        { step_order: 2, approver_type: 'DIVISION_HEAD', sla_working_days: 2 },
+        {
+          step_order: 3,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'COMBEN',
+          sla_working_days: 2,
+        },
+        {
+          step_order: 4,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'FINANCE',
+          sla_working_days: 2,
+        },
+      ],
+    },
+    {
+      code: 'SIM',
+      module_code: 'LICENSE',
+      name: 'SIM — Atasan Langsung → Comben',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        {
+          step_order: 2,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'COMBEN',
+          sla_working_days: 2,
+        },
+      ],
+    },
+    {
+      code: 'SWAP',
+      module_code: 'ATTENDANCE',
+      name: 'Ganti hari — Atasan Langsung → Comben',
+      steps: [
+        { step_order: 1, approver_type: 'DIRECT_SUPERVISOR', sla_working_days: 2 },
+        {
+          step_order: 2,
+          approver_type: 'SPECIFIC_GROUP',
+          approver_ref: 'COMBEN',
+          sla_working_days: 2,
+        },
+      ],
+    },
+  ];
+  const workflowIds = new Map<string, string>();
+  for (const wf of workflows) {
+    const row = await prisma.approval_workflows.upsert({
+      where: { code: wf.code },
+      create: { code: wf.code, module_code: wf.module_code, name: wf.name },
+      update: { name: wf.name, module_code: wf.module_code },
+    });
+    workflowIds.set(wf.code, row.id);
+    for (const step of wf.steps) {
+      await prisma.approval_workflow_steps.upsert({
+        where: { workflow_id_step_order: { workflow_id: row.id, step_order: step.step_order } },
+        create: { workflow_id: row.id, ...step },
+        update: {
+          approver_type: step.approver_type,
+          approver_ref: step.approver_ref ?? null,
+          sla_working_days: step.sla_working_days,
+        },
+      });
+    }
+  }
+  console.log(`✔ ${workflows.length} approval workflows`);
+
+  // ---------- Leave types (CONTEXT.md: Cuti Tahunan / Cuti Advance / Cuti Khusus / Izin / Sakit) ----------
+  await prisma.leave_types.upsert({
+    where: { code: 'CUTI_TAHUNAN' },
+    create: {
+      code: 'CUTI_TAHUNAN',
+      name: 'Cuti Tahunan',
+      deduct_quota: true,
+      deduct_salary: false,
+      max_days_per_request: 12,
+      min_notice_days: 7, // BR-C07: notice period cuti tahunan = 7 hari kerja
+      allow_backdate: false,
+      allow_half_day: true,
+      workflow_code: 'CUTI',
+      affects_attendance_allowance: true,
+      affects_meal_transport_allowance: true,
+    },
+    update: {
+      deduct_quota: true,
+      deduct_salary: false,
+      min_notice_days: 7,
+      workflow_code: 'CUTI',
+    },
+  });
+  await prisma.leave_types.upsert({
+    where: { code: 'CUTI_ADVANCE' },
+    create: {
+      code: 'CUTI_ADVANCE',
+      name: 'Cuti di Muka',
+      deduct_quota: true, // drawn down from future entitlement
+      deduct_salary: false,
+      max_days_per_request: 3,
+      allow_backdate: false,
+      allow_half_day: false,
+      workflow_code: 'CUTI',
+      affects_attendance_allowance: true,
+      affects_meal_transport_allowance: true,
+    },
+    update: { deduct_quota: true, deduct_salary: false, workflow_code: 'CUTI' },
+  });
+  await prisma.leave_types.upsert({
+    where: { code: 'CUTI_KHUSUS' },
+    create: {
+      code: 'CUTI_KHUSUS',
+      name: 'Cuti Khusus',
+      deduct_quota: false,
+      deduct_salary: false, // does not reduce gaji pokok (CONTEXT.md)
+      allow_backdate: true,
+      allow_half_day: false,
+      workflow_code: 'CUTI',
+      affects_attendance_allowance: true,
+      affects_meal_transport_allowance: true,
+    },
+    update: { deduct_quota: false, deduct_salary: false, workflow_code: 'CUTI' },
+  });
+  await prisma.leave_types.upsert({
+    where: { code: 'IZIN' },
+    create: {
+      code: 'IZIN',
+      name: 'Izin',
+      deduct_quota: false,
+      deduct_salary: true, // only Izin/Alpha deduct gaji pokok (CONTEXT.md)
+      min_notice_days: 1, // BR-C08: notice period izin = H-1
+      allow_backdate: true,
+      allow_half_day: true,
+      workflow_code: 'IZIN',
+      affects_attendance_allowance: true,
+      affects_meal_transport_allowance: true,
+    },
+    update: { deduct_quota: false, deduct_salary: true, min_notice_days: 1, workflow_code: 'IZIN' },
+  });
+  await prisma.leave_types.upsert({
+    where: { code: 'SAKIT' },
+    create: {
+      code: 'SAKIT',
+      name: 'Sakit',
+      deduct_quota: false,
+      deduct_salary: false, // Sakit does not reduce gaji pokok (CONTEXT.md)
+      requires_attachment: true,
+      allow_backdate: true,
+      allow_half_day: false,
+      workflow_code: 'IZIN',
+      affects_attendance_allowance: true,
+      affects_meal_transport_allowance: true,
+    },
+    update: { deduct_quota: false, deduct_salary: false, workflow_code: 'IZIN' },
+  });
+  console.log('✔ 5 leave types');
+
+  // ---------- Overtime rate rules (Class A) — CONTEXT.md: ×2 holiday is Non-Staff only ----------
+  // Grade-scoped: Non-Staff ×2 on holidays, Staff/SPV/Manager ×1.
+  const nonStaffGrade = await prisma.job_grades.upsert({
+    where: { code: 'NON_STAFF' },
+    create: { code: 'NON_STAFF', name: 'Non-Staff', level_order: 1, is_staff: false },
+    update: {},
+  });
+  const supervisorGrade = await prisma.job_grades.upsert({
+    where: { code: 'SUPERVISOR' },
+    create: { code: 'SUPERVISOR', name: 'Supervisor', level_order: 3, is_staff: true },
+    update: {},
+  });
+  const gradeRateRules = [
+    // Non-Staff: ordinary day ×1 via PAYROLL.OVERTIME_DIVISOR, holiday ×2
+    {
+      job_grade_id: nonStaffGrade.id,
+      day_type: 'WEEKDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: nonStaffGrade.id,
+      day_type: 'WEEKEND',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: nonStaffGrade.id,
+      day_type: 'NATIONAL_HOLIDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 2,
+    },
+    {
+      job_grade_id: nonStaffGrade.id,
+      day_type: 'JOINT_HOLIDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 2,
+    },
+    // Staff/SPV/Manager: ×1 on all day types
+    {
+      job_grade_id: gradeStaff.id,
+      day_type: 'WEEKDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: gradeStaff.id,
+      day_type: 'WEEKEND',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: gradeStaff.id,
+      day_type: 'NATIONAL_HOLIDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: gradeStaff.id,
+      day_type: 'JOINT_HOLIDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: supervisorGrade.id,
+      day_type: 'WEEKDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: supervisorGrade.id,
+      day_type: 'WEEKEND',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: supervisorGrade.id,
+      day_type: 'NATIONAL_HOLIDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    {
+      job_grade_id: supervisorGrade.id,
+      day_type: 'JOINT_HOLIDAY',
+      calc_method: 'HOURLY_DIVISOR',
+      multiplier: 1,
+    },
+    { job_grade_id: gradeManager.id, day_type: 'WEEKDAY', calc_method: 'NONE' },
+    { job_grade_id: gradeManager.id, day_type: 'WEEKEND', calc_method: 'NONE' },
+    { job_grade_id: gradeManager.id, day_type: 'NATIONAL_HOLIDAY', calc_method: 'NONE' },
+    { job_grade_id: gradeManager.id, day_type: 'JOINT_HOLIDAY', calc_method: 'NONE' },
+  ];
+  for (const r of gradeRateRules) {
+    const existing = await prisma.overtime_rate_rules.findFirst({
+      where: { job_grade_id: r.job_grade_id, day_type: r.day_type, effective_from: ASOF },
+    });
+    const data = { ...r, effective_from: ASOF, effective_to: null };
+    if (existing) {
+      await prisma.overtime_rate_rules.update({ where: { id: existing.id }, data });
+    } else {
+      await prisma.overtime_rate_rules.create({ data });
+    }
+  }
+  console.log(`✔ ${gradeRateRules.length} overtime rate rules`);
+
+  // ---------- Attendance allowance ladder (CONTEXT.md) ----------
+  // NON_STAFF_DEFAULT: 1 absence → 50%, >1 → 0
+  // OPERATOR_TINTIN: 1 → 80%, 2 → 50%, >2 → 0
+  const allowanceRules = [
+    {
+      rule_set_code: 'NON_STAFF_DEFAULT',
+      absence_days_min: 1,
+      absence_days_max: 1,
+      percentage: 50,
+    },
+    {
+      rule_set_code: 'NON_STAFF_DEFAULT',
+      absence_days_min: 2,
+      absence_days_max: null,
+      percentage: 0,
+    },
+    { rule_set_code: 'OPERATOR_TINTIN', absence_days_min: 1, absence_days_max: 1, percentage: 80 },
+    { rule_set_code: 'OPERATOR_TINTIN', absence_days_min: 2, absence_days_max: 2, percentage: 50 },
+    {
+      rule_set_code: 'OPERATOR_TINTIN',
+      absence_days_min: 3,
+      absence_days_max: null,
+      percentage: 0,
+    },
+  ];
+  for (const r of allowanceRules) {
+    const existing = await prisma.attendance_allowance_rules.findFirst({
+      where: {
+        rule_set_code: r.rule_set_code,
+        absence_days_min: r.absence_days_min,
+        effective_from: ASOF,
+      },
+    });
+    const data = { ...r, effective_from: ASOF, effective_to: null };
+    if (existing) {
+      await prisma.attendance_allowance_rules.update({ where: { id: existing.id }, data });
+    } else {
+      await prisma.attendance_allowance_rules.create({ data });
+    }
+  }
+  console.log(`✔ ${allowanceRules.length} attendance allowance rules`);
+
+  // ---------- Payroll components (feeder-ready) ----------
+  const payrollComponents = [
+    {
+      code: 'BASIC_SALARY',
+      name: 'Gaji Pokok',
+      component_type: 'INCOME',
+      calc_method: 'FIXED',
+      taxable: true,
+      bpjs_base: true,
+      display_order: 1,
+    },
+    {
+      code: 'TUNJANGAN_MAKAN',
+      name: 'Uang Makan',
+      component_type: 'INCOME',
+      calc_method: 'PER_DAY',
+      taxable: false,
+      display_order: 2,
+    },
+    {
+      code: 'TUNJANGAN_TRANSPORT',
+      name: 'Uang Transport',
+      component_type: 'INCOME',
+      calc_method: 'PER_DAY',
+      taxable: false,
+      display_order: 3,
+    },
+    {
+      code: 'TUNJANGAN_KEHADIRAN',
+      name: 'Tunjangan Kehadiran',
+      component_type: 'INCOME',
+      calc_method: 'PERCENTAGE',
+      taxable: false,
+      display_order: 4,
+    },
+    {
+      code: 'LEMBUR',
+      name: 'Lembur',
+      component_type: 'INCOME',
+      calc_method: 'FORMULA',
+      formula_expression: 'HOURLY_DIVISOR * MULTIPLIER * HOURS',
+      taxable: true,
+      display_order: 5,
+    },
+  ];
+  for (const c of payrollComponents) {
+    await prisma.payroll_components.upsert({
+      where: { code: c.code },
+      create: c,
+      update: c,
+    });
+  }
+  console.log(`✔ ${payrollComponents.length} payroll components`);
+
+  // ---------- Loan types (pinjaman purpose whitelist enforced) ----------
+  await prisma.loan_types.upsert({
+    where: { code: 'WELFARE' },
+    create: {
+      code: 'WELFARE',
+      name: 'Pinjaman Kesejahteraan',
+      max_amount: 150000,
+      max_tenor_months: 12,
+      min_service_months: 24,
+      max_per_year: 2,
+      requires_attachment: true,
+      workflow_code: 'PINJAMAN',
+      allowed_purposes: ['MARRIED_MEDICAL', 'UNMARRIED_MEDICAL', 'FUNERAL', 'OWN_WEDDING'],
+    },
+    update: {
+      max_amount: 150000,
+      max_tenor_months: 12,
+      min_service_months: 24,
+      workflow_code: 'PINJAMAN',
+    },
+  });
+  console.log('✔ 1 loan type');
+
   // ---------- Demo employee + user ----------
   const demoEmployee = await prisma.employees.upsert({
     where: { nik: DEMO_ADMIN_NIK },
@@ -359,10 +939,8 @@ async function main() {
     parallelism: 2,
     outputLen: 32,
   });
-  // Fixed TOTP secret so the demo admin can log in with 2FA (SUPER_ADMIN requires it).
-  // Seed-only convenience; in production secrets are generated at enroll2fa time.
-  // Set only on CREATE so re-seeding never invalidates an enrolled secret.
-  const DEMO_TOTP_SECRET = 'JBSWY3DPEHPK3PXP'; // standard otplib demo secret
+  // Authenticator/OTP 2FA was removed from login — demo user signs in with
+  // password only (no TOTP secret, two_factor_enabled stays false).
   const demoUser = await prisma.users.upsert({
     where: { login_nik: DEMO_ADMIN_NIK },
     create: {
@@ -372,20 +950,17 @@ async function main() {
       password_hash: passwordHash,
       status: 'ACTIVE',
       must_change_password: false,
-      two_factor_secret: DEMO_TOTP_SECRET,
-      two_factor_enabled: true,
+      two_factor_enabled: false,
     },
     update: { employee_id: demoEmployee.id, email: 'admin@lahans.dev' },
   });
   console.log(`✔ demo user ${DEMO_ADMIN_NIK} (password: Lahans@2026)`);
-  console.log(`  TOTP secret: ${DEMO_TOTP_SECRET}`);
   // Assign to SUPER_ADMIN
   await prisma.user_group_members.upsert({
     where: { user_id_group_id: { user_id: demoUser.id, group_id: groupIds.get('SUPER_ADMIN')! } },
     create: { user_id: demoUser.id, group_id: groupIds.get('SUPER_ADMIN')! },
     update: {},
   });
-  console.log(`✔ demo user ${DEMO_ADMIN_NIK} (password: Lahans@2026)`);
 
   // ---------- system_parameters (effective-dated) ----------
   // No unique key on system_parameters (only a composite index), so idempotency
@@ -475,6 +1050,24 @@ async function main() {
       permission_code: 'master.companies.read',
     },
     {
+      code: 'MASTER.BRANCHES',
+      label: 'Cabang',
+      route: '/master/branches',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 13,
+      permission_code: 'master.branches.read',
+    },
+    {
+      code: 'MASTER.DIVISIONS',
+      label: 'Divisi',
+      route: '/master/divisions',
+      parent_code: 'MASTER',
+      platform: 'BOTH',
+      sort_order: 14,
+      permission_code: 'master.divisions.read',
+    },
+    {
       code: 'CONFIG',
       label: 'Pengaturan',
       icon: 'Settings',
@@ -508,6 +1101,118 @@ async function main() {
       platform: 'BOTH',
       sort_order: 23,
       permission_code: 'config.sequence.read',
+    },
+    // HR operational modules (S7 → v2)
+    {
+      code: 'LEAVE',
+      label: 'Cuti & Izin',
+      icon: 'CalendarDays',
+      platform: 'BOTH',
+      sort_order: 30,
+      permission_code: 'leave.request.read',
+    },
+    {
+      code: 'LEAVE.REQUESTS',
+      label: 'Pengajuan Cuti',
+      route: '/cuti',
+      parent_code: 'LEAVE',
+      platform: 'BOTH',
+      sort_order: 31,
+      permission_code: 'leave.request.read',
+    },
+    {
+      code: 'LEAVE.PERMITS',
+      label: 'Pengajuan Izin',
+      route: '/izin',
+      parent_code: 'LEAVE',
+      platform: 'BOTH',
+      sort_order: 32,
+      permission_code: 'leave.request.read',
+    },
+    {
+      code: 'OVERTIME',
+      label: 'Lembur',
+      icon: 'Clock',
+      platform: 'BOTH',
+      sort_order: 40,
+      permission_code: 'overtime.request.read',
+    },
+    {
+      code: 'OVERTIME.REQUESTS',
+      label: 'Pengajuan',
+      route: '/overtime',
+      parent_code: 'OVERTIME',
+      platform: 'BOTH',
+      sort_order: 41,
+      permission_code: 'overtime.request.read',
+    },
+    {
+      code: 'PERDIN',
+      label: 'Perjalanan Dinas',
+      icon: 'Plane',
+      platform: 'BOTH',
+      sort_order: 50,
+      permission_code: 'perdin.request.read',
+    },
+    {
+      code: 'PERDIN.REQUESTS',
+      label: 'Pengajuan',
+      route: '/perdin',
+      parent_code: 'PERDIN',
+      platform: 'BOTH',
+      sort_order: 51,
+      permission_code: 'perdin.request.read',
+    },
+    {
+      code: 'PINJAMAN',
+      label: 'Pinjaman',
+      icon: 'Wallet',
+      platform: 'BOTH',
+      sort_order: 60,
+      permission_code: 'loan.request.read',
+    },
+    {
+      code: 'PINJAMAN.REQUESTS',
+      label: 'Pengajuan',
+      route: '/pinjaman',
+      parent_code: 'PINJAMAN',
+      platform: 'BOTH',
+      sort_order: 61,
+      permission_code: 'loan.request.read',
+    },
+    {
+      code: 'LICENSE',
+      label: 'Pembiayaan SIM',
+      icon: 'IdCard',
+      platform: 'BOTH',
+      sort_order: 70,
+      permission_code: 'license.request.read',
+    },
+    {
+      code: 'LICENSE.REQUESTS',
+      label: 'Pengajuan',
+      route: '/sim',
+      parent_code: 'LICENSE',
+      platform: 'BOTH',
+      sort_order: 71,
+      permission_code: 'license.request.read',
+    },
+    {
+      code: 'ATTENDANCE',
+      label: 'Kehadiran',
+      icon: 'Fingerprint',
+      platform: 'BOTH',
+      sort_order: 80,
+      permission_code: 'attendance.daily.read',
+    },
+    {
+      code: 'ATTENDANCE.DAILY',
+      label: 'Rekap Harian',
+      route: '/attendance',
+      parent_code: 'ATTENDANCE',
+      platform: 'BOTH',
+      sort_order: 81,
+      permission_code: 'attendance.daily.read',
     },
   ];
   const menuIdByCode = new Map<string, string>();
