@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -26,6 +27,7 @@ import {
  *
  * Endpoints:
  *  - GET  /roster/calendar                 one row per employee × date (branch-filterable)
+ *  - GET  /roster/employees/:id/schedule   active schedule snapshot for one employee
  *  - GET  /roster/overrides / POST /roster/overrides    per-date roster rows
  *  - POST /roster/schedules/:id/assign      bulk employee → work_schedule
  *  - GET/POST/PUT/DELETE /roster/shifts     shift definitions (NORMAL/PAGI/SIANG/MALAM)
@@ -49,6 +51,19 @@ export class RosterController {
     @Query() query: { from: string; to: string; branchId?: string },
   ) {
     return this.roster.calendar(user, query);
+  }
+
+  // -- employee schedule snapshot (Ticket 04 — read-only "Jadwal Kerja" card) --
+
+  @Get('employees/:id/schedule')
+  @RequirePermission('roster.calendar.read')
+  @ApiOperation({ summary: 'Jadwal kerja aktif karyawan (untuk kartu tampilan)' })
+  employeeSchedule(
+    @CurrentUser() user: CurrentUser,
+    @Param('id') id: string,
+    @Query() query: { date?: string },
+  ) {
+    return this.roster.resolveEmployeeSchedule(user, id, this.parseScheduleDate(query.date));
   }
 
   // -- overrides -------------------------------------------------------------
@@ -158,5 +173,16 @@ export class RosterController {
   @ApiOperation({ summary: 'Batalkan delegasi' })
   cancelDelegation(@CurrentUser() user: CurrentUser, @Param('id') id: string) {
     return this.roster.cancelDelegation(user, id);
+  }
+
+  /** `?date=YYYY-MM-DD` (WIB) → UTC-midnight; omitted → today's WIB date. */
+  private parseScheduleDate(date?: string): Date {
+    if (!date) return new Date();
+    const d = new Date(date);
+    if (Number.isNaN(d.getTime())) {
+      throw new BadRequestException('Parameter date tidak valid.');
+    }
+    // Normalize to UTC midnight of the Indonesian day (work_date convention).
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
   }
 }

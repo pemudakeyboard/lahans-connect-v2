@@ -46,6 +46,8 @@ const PERMISSIONS = [
   'master.job_grades.write',
   'master.employees.read',
   'master.employees.write',
+  'master.employee_assignments.read',
+  'master.employee_assignments.write',
   'master.reference_data.read',
   'master.reference_data.write',
   // master — schedule/calendar admin config (jadwal kerja & kalender kerja,
@@ -1474,6 +1476,60 @@ async function main() {
     }
   }
   console.log(`✔ ${m6Employees.length} M6 employees + attendance + overtime`);
+
+  // -- Employee contract assignments (effective-dated, is_primary) for the
+  //    master list's Status Kontrak / Akhir Kontrak columns. Contract types
+  //    come from CONTRACT_TYPE reference data; PERMANENT rows have no end date.
+  const contractSeeds: {
+    nik: string;
+    type: 'PERMANENT' | 'CONTRACT' | 'PROBATION';
+    start: string;
+    end?: string;
+  }[] = [
+    { nik: '20250055', type: 'PERMANENT', start: '2025-01-01' },
+    { nik: '20230567', type: 'PERMANENT', start: '2023-06-01' },
+    { nik: '20260007', type: 'PROBATION', start: '2026-07-01', end: '2026-12-31' },
+    { nik: '20230612', type: 'CONTRACT', start: '2026-02-01', end: '2026-08-31' },
+    { nik: '20000173', type: 'CONTRACT', start: '2026-05-01', end: '2027-04-30' },
+    { nik: '20240682', type: 'CONTRACT', start: '2025-11-01', end: '2027-01-31' },
+    { nik: '88000002', type: 'PERMANENT', start: '2020-01-01' },
+    { nik: '88000011', type: 'PERMANENT', start: '2023-01-01' },
+    { nik: '88000012', type: 'PERMANENT', start: '2023-01-01' },
+  ];
+  let contractCount = 0;
+  for (const c of contractSeeds) {
+    const empRow = await prisma.employees.findUnique({
+      where: { nik: c.nik },
+      select: { id: true },
+    });
+    if (!empRow) continue;
+    const existing = await prisma.employee_assignments.findFirst({
+      where: { employee_id: empRow.id, is_primary: true },
+    });
+    const data = {
+      employee_id: empRow.id,
+      contract_type: c.type,
+      contract_start: new Date(c.start),
+      contract_end: c.end ? new Date(c.end) : null,
+      effective_from: ASOF,
+      effective_to: null,
+      is_primary: true,
+    };
+    if (existing) {
+      await prisma.employee_assignments.update({
+        where: { id: existing.id },
+        data: {
+          contract_type: c.type,
+          contract_start: data.contract_start,
+          contract_end: data.contract_end,
+        },
+      });
+    } else {
+      await prisma.employee_assignments.create({ data });
+    }
+    contractCount++;
+  }
+  console.log(`✔ ${contractCount} employee contract assignments`);
 
   // -- Payroll period 2026-08 (OPEN, 22 Jul – 21 Aug 2026).
   await prisma.payroll_periods.upsert({

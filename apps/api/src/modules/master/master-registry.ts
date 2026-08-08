@@ -19,8 +19,16 @@ export interface MasterEntityConfig {
   /**
    * Relations to include on list reads so the UI can show the referenced
    * entity's name (e.g. employees → branch.name). Mirrors Prisma `include`.
+   * Values may carry Prisma include options (where/orderBy/take) beyond a bare
+   * `select` (e.g. an employee's current contract assignment).
    */
-  include?: Record<string, { select: Record<string, boolean> }>;
+  include?: Record<string, object>;
+  /**
+   * Fields the list query may filter on via exact-match query params
+   * (e.g. employees → `?branch_id=…&employment_status=…`). Only declared
+   * fields are honored — anything else is ignored.
+   */
+  filterable?: string[];
   /** Entity has an `is_active` soft-delete column; list excludes inactive rows. */
   isActive?: boolean;
   /** Entity is effective-dated (Class A/B). List/reads then REQUIRE asOf. */
@@ -76,17 +84,43 @@ export const MASTER_REGISTRY: Record<string, MasterEntityConfig> = {
     searchable: ['nik', 'full_name', 'email'],
     label: 'Karyawan',
     isActive: true,
+    filterable: ['branch_id', 'employment_status'],
     include: {
       branch: { select: { name: true } },
       job_position: { select: { name: true } },
       job_grade: { select: { name: true } },
+      // Current contract assignment (Class B, effective-dated) for the list's
+      // kontrak columns. Takes the is_primary assignment still effective today.
+      assignments: {
+        where: { is_primary: true, contract_type: { not: null } },
+        orderBy: { effective_from: 'desc' },
+        take: 1,
+        select: {
+          id: true,
+          contract_type: true,
+          contract_start: true,
+          contract_end: true,
+        },
+      },
     },
+  },
+  /**
+   * Contract assignment (Class B, effective-dated) — the employee's current
+   * contract_type/start/end live here, not on `employees`. Written by the
+   * employee detail page's Pekerjaan tab. Not temporal here on purpose: the
+   * generic CRUD keeps it simple, satisfies reads via the employees include.
+   */
+  'employee-assignments': {
+    delegate: 'employee_assignments',
+    searchable: ['employee_id'],
+    label: 'Penugasan Karyawan',
   },
   'reference-data': {
     delegate: 'reference_data',
     searchable: ['category', 'code', 'label'],
     label: 'Data Referensi',
     isActive: true,
+    filterable: ['category'],
   },
   'leave-types': {
     delegate: 'leave_types',

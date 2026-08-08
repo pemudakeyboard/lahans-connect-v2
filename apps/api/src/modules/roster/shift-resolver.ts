@@ -41,6 +41,10 @@ export interface AssignmentRow {
   scope_ref_id: string;
   work_schedule: {
     id: string;
+    /** Schedule code (HO_STANDARD, PABRIK_SHIFT_3X, …) — carried by the row include. */
+    code: string;
+    /** Schedule display name (HO Standard, Pabrik Shift 3x8, …). */
+    name: string;
     schedule_type: string;
     shift_pattern: {
       cycle_length: number;

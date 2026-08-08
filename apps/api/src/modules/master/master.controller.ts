@@ -48,7 +48,14 @@ export class MasterController {
   @ApiOperation({ summary: 'Daftar master (search + paginate)' })
   list(
     @Param('entity') entity: string,
-    @Query() query: { page?: number; pageSize?: number; search?: string; asOf?: string },
+    @Query()
+    query: {
+      page?: number;
+      pageSize?: number;
+      search?: string;
+      asOf?: string;
+      [filter: string]: string | number | undefined;
+    },
     @CurrentUser() user: { permissions: string[] },
   ) {
     this.assertPermission(user, permissionResource(entity), 'read');

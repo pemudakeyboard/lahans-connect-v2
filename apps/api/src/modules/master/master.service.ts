@@ -55,7 +55,13 @@ export class MasterService {
 
   async list(
     entity: string,
-    query: { page?: number; pageSize?: number; search?: string; asOf?: string },
+    query: {
+      page?: number;
+      pageSize?: number;
+      search?: string;
+      asOf?: string;
+      [filter: string]: string | number | undefined;
+    },
   ) {
     const config = this.resolveConfig(entity);
     const asOf = this.assertAsOf(entity, config, query.asOf);
@@ -66,6 +72,14 @@ export class MasterService {
     const where: Record<string, unknown> = {};
     // Soft-deleted rows (is_active = false) are hidden from list views.
     if (config.isActive) where.is_active = true;
+    // Exact-match filters declared as filterable (e.g. branch_id, employment_status).
+    // Unknown query params are ignored — the registry is the allow-list.
+    if (config.filterable) {
+      for (const f of config.filterable) {
+        const v = query[f];
+        if (v !== undefined && v !== '') where[f] = v;
+      }
+    }
     if (config.temporal && asOf) {
       where.effective_from = { lte: asOf };
       where.OR = [{ effective_to: null }, { effective_to: { gte: asOf } }];
@@ -99,7 +113,10 @@ export class MasterService {
       where.effective_from = { lte: date };
       where.OR = [{ effective_to: null }, { effective_to: { gte: date } }];
     }
-    const row = await d.findFirst({ where });
+    const row = await d.findFirst({
+      where,
+      ...(config.include ? { include: config.include } : {}),
+    });
     if (!row) throw new NotFoundException(`${config.label} ${id} tidak ditemukan.`);
     return row;
   }

@@ -127,7 +127,7 @@ export default function PayrollFeederPage() {
       render: (r) => <span className="font-mono text-xs">{r.employee?.nik ?? r.employee_id}</span>,
     },
     {
-      key: 'employee',
+      key: 'employee_name',
       header: 'Nama',
       render: (r) => r.employee?.full_name ?? '—',
     },

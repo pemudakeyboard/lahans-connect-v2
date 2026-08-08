@@ -33,6 +33,8 @@ interface DataTableProps<T> {
   asOf?: string;
   onAsOfChange?: (value: string) => void;
   emptyMessage?: string;
+  /** When set, rows become clickable (e.g. navigate to a detail page). */
+  onRowClick?: (row: T) => void;
 }
 
 export function DataTable<T extends { id: string }>({
@@ -48,6 +50,7 @@ export function DataTable<T extends { id: string }>({
   asOf,
   onAsOfChange,
   emptyMessage = 'Tidak ada data.',
+  onRowClick,
 }: DataTableProps<T>) {
   const [searchDraft, setSearchDraft] = useState(search ?? '');
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -110,7 +113,11 @@ export function DataTable<T extends { id: string }>({
               </TableRow>
             ) : (
               rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className={onRowClick ? 'cursor-pointer' : undefined}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                >
                   {columns.map((c) => (
                     <TableCell key={c.key} className={c.className}>
                       {c.render

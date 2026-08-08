@@ -524,6 +524,8 @@ export class RosterService {
           scope_ref_id: employeeId,
           work_schedule: {
             id: schedule.id,
+            code: schedule.code,
+            name: schedule.name,
             schedule_type: schedule.schedule_type,
             shift_pattern: schedule.shift_pattern,
             days: schedule.days,
@@ -590,6 +592,103 @@ export class RosterService {
     const winner = rankAssignments(effective, date);
     if (!winner) return null;
     return resolveShiftWindow(winner, date);
+  }
+
+  // -------------------------------------------------------------------------
+  // EMPLOYEE SCHEDULE SNAPSHOT (Ticket 04 — read-only "Jadwal Kerja" card)
+  // -------------------------------------------------------------------------
+
+  /**
+   * Resolve an employee's currently active schedule for a date, including the
+   * schedule's own metadata (code/name/type) — unlike resolveWorkSchedule,
+   * which only returns the concrete shift window. Fed by the same 5-level
+   * priority pipeline (scopeRefsFor → isAssignmentEffective → rankAssignments →
+   * resolveShiftWindow), so the card always agrees with the roster calendar.
+   * Enforces the same employee data-scope as the calendar (roster.calendar.read),
+   * so a SELF-scope EMPLOYEE can only read their own schedule.
+   * Returns null when the employee is not found or has no schedule.
+   */
+  async resolveEmployeeSchedule(
+    user: CurrentUser,
+    employeeId: string,
+    date: Date,
+  ): Promise<{
+    schedule: {
+      id: string;
+      code: string;
+      name: string;
+      schedule_type: string;
+    } | null;
+    scope: { type: string; refId: string; priority: number } | null;
+    window: ShiftWindow | null;
+  } | null> {
+    const empWhere = await this.scope.employeeWhere(user, 'roster.calendar.read');
+    const emp = await this.prisma.employees.findFirst({
+      // AND both constraints: a SELF scope's { id } must not be dropped in
+      // favour of the requested id (object-literal spread would collapse the
+      // duplicate `id` key), and the requested id must not be dropped either.
+      where: { AND: [{ id: employeeId }, empWhere] },
+      select: {
+        id: true,
+        job_position_id: true,
+        job_grade_id: true,
+        branch_id: true,
+        branch: { select: { company_id: true } },
+      },
+    });
+    if (!emp) {
+      // Distinguish "exists but out of scope" from "no such employee". A
+      // company-wide scope ({} where) simply means the employee doesn't exist.
+      const inScope = Object.keys(empWhere).length === 0;
+      if (!inScope) {
+        throw new ConflictException({
+          code: 'ROSTER_SCOPE',
+          message: 'Karyawan di luar cakupan Anda.',
+        });
+      }
+      return null;
+    }
+
+    const refs = scopeRefsFor({
+      employee_id: emp.id,
+      job_position_id: emp.job_position_id,
+      job_grade_id: emp.job_grade_id,
+      branch_id: emp.branch_id,
+      company_id: emp.branch?.company_id ?? null,
+      entity_company_id: emp.branch?.company_id ?? null,
+    });
+    const assignments = await this.prisma.schedule_assignments.findMany({
+      where: {
+        OR: refs.map((r) => ({ scope_type: r.scope_type, scope_ref_id: r.scope_ref_id })),
+      },
+      include: {
+        work_schedule: {
+          include: {
+            shift_pattern: { include: { rotations: { include: { shift_definition: true } } } },
+            days: true,
+          },
+        },
+      },
+    });
+    const effective = assignments.filter((a) => isAssignmentEffective(a, date));
+    const winner = rankAssignments(effective, date);
+    if (!winner) return { schedule: null, scope: null, window: null };
+    return {
+      schedule: winner.work_schedule
+        ? {
+            id: winner.work_schedule.id,
+            code: winner.work_schedule.code,
+            name: winner.work_schedule.name,
+            schedule_type: winner.work_schedule.schedule_type,
+          }
+        : null,
+      scope: {
+        type: winner.scope_type,
+        refId: winner.scope_ref_id,
+        priority: winner.priority,
+      },
+      window: resolveShiftWindow(winner, date),
+    };
   }
 
   // -------------------------------------------------------------------------

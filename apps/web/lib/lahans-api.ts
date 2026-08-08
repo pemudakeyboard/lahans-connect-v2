@@ -190,13 +190,23 @@ export async function reserveNextNumber(
 
 export async function masterList<T = Record<string, unknown>>(
   entity: string,
-  params?: { page?: number; pageSize?: number; search?: string; asOf?: string },
+  params?: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    asOf?: string;
+    /** Exact-match filters (per-entity allow-list enforced server-side). */
+    filters?: Record<string, string>;
+  },
 ): Promise<ListResponse<T>> {
   const q = new URLSearchParams();
   if (params?.page) q.set('page', String(params.page));
   if (params?.pageSize) q.set('pageSize', String(params.pageSize));
   if (params?.search) q.set('search', params.search);
   if (params?.asOf) q.set('asOf', params.asOf);
+  for (const [k, v] of Object.entries(params?.filters ?? {})) {
+    if (v && v !== '') q.set(k, v);
+  }
   const qs = q.toString();
   return api<ListResponse<T>>(`/api/master/${entity}${qs ? `?${qs}` : ''}`);
 }
@@ -742,6 +752,35 @@ export interface RosterCalendarResponse {
   from: string;
   to: string;
   rows: RosterCalendarRow[];
+}
+
+/** Active-schedule snapshot for the employee detail "Jadwal Kerja" card (Ticket 04). */
+export interface EmployeeScheduleRow {
+  schedule: {
+    id: string;
+    code: string;
+    name: string;
+    schedule_type: string;
+  } | null;
+  scope: { type: string; refId: string; priority: number } | null;
+  window: {
+    scheduleId: string | null;
+    shiftCode: string | null;
+    start_time: string | null;
+    end_time: string | null;
+    break_minutes: number;
+    late_tolerance_minutes: number;
+    is_working_day: boolean;
+    crosses_midnight: boolean;
+  } | null;
+}
+
+export async function getEmployeeSchedule(
+  employeeId: string,
+  params?: { date?: string },
+): Promise<EmployeeScheduleRow> {
+  const qs = params?.date ? `?date=${encodeURIComponent(params.date)}` : '';
+  return api<EmployeeScheduleRow>(`/api/roster/employees/${employeeId}/schedule${qs}`);
 }
 
 export interface ScheduleOverrideRow {
